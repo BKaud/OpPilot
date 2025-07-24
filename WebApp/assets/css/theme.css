@@ -1,0 +1,136 @@
+/*================================================================================
+  OPilot Brand Theme
+    • Navy      → #15303D
+    • Teal      → #2F6F6B
+    • Off‑white → #F4F2ED
+================================================================================*/
+
+:root {
+  /* Base background & text */
+  --bg-page:       #F4F2ED;   /* page background */
+  --bg-surface:    #FFFFFF;   /* cards, panels, modals */
+  --text-primary:  #15303D;   /* main text, nav text */
+  --text-secondary:#2F6F6B;   /* subtitles, secondary text */
+
+  /* Panels & borders */
+  --panel-bg:      var(--bg-surface);
+  --border-color:  #CDD1D4;   /* light neutral for borders */
+
+  /* Navigation & sidebar */
+  --nav-bg:        #FFFFFF;   /* navbar background */
+  --sidebar-bg:    #f4edef;   /* sidebar background */
+
+  /* Buttons */
+  --btn-bg:        #2F6F6B;   /* default button background */
+  --btn-text:      #FFFFFF;   /* default button text */
+  --btn-hover:     #1E4A49;   /* hover state */
+
+  /* Accent (if you still want to keep the gold for arrows, etc) */
+  --accent:        #2F6F6B;   /* amber/gold highlight */
+
+  /* Modal background */
+  --modal-bg:      var(--bg-surface);
+
+  /* Drop‑indicator */
+  --drop-indicator-outline: 2px dashed var(--accent);
+  --drop-indicator-bg: rgba(255, 193, 7, 0.2);
+}
+
+/*================================================================================
+  Global Resets & Application
+================================================================================*/
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+/*================================================================================
+  Navbar
+================================================================================*/
+
+.navbar {
+  background: var(--nav-bg);
+  color: var(--bg-surface);
+}
+
+/*================================================================================
+  Sidebar
+================================================================================*/
+
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--bg-surface);
+}
+
+/*================================================================================
+  Panels & Cards (rides, schedule, shift boxes…)
+================================================================================*/
+
+.ride-box,
+.operator-shift-container,
+.rotation-schedule,
+.modal-box {
+  background: var(--panel-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/*================================================================================
+  Buttons
+================================================================================*/
+
+button {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: var(--btn-hover);
+}
+
+/*================================================================================
+  Accents & Icons
+================================================================================*/
+
+.ride-icon {
+  background-color: var(--text-secondary);
+}
+
+/*================================================================================
+  Drop‑Indicator
+================================================================================*/
+
+.drop-indicator {
+  outline: var(--drop-indicator-outline);
+  background-color: var(--drop-indicator-bg);
+}
+
+/*================================================================================
+  Modals
+================================================================================*/
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-box {
+  background: var(--modal-bg);
+  color: var(--text-primary);
+}
+
+/*================================================================================
+overrides
+================================================================================*/
+
+.arrow {
+  color: var(--accent);
+}
+
+.rotation-time-label {
+  color: var(--accent);
+}

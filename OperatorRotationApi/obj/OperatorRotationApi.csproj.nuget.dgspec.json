@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\RotationHandler\\OperatorRotationApi\\OperatorRotationApi.csproj": {}
+    "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\OPilot\\OperatorRotationApi\\OperatorRotationApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\RotationHandler\\OperatorRotationApi\\OperatorRotationApi.csproj": {
+    "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\OPilot\\OperatorRotationApi\\OperatorRotationApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\RotationHandler\\OperatorRotationApi\\OperatorRotationApi.csproj",
+        "projectUniqueName": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\OPilot\\OperatorRotationApi\\OperatorRotationApi.csproj",
         "projectName": "OperatorRotationApi",
-        "projectPath": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\RotationHandler\\OperatorRotationApi\\OperatorRotationApi.csproj",
+        "projectPath": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\OPilot\\OperatorRotationApi\\OperatorRotationApi.csproj",
         "packagesPath": "C:\\Users\\brade\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\RotationHandler\\OperatorRotationApi\\obj\\",
+        "outputPath": "C:\\Users\\brade\\OneDrive - Delaware Area Career Center\\ProjectRepository\\sites\\OPilot\\OperatorRotationApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
