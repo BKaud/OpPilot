@@ -9,33 +9,119 @@
   <link rel="stylesheet" href="../../assets/css/theme.css" />
 </head>
 
-<body style="width:100vw;max-width:100vw;">
-  <!-- NAVBAR (unchanged) -->
+<body>
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div id="navbar-logo" class="navbar-logo">
       <img id="logoanim" src="../../assets/images/compassanim.gif" alt="OPilot Logo" />
       <img id="logotext" class="logoText" src="../../assets/images/oppilottext.png" />
     </div>
-      <div class="navbar-login">
-        <div class="login-fields">
-          <input type="text" placeholder="Username" />
-          <input type="password" placeholder="Password" />
-        </div>
-        <button class="login-btn">Login</button>
+    <div class="navbar-login">
+      <div class="login-fields">
+        <input type="text" placeholder="Username" />
+        <input type="password" placeholder="Password" />
+      </div>
+      <button class="login-btn">Login</button>
     </div>
   </nav>
 
-
-  <div class="main" style="width:100vw;max-width:100vw;">
-    <!-- Sidebar -->
+  <div class="main">
+    <!-- Enhanced Sidebar with Navigation -->
     <aside id="sidebar" class="sidebar closed">
-      <button id="add-event-btn" class="btn-special">Add Event</button>
-      <button id="push-rotation-btn" class="btn-special">Push Rotation</button>
-      <div class="button-row">
-        <button id="addRideBtn">Add Ride</button>
-        <button id="removeRideBtn">Remove Ride</button>
-        <button id="addOperatorBtn">Add Operator</button>
-        <button id="removeOperatorBtn">Remove Operator</button>
+      <div class="nav-section">
+        <!-- Homepage -->
+        <div class="nav-item">
+          <a href="#" class="nav-link active">
+            <div class="nav-icon">🏠</div>
+            <span class="nav-text">Homepage</span>
+          </a>
+        </div>
+        
+        <!-- Zones (Expandable) -->
+        <div class="nav-item expandable" id="zones">
+          <a href="#" class="nav-link expandable">
+            <div class="nav-icon">🎢</div>
+            <span class="nav-text">Zones</span>
+          </a>
+          <div class="sub-nav" id="zones-sub">
+            <!-- Rides 1 Zone -->
+            <div class="zone-item expandable" id="rides1-zone">
+              <a href="#" class="sub-nav-link expandable">
+                <span class="nav-text">Rides 1</span>
+              </a>
+              <div class="zone-sub-nav" id="rides1-sub">
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Edit Mode</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Config</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Settings</span>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Example of another zone -->
+            <div class="zone-item expandable" id="rides2-zone">
+              <a href="#" class="sub-nav-link expandable">
+                <span class="nav-text">Rides 2</span>
+              </a>
+              <div class="zone-sub-nav" id="rides2-sub">
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Edit Mode</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Config</span>
+                </a>
+                <a href="#" class="zone-sub-link">
+                  <span class="nav-text">Settings</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation Items -->
+        <div class="bottom-section">
+          <div class="nav-item">
+            <a href="#" class="nav-link">
+              <div class="nav-icon">👤</div>
+              <span class="nav-text">Account Settings</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link">
+              <div class="nav-icon">📋</div>
+              <span class="nav-text">Changelog</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons Section -->
+      <div class="action-buttons">
+        <button id="add-event-btn" class="btn-special">
+          <div class="btn-icon">+</div>
+          <span class="btn-text">Add Event</span>
+        </button>
+        <button id="push-rotation-btn" class="btn-special">
+          <div class="btn-icon">🔄</div>
+          <span class="btn-text">Push Rotation</span>
+        </button>
+        
+        <div class="button-row">
+          <button id="addRideBtn">Add Ride</button>
+          <button id="removeRideBtn">Remove Ride</button>
+          <button id="addOperatorBtn">Add Operator</button>
+          <button id="removeOperatorBtn">Remove Operator</button>
+        </div>
       </div>
     </aside>
 
@@ -43,98 +129,116 @@
     <div class="ops-col ops-schedule">
       <div class="ops-schedule-content">
         <h3>Rotation Schedule</h3>
-      <!-- … your rotation‐time‐block items … -->
+        <p>Schedule content goes here...</p>
       </div>
     </div>
 
     <!-- Ride Position Dashboard -->
     <div class="ops-col ops-main">
-      <!-- (optional) slider preview -->
       <div class="rotation-preview">
         <input type="range" id="rotationSlider" min="0" max="100" value="0" />
       </div>
-
-      <!-- Current Ride Positions header -->
+      
       <h2 id="crp">Current Ride Positions</h2>
-
-      <!-- Ride panels -->
+      
       <div class="ride-container">
         <div class="ride-group">
-          <!-- rides rendered here -->
+          <p>Ride positions will be displayed here...</p>
         </div>
       </div>
 
-      <!-- Bottom: Shift & Break side by side -->
       <div class="bottom-panels">
         <div class="panel-box shift-panel">
           <h3>Operators On Shift</h3>
-          <div id="operatorsOnShift" class="operators-on-shift"></div>
+          <div id="operatorsOnShift" class="operators-on-shift">
+            <p>Operators on shift...</p>
+          </div>
         </div>
         <div class="panel-box break-panel">
           <h3>On Break</h3>
-          <div id="operatorsOnBreak" class="operators-on-break"></div>
+          <div id="operatorsOnBreak" class="operators-on-break">
+            <p>Operators on break...</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL OVERLAY (unchanged) -->
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div class="modal-box">
-      <p id="modalMessage">Are you sure?</p>
-      <div class="modal-buttons">
-        <button id="modalConfirm">Yes</button>
-        <button id="modalCancel">No</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- UNSUPPORTED SCREEN OVERLAY -->
-  <div class="unsupported-screen">
-    <img class="unsupported-logo" src="../../assets/images/compassanim.gif" alt="OPilot Logo" />
-    <div class="unsupported-message">
-      Screens this small are not supported
-    </div>
-  </div>
-
-  <!-- SCRIPTS -->
-  <script type="module" src="js/state.js"></script>
-  <script type="module" src="js/render.js"></script>
-  <script type="module" src="js/modal.js"></script>
-  <script type="module" src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-
       const sidebar = document.getElementById('sidebar');
       const logoAnim = document.getElementById('logoanim');
-      const logoText = document.getElementById('logotext')
-      const forwardGif = '../../assets/images/compassanim.gif';
-      const reverseGif = '../../assets/images/compassanim-reverse.gif';
-      const navLogo = document.getElementById('navbar-logo')
+      const logoText = document.getElementById('logotext');
 
-
+      // Sidebar hover functionality
       sidebar.addEventListener('mouseover', () => {
         const isOpen = sidebar.classList.toggle('open');
         sidebar.classList.toggle('closed', !isOpen);
-        //---------------------------------------------------
-        //Text logo fading
-        logoText.classList.remove('logoText')
-        //---------------------------------------------------
-
-        // swap the GIF src to replay forward or backward
-
-        // force‐reload so it starts from the beginning
-        logoAnim.src = logoAnim.src + '?t=' + Date.now();
-
-        //---------------------------------------------------
-
-        logoText.classList.add('act')
+        logoText.classList.remove('logoText');
+        logoText.classList.add('act');
       });
 
       sidebar.addEventListener('mouseout', () => {
-        logoText.classList.remove('act')
-        //Text logo fading
-        logoText.classList.add('logoText')
+        logoText.classList.remove('act');
+        logoText.classList.add('logoText');
+      });
+
+      // Zone expansion functionality
+      document.getElementById('zones').addEventListener('click', function(e) {
+        if (e.target.classList.contains('expandable')) {
+          e.preventDefault();
+          const subNav = document.getElementById('zones-sub');
+          const expandable = e.target;
+          
+          if (subNav.classList.contains('expanded')) {
+            subNav.classList.remove('expanded');
+            expandable.classList.remove('expanded');
+          } else {
+            subNav.classList.add('expanded');
+            expandable.classList.add('expanded');
+          }
+        }
+      });
+
+      // Individual zone expansion (Rides 1, Rides 2, etc.)
+      document.querySelectorAll('.zone-item').forEach(zoneItem => {
+        zoneItem.addEventListener('click', function(e) {
+          if (e.target.classList.contains('expandable')) {
+            e.preventDefault();
+            const zoneSubNav = this.querySelector('.zone-sub-nav');
+            const expandable = e.target;
+            
+            if (zoneSubNav.classList.contains('expanded')) {
+              zoneSubNav.classList.remove('expanded');
+              expandable.classList.remove('expanded');
+            } else {
+              zoneSubNav.classList.add('expanded');
+              expandable.classList.add('expanded');
+            }
+          }
+        });
+      });
+
+      // Navigation link clicks
+      document.querySelectorAll('.nav-link, .sub-nav-link, .zone-sub-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          if (!this.classList.contains('expandable')) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-link, .sub-nav-link, .zone-sub-link').forEach(item => {
+              item.classList.remove('active');
+            });
+            // Add active class to clicked item
+            this.classList.add('active');
+          }
+        });
+      });
+
+      // Edit mode toggle (works from any Edit Mode link)
+      document.addEventListener('click', function(e) {
+        if (e.target.textContent.trim() === 'Edit Mode') {
+          e.preventDefault();
+          document.body.classList.toggle('edit-mode');
+        }
       });
     });
   </script>

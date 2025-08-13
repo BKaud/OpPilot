@@ -63,8 +63,24 @@ p, span, label, input, button {
   background: var(--bg-panel);
   min-height: 80px;
 }
-
-
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px;
+  border-bottom: 10px solid var(--border-color);
+}
+.navbar-logo img {
+  height: 60px;
+}
+.logoText {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.logoText.act {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
 .navbar-login {
   flex: 1;
   display: flex;
@@ -73,28 +89,6 @@ p, span, label, input, button {
   justify-content: flex-end;
   min-height: 90px;
   border-bottom: 10px solid var(--border-color);
-}
-.navbar-logo img {
-  height: 60px;
-}
-.navbar-logo {
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  gap:10px;
-  border-bottom: 10px solid var(--border-color);
-}
-
-.logoText {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.act {
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
-body.edit-mode #toggleEditModeBtn {
-  background: #5cb85c;
 }
 .navbar-login .login-fields {
   display: flex;
@@ -119,6 +113,28 @@ body.edit-mode #toggleEditModeBtn {
   background: var(--btn-hover);
 }
 
+/* Responsive styles for phone view */
+@media (max-width: 480px) {
+  .navbar-login {
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+    min-height: auto;
+  }
+  .navbar-login .login-fields {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .navbar-login input {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+  .navbar-login .login-btn {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+}
+
 /*================================================================================
   Main Layout
 ================================================================================*/
@@ -132,31 +148,72 @@ body.edit-mode #toggleEditModeBtn {
   Sidebar
 ================================================================================*/
 .sidebar {
+  grid-column: 1;
+  grid-row: 1;
+  width: 80px;
+  height: 100%;
+  min-height: 0;
+  transition: width 0.25s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2;
   background: var(--sidebar-bg);
   color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+}
+.sidebar:hover {
+  width: 250px;
+  background: var(--sidebar-bg) !important;
+  color: var(--sidebar-text) !important;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
 }
-
-/* Keep schedule & tasks on sidebar in same panel style?  If not, override: */
-.rotation-schedule {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-color);
+.sidebar:hover .btn-special,
+.sidebar:hover .button-row {
+  display: flex;
+}
+.sidebar .btn-special, .sidebar .button-row {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.sidebar:hover .btn-special, .sidebar:hover .button-row {
+  opacity: 1;
 }
 
-/* Sidebar buttons (match dashboard style) */
-.sidebar button {
-  width: 100%;
-  background: var(--sidebar-bg);
+/* Sidebar Buttons */
+.sidebar .btn-special {
   color: var(--btn-text);
   border: none;
-  padding: 20px 8px 20px 8px;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  justify-content: center;
 }
-.sidebar button:hover {
+.sidebar .btn-special:hover {
   background: var(--sidebar-darker-bg);
+}
+
+/* Core Add/Remove hidden outside edit mode */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.button-row button {
+  flex: 1;
+  padding: 6px;
+  background: #ff5c5c;
+  color: var(--btn-text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: none;
+}
+body.edit-mode .button-row button {
+  display: inline-block;
+}
+.button-row button:hover {
+  background: #e04a4a;
 }
 
 /*================================================================================
