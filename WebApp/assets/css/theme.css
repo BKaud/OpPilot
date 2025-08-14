@@ -145,82 +145,56 @@ p, span, label, input, button {
 }
 
 /*================================================================================
-  Sidebar
+  Sidebar - FIXED VERSION
 ================================================================================*/
 .sidebar {
   grid-column: 1;
   grid-row: 1;
   width: 80px;
-  height: 100%;
-  min-height: 0;
   transition: width 0.25s ease;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible; /* Changed from hidden to visible */
   z-index: 2;
   background: var(--sidebar-bg);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
+  position: relative; /* Added for proper positioning */
 }
+
 .sidebar:hover {
   width: 250px;
   background: var(--sidebar-bg) !important;
   color: var(--sidebar-text) !important;
-  overflow-y: auto;
-}
-.sidebar:hover .btn-special,
-.sidebar:hover .button-row {
-  display: flex;
-}
-.sidebar .btn-special, .sidebar .button-row {
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-.sidebar:hover .btn-special, .sidebar:hover .button-row {
-  opacity: 1;
+  overflow-y: auto; /* Only add scroll on hover when expanded */
 }
 
-/* Sidebar Buttons */
-.sidebar .btn-special {
-  color: var(--btn-text);
-  border: none;
-  cursor: pointer;
-}
-.sidebar .btn-special:hover {
-  background: var(--sidebar-darker-bg);
-}
-
-/* Core Add/Remove hidden outside edit mode */
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.button-row button {
-  flex: 1;
-  padding: 6px;
-  background: #ff5c5c;
-  color: var(--btn-text);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-  display: none;
-}
-body.edit-mode .button-row button {
-  display: inline-block;
-}
-.button-row button:hover {
-  background: #e04a4a;
-}
-
-/* Navigation Items */
+/* Navigation section with proper scrolling */
 .nav-section {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Important for flex overflow */
+  overflow: hidden; /* Hide overflow by default */
 }
 
+.sidebar:hover .nav-section {
+  overflow-y: auto; /* Enable scrolling only when sidebar is expanded */
+}
+
+.nav-upper {
+  flex: 1; /* Take up available space */
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for proper flex behavior */
+}
+
+.nav-lower {
+  flex-shrink: 0; /* Don't shrink the bottom section */
+  border-top: 2px solid var(--sidebar-gray);
+  margin-top: 8px; /* Small gap between upper and lower */
+}
+
+/* Navigation Items */
 .nav-item {
   position: relative;
   border-bottom: 1px solid var(--sidebar-gray);
@@ -280,12 +254,12 @@ body.edit-mode .button-row button {
 
 .expandable::after {
   position: absolute;
-  right: 16px; /* Adjusted for better alignment */
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   transition: transform 0.3s ease, opacity 0.3s ease;
   color: var(--text-secondary);
-  font-size: 14px; /* Increased for better visibility */
+  font-size: 12px;
   opacity: 0;
 }
 
@@ -306,7 +280,7 @@ body.edit-mode .button-row button {
 }
 
 .sub-nav.expanded {
-  max-height: 300px;
+  max-height: 500px; /* Increased from 300px */
 }
 
 .sub-nav-link {
@@ -323,7 +297,7 @@ body.edit-mode .button-row button {
 
 .sub-nav-link::before {
   position: absolute;
-  left: 32px; /* Adjusted for better alignment */
+  left: 32px;
   color: var(--text-secondary);
   font-size: 12px;
   opacity: 0;
@@ -340,8 +314,13 @@ body.edit-mode .button-row button {
 }
 
 .zone-item .sub-nav-link.expandable::after {
-
-  font-size: 12px;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  color: var(--text-secondary);
+  font-size: 10px;
   opacity: 0;
 }
 
@@ -361,7 +340,7 @@ body.edit-mode .button-row button {
 }
 
 .zone-sub-nav.expanded {
-  max-height: 200px;
+  max-height: 300px; /* Increased from 200px */
 }
 
 .zone-sub-link {
@@ -395,18 +374,18 @@ body.edit-mode .button-row button {
   padding-left: 76px;
 }
 
-/* Action buttons section */
+/* Action buttons section - FIXED */
 .action-buttons {
-  margin-top: auto;
-  border-top: 2px solid var(--sidebar-gray);
+  flex-shrink: 0; /* Don't shrink */
   padding: 16px 0;
+  border-top: 2px solid var(--sidebar-gray);
 }
 
 .btn-special {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 20px 8px 20px 8px;
+  padding: 20px 8px;
   background: var(--sidebar-bg);
   color: var(--btn-text);
   border: none;
@@ -475,12 +454,6 @@ body.edit-mode .button-row button {
 
 .button-row button:hover {
   background: #c0392b;
-}
-
-/* Bottom section */
-.bottom-section {
-  border-top: 2px solid var(--sidebar-gray);
-  margin-top: auto;
 }
 
 /*================================================================================

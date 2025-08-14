@@ -29,78 +29,81 @@
     <!-- Enhanced Sidebar with Navigation -->
     <aside id="sidebar" class="sidebar closed">
       <div class="nav-section">
-        <!-- Homepage -->
-        <div class="nav-item">
-          <a href="#" class="nav-link active">
-            <div class="nav-icon"><img src="../../assets/images/icons/homepage.png"></div>
-            <span class="nav-text">Homepage</span>
-          </a>
-        </div>
-        
-        <!-- Zones (Expandable) -->
-        <div class="nav-item expandable" id="zones">
-          <a href="#" class="nav-link expandable">
-            <div class="nav-icon"><img src="../../assets/images/icons/zones.png"></div>
-            <span class="nav-text">Zones</span>
-          </a>
-          <div class="sub-nav" id="zones-sub">
-            <!-- Rides 1 Zone -->
-            <div class="zone-item expandable" id="rides1-zone">
-              <a href="#" class="sub-nav-link expandable">
-                <span class="nav-text">Rides 1</span>
-              </a>
-              <div class="zone-sub-nav" id="rides1-sub">
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Edit Mode</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Config</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Settings</span>
-                </a>
-              </div>
-            </div>
-            
-            <!-- Example of another zone -->
-            <div class="zone-item expandable" id="rides2-zone">
-              <a href="#" class="sub-nav-link expandable">
-                <span class="nav-text">Rides 2</span>
-              </a>
-              <div class="zone-sub-nav" id="rides2-sub">
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Edit Mode</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Config</span>
-                </a>
-                <a href="#" class="zone-sub-link">
-                  <span class="nav-text">Settings</span>
-                </a>
-              </div>
-            </div>
+        <div class="nav-upper">
+          <!-- Homepage -->
+          <div class="nav-item">
+            <a href="#" class="nav-link active">
+              <div class="nav-icon"><img src="../../assets/images/icons/homepage.png"></div>
+              <span class="nav-text">Homepage</span>
+            </a>
           </div>
-        </div>
 
-        <!-- Bottom Navigation Items -->
-        <div class="bottom-section">
-          <div class="nav-item">
-            <a href="#" class="nav-link">
-              <div class="nav-icon"><img src="../../assets/images/icons/accsett.png"></div>
-              <span class="nav-text">Account Settings</span>
+          <!-- Zones (Expandable) -->
+          <div class="nav-item expandable" id="zones">
+            <a href="#" class="nav-link expandable">
+              <div class="nav-icon"><img src="../../assets/images/icons/zones.png"></div>
+              <span class="nav-text">Zones</span>
             </a>
+            <div class="sub-nav" id="zones-sub">
+              <!-- Rides 1 Zone -->
+              <div class="zone-item expandable" id="rides1-zone">
+                <a href="#" class="sub-nav-link expandable">
+                  <span class="nav-text">Rides 1</span>
+                </a>
+                <div class="zone-sub-nav" id="rides1-sub">
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Dashboard</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Edit Mode</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Config</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Settings</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Example of another zone -->
+              <div class="zone-item expandable" id="rides2-zone">
+                <a href="#" class="sub-nav-link expandable">
+                  <span class="nav-text">Rides 2</span>
+                </a>
+                <div class="zone-sub-nav" id="rides2-sub">
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Dashboard</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Edit Mode</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Config</span>
+                  </a>
+                  <a href="#" class="zone-sub-link">
+                    <span class="nav-text">Settings</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="nav-item">
-            <a href="#" class="nav-link">
-              <div class="nav-icon"><img src="../../assets/images/icons/changelog.png"></div>
-              <span class="nav-text">Changelog</span>
-            </a>
+        </div>
+        <div class="nav-lower">
+          <!-- Bottom Navigation Items -->
+          <div class="bottom-section">
+            <div class="nav-item">
+              <a href="#" class="nav-link">
+                <div class="nav-icon"><img src="../../assets/images/icons/accsett.png"></div>
+                <span class="nav-text">Account Settings</span>
+              </a>
+            </div>
+            <div class="nav-item">
+              <a href="#" class="nav-link">
+                <div class="nav-icon"><img src="../../assets/images/icons/changelog.png"></div>
+                <span class="nav-text">Changelog</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -123,7 +126,7 @@
           <div class="btn-icon">🔄</div>
           <span class="btn-text">Push Rotation</span>
         </button>
-        
+
         <div class="button-row">
           <button id="addRideBtn">Add Ride</button>
           <button id="removeRideBtn">Remove Ride</button>
@@ -138,9 +141,9 @@
       <div class="rotation-preview">
         <input type="range" id="rotationSlider" min="0" max="100" value="0" />
       </div>
-      
+
       <h2 id="crp">Current Ride Positions</h2>
-      
+
       <div class="ride-container">
         <div class="ride-group">
           <p>Ride positions will be displayed here...</p>
@@ -165,7 +168,7 @@
   </div>
 
   <script>
-   document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
       const sidebar = document.getElementById('sidebar');
       const logoAnim = document.getElementById('logoanim');
       const logoText = document.getElementById('logotext');
@@ -184,15 +187,15 @@
       });
 
       // Zone expansion functionality - FIXED
-      document.getElementById('zones').addEventListener('click', function(e) {
+      document.getElementById('zones').addEventListener('click', function (e) {
         // Only handle clicks on the main zones link, not child elements
         if (e.target.closest('.nav-link') === this.querySelector('.nav-link')) {
           e.preventDefault();
           e.stopPropagation(); // Prevent event bubbling
-          
+
           const subNav = document.getElementById('zones-sub');
           const expandable = this.querySelector('.nav-link');
-          
+
           if (subNav.classList.contains('expanded')) {
             subNav.classList.remove('expanded');
             expandable.classList.remove('expanded');
@@ -205,15 +208,15 @@
 
       // Individual zone expansion (Rides 1, Rides 2, etc.) - FIXED
       document.querySelectorAll('.zone-item').forEach(zoneItem => {
-        zoneItem.addEventListener('click', function(e) {
+        zoneItem.addEventListener('click', function (e) {
           // Only handle clicks on the zone's own expandable link
           if (e.target.closest('.sub-nav-link') === this.querySelector('.sub-nav-link')) {
             e.preventDefault();
             e.stopPropagation(); // Prevent event bubbling to parent zones
-            
+
             const zoneSubNav = this.querySelector('.zone-sub-nav');
             const expandable = this.querySelector('.sub-nav-link');
-            
+
             if (zoneSubNav.classList.contains('expanded')) {
               zoneSubNav.classList.remove('expanded');
               expandable.classList.remove('expanded');
@@ -227,7 +230,7 @@
 
       // Navigation link clicks
       document.querySelectorAll('.nav-link, .sub-nav-link, .zone-sub-link').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
           if (!this.classList.contains('expandable')) {
             e.stopPropagation(); // Prevent bubbling for non-expandable links
             // Remove active class from all nav items
@@ -241,7 +244,7 @@
       });
 
       // Edit mode toggle (works from any Edit Mode link)
-      document.addEventListener('click', function(e) {
+      document.addEventListener('click', function (e) {
         if (e.target.textContent.trim() === 'Edit Mode') {
           e.preventDefault();
           e.stopPropagation();
@@ -253,4 +256,3 @@
 </body>
 
 </html>
-``` 
