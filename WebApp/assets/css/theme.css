@@ -17,7 +17,7 @@
   --border-color:     var(--color-border);
   --btn-bg:           var(--color-teal);
   --btn-hover:        #1E4A49;
-  --btn-text:         var(--color-white);
+  --btn-text:         var(--text-primary);
   --sidebar-bg:       #222222; /* dark sidebar */
   --sidebar-darker-bg: #1A1A1A; /* darker sidebar for hover */
   --sidebar-gray:      #333333; /* gray sidebar for inactive */
