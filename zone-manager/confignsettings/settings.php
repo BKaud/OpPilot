@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OPilot – Settings</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="..\assets\css\theme.css" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="../../assets/css/theme.css" />
 </head>
 <body>
 
@@ -15,11 +15,6 @@
   <div class="navbar-logo">
     <div class="logo-icon"></div>
     <span class="logo-name">O<span>P</span>ilot</span>
-  </div>
-  <div class="navbar-login">
-    <input type="text" placeholder="Username" />
-    <input type="password" placeholder="Password" />
-    <button class="login-btn">Login</button>
   </div>
 </nav>
 
