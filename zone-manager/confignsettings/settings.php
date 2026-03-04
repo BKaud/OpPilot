@@ -31,7 +31,7 @@
       <div class="nav-upper">
         <!-- Homepage -->
           <div class="nav-item">
-            <a href="dashborard.html" class="nav-link active" id="home-link">
+            <a href="../dashboard/dashboard.php" class="nav-link active" id="home-link">
               <div class="nav-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 12L12 3l9 9"/>
