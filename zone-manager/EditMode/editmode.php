@@ -96,7 +96,7 @@
         </div>
 
         <div class="canvas-wrap" id="canvasWrap">
-          <div id="ci" style="position:relative;width:100%;height:530px;padding:16px;">
+          <div id="ci" style="position:relative;width:100%;min-height:100%;padding:16px;box-sizing:border-box;">
             
             <!-- Single Rotation Zone -->
             <div class="rot-zone" id="mainZone">
