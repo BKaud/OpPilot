@@ -1,0 +1,22 @@
+cmds to update ur branch from main:
+-------------------------
+git checkout main
+git pull origin main
+git checkout braden
+git merge main
+-------------------------
+git checkout main
+git pull origin main
+git checkout jess
+git merge main
+-------------------------
+git checkout main
+git pull origin main
+git checkout mosey
+git merge main
+-------------------------
+git checkout main
+git pull origin main
+git checkout sam
+git merge main
+-------------------------
