@@ -254,7 +254,6 @@ function renderAttractionBar() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
         </svg>
-        <div class="tnum">${index + 1}</div>
         <div class="attr-thumb-label">${attraction.name}</div>
       </div>
     `;
@@ -357,6 +356,37 @@ function renderGrid() {
       dragType = null;
       draggedSlotId = null;
       document.getElementById('returnDropZone').classList.remove('active');
+    });
+
+    // Reorder within grid by dragging one box onto another
+    box.addEventListener('dragover', (e) => {
+      if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+        box.classList.add('drag-over');
+      }
+    });
+
+    box.addEventListener('dragleave', () => {
+      if (dragType === 'rideslot') box.classList.remove('drag-over');
+    });
+
+    box.addEventListener('drop', (e) => {
+      if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
+        e.preventDefault();
+        e.stopPropagation();
+        box.classList.remove('drag-over');
+        const fromIdx = rideSlots.findIndex(s => s.id === draggedSlotId);
+        const toIdx   = rideSlots.findIndex(s => s.id === slot.id);
+        if (fromIdx !== -1 && toIdx !== -1) {
+          [rideSlots[fromIdx], rideSlots[toIdx]] = [rideSlots[toIdx], rideSlots[fromIdx]];
+          const prevSelected = selectedSlot ? selectedSlot.id : null;
+          renderGrid();
+          if (prevSelected) selectRideSlot(prevSelected);
+          autoSaveLayout('Rotation order updated');
+        }
+      }
     });
   });
   
