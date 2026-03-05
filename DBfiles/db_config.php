@@ -1,9 +1,9 @@
 <?php
 // Database configuration for existing OPPilot schema
 define('DB_HOST', 'localhost');
-define('DB_PORT', '3305');              // Your MySQL Workbench port
+define('DB_PORT', '3306');              // Your MySQL Workbench port
 define('DB_USER', 'root');              // Change if different
-define('DB_PASS', 'F4Gsr6R&bkk');                  // Add password if you have one
+define('DB_PASS', 'password');                  // Add password if you have one
 define('DB_NAME', 'oppilot');           // Your existing database
 
 // Create connection
