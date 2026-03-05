@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OPilot – Edit Mode</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../assets/css/theme.css" />
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="../assets/css/theme.css" />
 </head>
 <body>
 <nav class="navbar">
@@ -35,10 +35,10 @@
             <div class="zone-item" id="rides1-zone">
               <a href="#" class="sub-nav-link" id="r1-toggle">Rides 1</a>
               <div class="zone-sub-nav expanded">
-                <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
-                <a href="editmode.php" class="zone-sub-link active">Edit Mode</a>
+                <a href="#" class="zone-sub-link">Dashboard</a>
+                <a href="#" class="zone-sub-link active">Edit Mode</a>
                 <a href="#" class="zone-sub-link">Config</a>
-                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings</a>
+                <a href="#" class="zone-sub-link">Settings</a>
               </div>
             </div>
             <div class="zone-item" id="rides2-zone">
@@ -314,8 +314,9 @@ function renderGrid() {
           <div class="position-slot" data-slot-id="${slot.id}" data-pos-idx="${idx}">
             <div class="position-slot-name">${pos.name}</div>
             <div class="position-slot-operator ${pos.operator ? 'filled' : 'empty'}" 
-                 data-operator="${pos.operator}">
-              ${pos.operator || 'Unassigned'}
+                 data-operator="${pos.operator}"
+                 data-operator-id="${pos.operatorId || ''}">
+              ${pos.operator ? '<span class="op-drag-handle">⠿</span>' : ''}${pos.operator || 'Unassigned'}
             </div>
           </div>
           ${idx < slot.positions.length - 1 ? `
@@ -331,7 +332,29 @@ function renderGrid() {
     `;
     
     grid.appendChild(box);
-    
+
+    // Make filled operator chips draggable independently (without dragging the whole card)
+    box.querySelectorAll('.position-slot-operator.filled').forEach(opEl => {
+      opEl.setAttribute('draggable', 'true');
+      opEl.addEventListener('dragstart', (e) => {
+        e.stopPropagation(); // prevent the card's own dragstart from firing
+        dragType = 'operator';
+        dragSourceSlotId = opEl.closest('.position-slot').dataset.slotId;
+        dragSourcePosIdx = parseInt(opEl.closest('.position-slot').dataset.posIdx);
+        operatorDragMoved = false;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', opEl.dataset.operatorId);
+        opEl.style.opacity = '0.4';
+      });
+      opEl.addEventListener('dragend', () => {
+        opEl.style.opacity = '1';
+        dragSourceSlotId = null;
+        dragSourcePosIdx = null;
+        operatorDragMoved = false;
+        dragType = null;
+      });
+    });
+
     // Click handler for selecting ride slot
     box.addEventListener('click', (e) => {
       if (!e.target.classList.contains('template-box-number')) {
@@ -538,6 +561,9 @@ function updateSlotCount() {
 let draggedElement = null;
 let dragType = null; // 'ride', 'operator', or 'rideslot'
 let draggedSlotId = null;
+let dragSourceSlotId = null;  // slot the operator was dragged FROM (canvas)
+let dragSourcePosIdx = null;
+let operatorDragMoved = false;
 
 function setupDragAndDrop() {
   // Make attraction thumbnails draggable (only non-placed ones)
@@ -642,6 +668,17 @@ function setupDragAndDrop() {
             slot.positions[posIdx].operatorId = operator.id;
             slot.positions[posIdx].operator = operator.name;
             slot.positions[posIdx].operatorTier = operator.tier;
+          }
+          // If dragged FROM another canvas slot, clear the source
+          if (dragSourceSlotId !== null) {
+            const srcSlot = rideSlots.find(s => s.id === dragSourceSlotId);
+            if (srcSlot && srcSlot.positions[dragSourcePosIdx] &&
+                !(dragSourceSlotId === slotId && dragSourcePosIdx === posIdx)) {
+              srcSlot.positions[dragSourcePosIdx].operatorId = null;
+              srcSlot.positions[dragSourcePosIdx].operator = '';
+              srcSlot.positions[dragSourcePosIdx].operatorTier = '';
+            }
+            operatorDragMoved = true;
           }
           renderGrid();
           if (selectedSlot && selectedSlot.id === slotId) {
