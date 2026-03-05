@@ -1,0 +1,124 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║                   OPPILOT ROTATION MANAGEMENT                         ║
+║                     Database Integration Complete                     ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ STEP 1: RUN MIGRATION (MySQL Workbench)                              │
+├───────────────────────────────────────────────────────────────────────┤
+│ File: migration.sql                                                   │
+│ Action: Adds 6 columns to existing tables                            │
+│                                                                       │
+│ • zone.zone_name           ← Display name                            │
+│ • ride.ride_is_placed_on_canvas  ← On grid?                          │
+│ • ride.ride_canvas_order   ← Display order                           │
+│ • position.pos_order       ← Rotation flow (1→2→3)                   │
+│ • account.acc_tier         ← Operator skill                          │
+│ • account.acc_is_active    ← Available?                              │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ STEP 2: ADD TEST DATA (MySQL Workbench)                              │
+├───────────────────────────────────────────────────────────────────────┤
+│ File: sample_data.sql                                                 │
+│ Creates:                                                              │
+│   • 1 zone ("Rides Zone 1")                                           │
+│   • 6 rides (4 on grid, 2 in sidebar)                                 │
+│   • 17 operators with tiers                                           │
+│   • Multiple positions per ride                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ STEP 3: TEST CONNECTION                                              │
+├───────────────────────────────────────────────────────────────────────┤
+│ URL: http://localhost/OPilot/zone-manager/EditMode/test_connection.php│
+│ Shows: ✓ Connection status, tables, columns, row counts              │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ STEP 4: OPEN EDIT MODE                                               │
+├───────────────────────────────────────────────────────────────────────┤
+│ URL: http://localhost/OPilot/zone-manager/EditMode/editmode.php      │
+│                                                                       │
+│ Expected Result:                                                      │
+│   [1] Tidal Twist    [2] Thunder Mountain                            │
+│       ↓ Rotation         ↓ Rotation                                  │
+│   [3] Space Coaster  [4] Bumper Cars                                 │
+│       ↓ Rotation         ↓ Rotation                                  │
+│                                                                       │
+│   Sidebar: [Carousel] [Drop Tower]                                   │
+│                                                                       │
+│   Operators: Drag & drop to assign positions                         │
+└───────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                        YOUR DATABASE SCHEMA                           ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+    ┌─────────┐
+    │  zone   │ (Operational zones)
+    └────┬────┘
+         │
+         │ zone_ride (junction)
+         │
+    ┌────▼────┐
+    │  ride   │ (Attractions/Rides)
+    └────┬────┘
+         │
+         │ ride_pos (junction)
+         │
+    ┌────▼────────┬────────────┐
+    │             │            │
+┌───▼────┐   ┌───▼────┐   ┌──▼──────┐
+│position│   │account │   │  ride   │
+│        │   │(Operat)│   │         │
+└────────┘   └────────┘   └─────────┘
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                         FILES YOU NEED                                ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+✅ editmode.php           - Main UI (23 KB)
+✅ api.php                - Backend API (7.8 KB) 
+✅ db_config.php          - Database settings (1.2 KB)
+✅ style.css              - Styling (18 KB)
+✅ test_connection.php    - Diagnostic tool (9.4 KB)
+⏳ migration.sql          - Run ONCE (1.7 KB)
+⏳ sample_data.sql        - Test data (4.9 KB)
+📖 README.md             - Quick reference (1.6 KB)
+📖 SETUP_GUIDE.md        - Detailed guide (4.3 KB)
+📖 INTEGRATION_SUMMARY.md - This summary (5.3 KB)
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                       DATABASE CONNECTION                             ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+Host:     localhost
+Port:     3305 (MySQL Workbench)
+Database: oppilot
+Username: root
+Password: F4Gsr6R&bkk
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                         TROUBLESHOOTING                               ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+❌ Connection Failed?
+   → Check MySQL is running on port 3305
+   → Verify credentials in db_config.php
+
+❌ No data showing?
+   → Run migration.sql first
+   → Run sample_data.sql second
+   → Check test_connection.php
+
+❌ API errors?
+   → View: api.php?action=getZoneData&zone_id=1
+   → Check browser console (F12)
+   → Check XAMPP error logs
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                       🎉 YOU'RE ALL SET! 🎉                           ║
+║                                                                       ║
+║  Just run migration.sql and sample_data.sql, then open editmode.php  ║
+╚═══════════════════════════════════════════════════════════════════════╝
