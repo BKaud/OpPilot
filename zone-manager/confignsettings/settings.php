@@ -178,8 +178,10 @@
             <div class="section-card-header">Attraction Configuration</div>
             <div class="section-card-body">
               <div class="form-row" style="align-items:flex-start; gap:12px;">
-                <div class="img-upload" title="Upload attraction image">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+                <div class="img-upload" title="Upload attraction image" onclick="document.getElementById('attractionImageInput').click()" style="cursor:pointer;overflow:hidden;position:relative;">
+                  <input type="file" id="attractionImageInput" accept="image/*" style="display:none;" onchange="previewAttractionImage(this)" />
+                  <img id="attractionImagePreview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:inherit;" />
+                  <svg id="attractionImagePlaceholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
                 </div>
                 <div class="form-col" style="flex:1;">
                   <div class="field-label">Attraction Name</div>
@@ -520,6 +522,24 @@
         });
       })
       .catch(err => console.error('Failed to load attractions:', err));
+  }
+
+
+  // Image upload preview
+  function previewAttractionImage(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('attractionImagePreview');
+        const placeholder = document.getElementById('attractionImagePlaceholder');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   // Load on page ready
