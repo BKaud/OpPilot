@@ -22,7 +22,7 @@ jobs:
           security: strict
           protocol: ftp    
           local-dir: ./
-          server-dir: /home/www/
+          server-dir: /home/www/oppilot.org
           exclude: |
             **/.git*
             **/.git*/**
