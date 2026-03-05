@@ -1,4 +1,4 @@
-name: Deploy to Atspace via FTP
+name: Deploy to Atspace via SFTP
 
 on:
   push:
@@ -12,16 +12,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy via FTP
+      - name: Deploy via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: f32-preview.atspace.me
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: ./   
-          server-dir: /home/www/ 
+          port: 221       
+          security: strict
+          protocol: sftp    
+          local-dir: ./
+          server-dir: /home/www/
           exclude: |
             **/.git*
             **/.git*/**
+            **/.github/**
             **/node_modules/**
