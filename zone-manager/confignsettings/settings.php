@@ -413,14 +413,41 @@
 
   // Attraction selector
   function selectAttraction(el, name) {
-    if (el.dataset.id === 'add') return;
     document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
     el.classList.add('selected');
-    document.getElementById('attractionName').value = name;
+    const nameInput = document.getElementById('attractionName');
+    if (nameInput) nameInput.value = name;
   }
 
   function addAttraction() {
-    alert('Add new attraction dialog would open here.');
+    const name = prompt("Enter attraction name:");
+    if (!name) return;
+
+    const grid = document.getElementById("attractionGrid");
+    const newTile = document.createElement("div");
+    newTile.className = "attraction-thumb";
+    newTile.setAttribute("data-id", name.toLowerCase().replace(/\s+/g, "-"));
+
+    newTile.innerHTML = `
+      <div class="thumb-bg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </div>
+      <div class="thumb-check">
+        <svg viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2">
+          <polyline points="1.5,5 4,7.5 8.5,2.5"/>
+        </svg>
+      </div>
+      <div class="attraction-label">${name}</div>
+    `;
+
+    newTile.onclick = function () {
+      selectAttraction(this, name);
+    };
+
+    const addTile = grid.querySelector('[data-id="add"]');
+    grid.insertBefore(newTile, addTile);
   }
 
   // Position management
