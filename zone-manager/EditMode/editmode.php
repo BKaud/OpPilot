@@ -37,8 +37,7 @@
               <div class="zone-sub-nav expanded">
                 <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
                 <a href="editmode.php" class="zone-sub-link active">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Config</a>
-                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings</a>
+                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
             <div class="zone-item" id="rides2-zone">
@@ -46,8 +45,7 @@
               <div class="zone-sub-nav expanded">
                 <a href="#" class="zone-sub-link">Dashboard</a>
                 <a href="#" class="zone-sub-link">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Config</a>
-                <a href="#" class="zone-sub-link">Settings</a>
+                <a href="#" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
           </div>
