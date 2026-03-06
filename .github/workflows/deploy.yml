@@ -1,4 +1,4 @@
-name: Deploy to Atspace via SFTP
+name: Deploy to Bitnami via SSH
 
 on:
   push:
@@ -9,35 +9,31 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Replace database credentials for production
-        run: |
-          # Replace database configuration in DBfiles/db_config.php
-          sed -i "s/define('DB_HOST', 'localhost');/define('DB_HOST', '${{ secrets.SERVER_HOST }}');/" DBfiles/db_config.php
-          sed -i "s/define('DB_PORT', '3306');/define('DB_PORT', '3306');/" DBfiles/db_config.php
-          sed -i "s/define('DB_USER', 'root');/define('DB_USER', '${{ secrets.SERVER_USER }}');/" DBfiles/db_config.php
-          sed -i "s/define('DB_PASS', 'password');/define('DB_PASS', '${{ secrets.SERVER_PASS }}');/" DBfiles/db_config.php
-          sed -i "s/define('DB_NAME', 'oppilot');/define('DB_NAME', '${{ secrets.SERVER_DB_NAME }}');/" DBfiles/db_config.php
-          
-          # Verify the changes (for debugging)
-          echo "=== Modified db_config.php ==="
-          grep -E "DB_HOST|DB_PORT|DB_USER|DB_PASS|DB_NAME" DBfiles/db_config.php
-
-      - name: Deploy via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21       
-          security: strict
-          protocol: ftp    
-          local-dir: ./
-          server-dir: oppilot.org/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/node_modules/**
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+
+            DEPLOY_DIR="/opt/bitnami/apache/htdocs/OPilot"
+            REPO_URL="https://github.com/BKaud/OPilot.git"
+
+            # Note: production database credentials (DB_HOST, DB_USER, DB_PASS, DB_NAME)
+            # must be configured directly on the server in DBfiles/db_config.php and are
+            # not overwritten by this workflow. Update them manually on first deployment.
+
+            if [ -d "$DEPLOY_DIR/.git" ]; then
+              echo "Repository found. Pulling latest changes..."
+              cd "$DEPLOY_DIR"
+              git fetch --all
+              git reset --hard origin/main
+            else
+              echo "Repository not found. Cloning..."
+              mkdir -p "$DEPLOY_DIR"
+              git clone --branch main "$REPO_URL" "$DEPLOY_DIR"
+            fi
+
+            echo "Deployment complete."
