@@ -21,10 +21,6 @@ jobs:
             DEPLOY_DIR="/opt/bitnami/apache/htdocs/"
             REPO_URL="https://github.com/BKaud/OPilot.git"
 
-            # Note: production database credentials (DB_HOST, DB_USER, DB_PASS, DB_NAME)
-            # must be configured directly on the server in DBfiles/db_config.php and are
-            # not overwritten by this workflow. Update them manually on first deployment.
-
             if [ -d "$DEPLOY_DIR/.git" ]; then
               echo "Repository found. Pulling latest changes..."
               cd "$DEPLOY_DIR"
@@ -36,4 +32,13 @@ jobs:
               git clone --branch main "$REPO_URL" "$DEPLOY_DIR"
             fi
 
+            # Update database configuration with production credentials
+            echo "Updating database configuration..."
+            sed -i "s/define('DB_HOST', 'localhost');/define('DB_HOST', '${{ secrets.SERVER_HOST }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+            sed -i "s/define('DB_PORT', '3306');/define('DB_PORT', '3306');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+            sed -i "s/define('DB_USER', 'root');/define('DB_USER', '${{ secrets.SERVER_USER }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+            sed -i "s/define('DB_PASS', 'password');/define('DB_PASS', '${{ secrets.SERVER_PASS }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+            sed -i "s/define('DB_NAME', 'oppilot');/define('DB_NAME', '${{ secrets.SERVER_DB_NAME }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+
+            echo "Database configuration updated successfully."
             echo "Deployment complete."
