@@ -18,7 +18,7 @@ jobs:
           script: |
             set -e
 
-            DEPLOY_DIR="/opt/bitnami/apache/htdocs/OPilot"
+            DEPLOY_DIR="/opt/bitnami/apache/htdocs/"
             REPO_URL="https://github.com/BKaud/OPilot.git"
 
             # Note: production database credentials (DB_HOST, DB_USER, DB_PASS, DB_NAME)
