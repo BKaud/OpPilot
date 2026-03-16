@@ -119,10 +119,10 @@
                 <div class="card-name">Tidal Twist</div>
                 <div class="card-meta"><span>4 positions</span><span>Tier 1</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip assigned">Station 2</span>
-                  <span class="pos-chip break">Load Plt</span>
-                  <span class="pos-chip assigned">Control</span>
+                  <span class="pos-chip assigned">Station 1: J. Williams</span>
+                  <span class="pos-chip assigned">Station 2: M. Lopez</span>
+                  <span class="pos-chip assigned">Load Plt: R. Chen</span>
+                  <span class="pos-chip assigned">Control: S. James</span>
                 </div>
                 <div class="card-operator">Lead: M. Torres</div>
                 <div class="rotation-change-preview">
@@ -151,10 +151,10 @@
                 <div class="card-name">Tidal Twist</div>
                 <div class="card-meta"><span>4 positions</span><span>Tier 1</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip assigned">Station 2</span>
-                  <span class="pos-chip assigned">Load Plt</span>
-                  <span class="pos-chip empty">Control</span>
+                  <span class="pos-chip assigned">Station 1: K. Park</span>
+                  <span class="pos-chip assigned">Station 2: M. Torres</span>
+                  <span class="pos-chip assigned">Load Plt: N. Silva</span>
+                  <span class="pos-chip empty">Control: Unassigned</span>
                 </div>
                 <div class="card-operator">Lead: D. Reyes</div>
                 <div class="rotation-change-preview">
@@ -183,9 +183,9 @@
                 <div class="card-name">Space Coaster</div>
                 <div class="card-meta"><span>3 positions</span><span>Tier 2</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Load</span>
-                  <span class="pos-chip break">Unload</span>
-                  <span class="pos-chip assigned">Control</span>
+                  <span class="pos-chip assigned">Load: P. Brown</span>
+                  <span class="pos-chip break">Unload: J. Davis</span>
+                  <span class="pos-chip assigned">Control: E. Wilson</span>
                 </div>
                 <div class="card-operator">Lead: A. Kim</div>
                 <div class="rotation-change-preview">
@@ -213,8 +213,8 @@
                 <div class="card-name">Bumper Cars</div>
                 <div class="card-meta"><span>2 positions</span><span>Tier 1</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Floor</span>
-                  <span class="pos-chip break">Control</span>
+                  <span class="pos-chip assigned">Floor: T. Martinez</span>
+                  <span class="pos-chip break">Control: Unassigned</span>
                 </div>
                 <div class="card-operator">Lead: —</div>
                 <div class="rotation-change-preview">
@@ -249,8 +249,8 @@
                 <div class="card-name">Carousel</div>
                 <div class="card-meta"><span>2 positions</span><span>Tier 1</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Platform</span>
-                  <span class="pos-chip assigned">Control</span>
+                  <span class="pos-chip assigned">Platform: C. Garcia</span>
+                  <span class="pos-chip assigned">Control: L. Rodriguez</span>
                 </div>
                 <div class="card-operator">Lead: P. Vega</div>
                 <div class="rotation-change-preview">
@@ -277,9 +277,9 @@
                 <div class="card-name">Drop Tower</div>
                 <div class="card-meta"><span>3 positions</span><span>Tier 2</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Load 1</span>
-                  <span class="pos-chip assigned">Load 2</span>
-                  <span class="pos-chip assigned">Control</span>
+                  <span class="pos-chip assigned">Load 1: H. Anderson</span>
+                  <span class="pos-chip assigned">Load 2: B. Thomas</span>
+                  <span class="pos-chip assigned">Control: D. Moore</span>
                 </div>
                 <div class="card-operator">Lead: S. Okoro</div>
                 <div class="rotation-change-preview">
@@ -307,10 +307,10 @@
                 <div class="card-name">Thunder Mtn</div>
                 <div class="card-meta"><span>4 positions</span><span>Tier 3</span></div>
                 <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip empty">Station 2</span>
-                  <span class="pos-chip break">Dispatch</span>
-                  <span class="pos-chip assigned">Control</span>
+                  <span class="pos-chip assigned">Station 1: V. Santos</span>
+                  <span class="pos-chip empty">Station 2: Unassigned</span>
+                  <span class="pos-chip break">Dispatch: X. White</span>
+                  <span class="pos-chip assigned">Control: Y. Harris</span>
                 </div>
                 <div class="card-operator">Lead: J. Marsh</div>
                 <div class="rotation-change-preview">
@@ -489,13 +489,24 @@
 
   // Load zone data from database on page load
   async function loadZoneData() {
+    console.log('[loadZoneData] Checking for updates...');
     try {
-      const response = await fetch(`EditMode/api.php?action=getZoneData&zone_id=${ZONE_ID}`);
+      const response = await fetch(`../EditMode/api.php?action=getZoneData&zone_id=${ZONE_ID}`);
       const data = await response.json();
+      console.log('[loadZoneData] Response received:', data);
       
       if (data.success && data.attractions) {
-        zoneData = data.attractions;
-        populateDashboard(zoneData);
+        // Check if data has changed
+        const newDataString = JSON.stringify(data.attractions);
+        const oldDataString = JSON.stringify(zoneData);
+        
+        if (newDataString !== oldDataString) {
+          console.log('[loadZoneData] Data changed! Updating dashboard');
+          zoneData = data.attractions;
+          populateDashboard(zoneData);
+        } else {
+          console.log('[loadZoneData] No changes detected');
+        }
       } else {
         console.warn('No zone data found, using sample data');
       }
@@ -504,17 +515,16 @@
     }
   }
 
+  // Auto-refresh every 30 seconds
+  console.log('[Dashboard] Setting up auto-refresh every 30 seconds');
+  setInterval(loadZoneData, 30000);
+
   // Populate dashboard with real data from database
   function populateDashboard(attractions) {
     const attractionRow = document.getElementById('attractionRow');
     
-    // Clear existing cards (keep rotation preview if we want to add it back)
-    const existingCards = attractionRow.querySelectorAll('.attraction-card');
-    existingCards.forEach(card => {
-      if (!card.classList.contains('rotation-info-card')) {
-        card.remove();
-      }
-    });
+    // Clear ALL existing cards completely
+    attractionRow.innerHTML = '';
 
     // Create cards from database data
     attractions.forEach((attraction, index) => {
@@ -525,7 +535,8 @@
       
       const positionsHTML = attraction.positions.map(pos => {
         const chipClass = pos.operator ? 'assigned' : 'empty';
-        return `<span class="pos-chip ${chipClass}">${pos.name}</span>`;
+        const operatorText = pos.operator ? pos.operator : 'Unassigned';
+        return `<span class="pos-chip ${chipClass}">${pos.name}: ${operatorText}</span>`;
       }).join('');
 
       const leadOperator = attraction.positions.find(p => p.name.toLowerCase().includes('control') || p.name.toLowerCase().includes('lead'));
@@ -562,7 +573,11 @@
   }
 
   // Load data when page loads
-  document.addEventListener('DOMContentLoaded', loadZoneData);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadZoneData);
+  } else {
+    loadZoneData();
+  }
 
   // Live clock
   function padZ(n) { return String(n).padStart(2,'0'); }
@@ -646,6 +661,7 @@
   let dragging = false;
 
   function setScrubberPct(pct) {
+    if (!scrubTrack) return; // Safety check
     pct = Math.max(0, Math.min(1, pct));
     const trackH = scrubTrack.clientHeight;
     const dotH = 14;
@@ -658,33 +674,37 @@
   }
 
   function pctFromEvent(e) {
+    if (!scrubTrack) return 0; // Safety check
     const rect = scrubTrack.getBoundingClientRect();
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return (clientY - rect.top) / rect.height;
   }
 
-  scrubDot.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    const pct = pctFromEvent(e);
-    isPreview = true;
-    const mins = DAY_START + pct * DAY_SPAN;
-    previewMinutes = mins;
-    updateDisplay(mins);
-    setScrubberPct(pct);
-  });
-  document.addEventListener('mouseup', () => { dragging = false; });
+  // Setup scrubber controls only if elements exist
+  if (scrubDot) {
+    scrubDot.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const pct = pctFromEvent(e);
+      isPreview = true;
+      const mins = DAY_START + pct * DAY_SPAN;
+      previewMinutes = mins;
+      updateDisplay(mins);
+      setScrubberPct(pct);
+    });
+    document.addEventListener('mouseup', () => { dragging = false; });
 
-  scrubDot.addEventListener('touchstart', e => { dragging = true; }, { passive: true });
-  document.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    const pct = pctFromEvent(e);
-    isPreview = true;
-    const mins = DAY_START + pct * DAY_SPAN;
-    updateDisplay(mins);
-    setScrubberPct(pct);
-  }, { passive: true });
-  document.addEventListener('touchend', () => { dragging = false; });
+    scrubDot.addEventListener('touchstart', e => { dragging = true; }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const pct = pctFromEvent(e);
+      isPreview = true;
+      const mins = DAY_START + pct * DAY_SPAN;
+      updateDisplay(mins);
+      setScrubberPct(pct);
+    }, { passive: true });
+    document.addEventListener('touchend', () => { dragging = false; });
+  }
 
   // Click on schedule items
   document.querySelectorAll('.sched-item').forEach(item => {
