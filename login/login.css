@@ -1,0 +1,48 @@
+/* Login page custom styles */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+.login-card {
+  background: var(--bg-card);
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  min-width: 320px;
+  text-align: center;
+}
+.login-card h2 {
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+}
+.login-card input[type="text"],
+.login-card input[type="password"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border-panel);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-dark);
+  font-size: 1rem;
+}
+.login-card button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-card button:hover {
+  background: var(--teal-light);
+}
