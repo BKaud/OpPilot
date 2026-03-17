@@ -169,11 +169,6 @@
       </div>
 
       <!-- ── RIGHT PANEL: Attraction + Position Settings ── -->
-                <div class="nav-item">
-                  <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
-                    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-                    <span class="nav-text">Management</span>
-                  </a>
       <div class="panel">
         <div class="panel-title">Attraction Settings &amp; Configuration</div>
         <div class="panel-scroll">
@@ -255,10 +250,6 @@
                 <button class="btn btn-danger btn-sm" onclick="removePosition()">– Remove</button>
               </div>
 
-              <div style="margin-top:12px;">
-                <button id="deleteBtn" class="btn btn-danger">Delete Attraction</button>
-              </div>
-
               <hr class="section-sep" />
 
               <div class="field-label">Permission Tier</div>
@@ -286,9 +277,9 @@
 
         <!-- Save bar -->
         <div class="save-bar">
-          <button id="discardBtn" class="btn btn-danger">Discard Changes</button>
-          <button id="resetDefaultsBtn" class="btn btn-gray">Reset Defaults</button>
-          <button id="saveSettingsBtn" class="btn btn-teal">Save Settings</button>
+          <button class="btn btn-danger">Discard Changes</button>
+          <button class="btn btn-gray">Reset Defaults</button>
+          <button class="btn btn-teal">Save Settings</button>
         </div>
 
       </div>
@@ -324,8 +315,6 @@
 
   // Attraction selector — fetch ride data from DB and populate right panel
   let currentRideId = null;
-  let selectedImageFile = null;
-  let savedSnapshot = null; // stores last-loaded ride data for discard
 
   function selectAttraction(el, name, rideId) {
     document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
@@ -333,10 +322,11 @@
 
     if (!rideId) return;
     currentRideId = rideId;
-    return fetch('api.php?action=getAttractionData&ride_id=' + rideId)
+
+    fetch('api.php?action=getAttractionData&ride_id=' + rideId)
       .then(res => res.json())
       .then(data => {
-        if (!data.success) return data;
+        if (!data.success) return;
 
         const ride = data.ride;
         const positions = data.positions;
@@ -352,10 +342,6 @@
         const rotationEl = document.getElementById('attractionInRotation');
         if (rotationEl) rotationEl.checked = ride.ride_is_placed_on_canvas == 1;
 
-        // Populate required certs if present
-        const certsEl = document.getElementById('requiredCerts');
-        if (certsEl && ride.ride_required_certs !== undefined) certsEl.value = ride.ride_required_certs || '';
-
         // Build position list
         const posList = document.getElementById('positionList');
         posList.innerHTML = '';
@@ -370,7 +356,7 @@
           row.setAttribute('data-pos-id', pos.pos_id);
           const holder = pos.acc_name ? ` (${pos.acc_name})` : '';
           row.innerHTML = `
-            <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
+            <input type="text" placeholder="Position Name" value="${pos.pos_name}" readonly />
             <div class="divider">→</div>
             <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
           `;
@@ -388,39 +374,33 @@
         }
 
         posCount = positions.length;
-        // Save snapshot for discard/rollback
-        savedSnapshot = { ride: ride, positions: positions };
-        return data;
       })
-      .catch(err => {
-        console.error('Failed to load attraction data:', err);
-        return { success: false, error: err.message };
-      });
+      .catch(err => console.error('Failed to load attraction data:', err));
   }
 
   function addAttraction() {
-    showInputModal('Enter attraction name:', 'Attraction name…').then(name => {
-      if (!name) return;
+    const name = prompt("Enter attraction name:");
+    if (!name) return;
 
-      // Save to database
-      const formData = new FormData();
-      formData.append('action', 'addAttraction');
-      formData.append('name', name);
-      formData.append('zone_id', 1); // Current zone ID
+    // Save to database
+    const formData = new FormData();
+    formData.append('action', 'addAttraction');
+    formData.append('name', name);
+    formData.append('zone_id', 1); // Current zone ID
 
-      fetch('api.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            showToast('Error saving attraction: ' + (data.error || 'Unknown error'), 'error');
-            return;
-          }
+    fetch('api.php', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert('Error saving attraction: ' + data.error);
+          return;
+        }
 
-          // Add the tile to the grid after successful DB insert
-          const grid = document.getElementById("attractionGrid");
-          const newTile = document.createElement("div");
-          newTile.className = "attraction-thumb";
-          newTile.setAttribute("data-id", "ride" + data.ride_id);
+        // Add the tile to the grid after successful DB insert
+        const grid = document.getElementById("attractionGrid");
+        const newTile = document.createElement("div");
+        newTile.className = "attraction-thumb";
+        newTile.setAttribute("data-id", "ride" + data.ride_id);
 
         newTile.innerHTML = `
           <div class="thumb-bg">
@@ -436,38 +416,32 @@
           <div class="attraction-label">${data.ride_name}</div>
         `;
 
-          newTile.onclick = function () {
-            selectAttraction(this, data.ride_name, data.ride_id);
-          };
+        newTile.onclick = function () {
+          selectAttraction(this, data.ride_name, data.ride_id);
+        };
 
-          const addTile = grid.querySelector('[data-id="add"]');
-          grid.insertBefore(newTile, addTile);
+        const addTile = grid.querySelector('[data-id="add"]');
+        grid.insertBefore(newTile, addTile);
 
-          // Auto-select the new tile and show success toast
-          selectAttraction(newTile, data.ride_name, data.ride_id)
-            .then(() => showToast('Attraction created', 'success'))
-            .catch(() => showToast('Attraction created', 'success'));
-        })
-        .catch(err => {
-          console.error('Failed to save attraction:', err);
-          showToast('Failed to save attraction: ' + (err.message || err), 'error');
-        });
-    });
+        // Auto-select the new tile
+        selectAttraction(newTile, data.ride_name, data.ride_id);
+      })
+      .catch(err => {
+        alert('Failed to save attraction: ' + err.message);
+      });
   }
 
   // Position management
   let posCount = 0;
-  let deletedPosIds = [];
   function addPosition() {
     if (!currentRideId) {
-      showToast('Select an attraction first.', 'error');
+      alert('Select an attraction first.');
       return;
     }
     posCount++;
     const list = document.getElementById('positionList');
     const row = document.createElement('div');
     row.className = 'position-row';
-    row.setAttribute('data-pos-id', '0');
     row.innerHTML = `
       <input type="text" placeholder="Position Name" value="Position ${posCount}" />
       <div class="divider">→</div>
@@ -478,21 +452,17 @@
     // Add to main position dropdown
     const mainPosSelect = document.getElementById('mainPosition');
     const opt = document.createElement('option');
-    opt.value = '';
     opt.textContent = 'Position ' + posCount;
     mainPosSelect.appendChild(opt);
   }
 
   function removePosition() {
     const list = document.getElementById('positionList');
-    if (list.children.length > 0) {
-      const last = list.lastChild;
-      const pid = parseInt(last.getAttribute('data-pos-id') || '0', 10);
-      if (pid > 0) deletedPosIds.push(pid);
-      list.removeChild(last);
-      if (posCount > 0) posCount--;
+    if (list.children.length > 1) {
+      list.removeChild(list.lastChild);
+      posCount--;
 
-      // Remove last option from main position dropdown if present
+      // Remove last option from main position dropdown
       const mainPosSelect = document.getElementById('mainPosition');
       if (mainPosSelect.options.length > 0) {
         mainPosSelect.remove(mainPosSelect.options.length - 1);
@@ -529,6 +499,7 @@
             <div class="thumb-bg">
               <img src="${ride.ride_image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjwvc3ZnPg=='}" style="width:100%;height:100%;object-fit:cover;" />
             </div>
+            </div>
             <div class="thumb-check">
               <svg viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2">
                 <polyline points="1.5,5 4,7.5 8.5,2.5"/>
@@ -558,7 +529,6 @@
     if (input.files && input.files[0]) {
       const file = input.files[0];
       if (!file.type.startsWith('image/')) return;
-      selectedImageFile = file;
       const reader = new FileReader();
       reader.onload = function(e) {
         const preview = document.getElementById('attractionImagePreview');
@@ -573,417 +543,7 @@
 
   // Load on page ready
   loadAttractions(1);
-
-  // Toast helper
-  function showToast(message, type = 'info', timeout = 3000) {
-    let container = document.getElementById('toastContainer');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toastContainer';
-      document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = 'toast ' + type;
-    toast.textContent = message;
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(12px)';
-    container.appendChild(toast);
-
-    // Force reflow then animate in
-    void toast.offsetWidth;
-    toast.style.transition = 'opacity 220ms ease, transform 220ms ease';
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateY(0)';
-
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(12px)';
-      setTimeout(() => toast.remove(), 240);
-    }, timeout);
-  }
-
-  // Input modal helper (returns Promise<string|null>)
-  function showInputModal(title, placeholder = '') {
-    return new Promise((resolve) => {
-      const overlay = document.createElement('div');
-      overlay.className = 'input-overlay';
-      overlay.innerHTML = `
-        <div class="input-modal">
-          <div class="input-title">${title}</div>
-          <input class="input-field" placeholder="${placeholder}" />
-          <div class="input-actions">
-            <button class="btn btn-gray cancel">Cancel</button>
-            <button class="btn btn-teal ok">OK</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-
-      const input = overlay.querySelector('.input-field');
-      const ok = overlay.querySelector('.ok');
-      const cancel = overlay.querySelector('.cancel');
-
-      function cleanup(val) {
-        try { overlay.remove(); } catch (e) {}
-        resolve(val);
-      }
-
-      ok.addEventListener('click', () => {
-        const v = input.value.trim();
-        cleanup(v === '' ? null : v);
-      });
-
-      cancel.addEventListener('click', () => cleanup(null));
-
-      overlay.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') return cleanup(null);
-        if (e.key === 'Enter') { e.preventDefault(); const v = input.value.trim(); return cleanup(v === '' ? null : v); }
-      }, true);
-
-      input.focus();
-    });
-  }
-
-  // Save settings handler
-  document.getElementById('saveSettingsBtn').addEventListener('click', function () {
-    if (!currentRideId) {
-      showToast('Select an attraction first.', 'error');
-      return;
-    }
-
-    const name = document.getElementById('attractionName').value.trim();
-    const status = document.getElementById('attractionStatus') ? document.getElementById('attractionStatus').value : 'up';
-    const isPlaced = document.getElementById('attractionInRotation') && document.getElementById('attractionInRotation').checked ? 1 : 0;
-
-    // Collect positions
-    const positions = [];
-    document.querySelectorAll('#positionList .position-row').forEach((row, idx) => {
-      const pid = parseInt(row.getAttribute('data-pos-id') || '0', 10);
-      const nameInput = row.querySelector('input[type="text"]');
-      const pname = nameInput ? nameInput.value.trim() : '';
-      positions.push({ pos_id: pid, pos_name: pname, pos_order: idx + 1 });
-    });
-
-    const mainPosition = document.getElementById('mainPosition') ? document.getElementById('mainPosition').value : '';
-    const requiredCerts = document.getElementById('requiredCerts') ? document.getElementById('requiredCerts').value.trim() : '';
-
-    const formData = new FormData();
-    formData.append('action', 'saveAttractionSettings');
-    formData.append('ride_id', currentRideId);
-    formData.append('ride_name', name);
-    formData.append('ride_status', status);
-    formData.append('ride_is_placed_on_canvas', isPlaced);
-    formData.append('positions', JSON.stringify(positions));
-    formData.append('deleted_positions', JSON.stringify(deletedPosIds));
-    formData.append('main_position', mainPosition);
-    formData.append('required_certs', requiredCerts);
-
-    fetch('api.php', { method: 'POST', body: formData })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.success) {
-          showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
-          return;
-        }
-
-        // Update selected tile label
-        const sel = document.querySelector('.attraction-thumb.selected .attraction-label');
-        if (sel) sel.textContent = name || data.ride_name || sel.textContent;
-
-        // If image selected, upload it now
-        if (selectedImageFile) {
-          const imageFormData = new FormData();
-          imageFormData.append('action', 'uploadAttractionImage');
-          imageFormData.append('ride_id', currentRideId);
-          imageFormData.append('image', selectedImageFile);
-
-          fetch('api.php', { method: 'POST', body: imageFormData })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                // Update the tile with the new image
-                const selectedTile = document.querySelector('.attraction-thumb.selected .thumb-bg img');
-                if (selectedTile) {
-                  selectedTile.src = data.image_path;
-                }
-                selectedImageFile = null; // Reset
-              } else {
-                alert('Settings saved, but failed to upload image: ' + data.error);
-              }
-            })
-            .catch(err => alert('Settings saved, but upload failed: ' + err.message));
-        }
-      })
-      .catch(err => {
-        console.error('Save error:', err);
-        showToast('Failed to save settings.', 'error');
-      });
-  });
-
-  // Discard changes handler — reload saved data for current ride
-  document.getElementById('discardBtn').addEventListener('click', function () {
-    if (!currentRideId) {
-      showToast('No attraction selected', 'error');
-      return;
-    }
-
-    // Reset deleted/new position trackers
-    deletedPosIds = [];
-
-    // Find the tile element for current ride
-    let tile = document.querySelector('.attraction-thumb.selected');
-    if (!tile) tile = document.querySelector('[data-id="ride' + currentRideId + '"]');
-
-    // If we have a saved snapshot for this ride, use it to revert immediately
-    if (savedSnapshot && savedSnapshot.ride && parseInt(savedSnapshot.ride.ride_id, 10) === parseInt(currentRideId, 10)) {
-      // Repopulate UI from snapshot
-      const ride = savedSnapshot.ride;
-      const positions = savedSnapshot.positions || [];
-      document.getElementById('attractionName').value = ride.ride_name || '';
-      const statusEl = document.getElementById('attractionStatus');
-      if (statusEl) statusEl.value = ride.ride_status || 'up';
-      const rotationEl = document.getElementById('attractionInRotation');
-      if (rotationEl) rotationEl.checked = ride.ride_is_placed_on_canvas == 1;
-      const certsEl = document.getElementById('requiredCerts');
-      if (certsEl) certsEl.value = ride.ride_required_certs || '';
-
-      const posList = document.getElementById('positionList');
-      posList.innerHTML = '';
-      const mainPosSelect = document.getElementById('mainPosition');
-      mainPosSelect.innerHTML = '';
-      positions.forEach(pos => {
-        const row = document.createElement('div');
-        row.className = 'position-row';
-        row.setAttribute('data-pos-id', pos.pos_id);
-        row.innerHTML = `
-          <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
-          <div class="divider">→</div>
-          <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
-        `;
-        posList.appendChild(row);
-
-        const opt = document.createElement('option');
-        opt.value = pos.pos_id;
-        opt.textContent = pos.pos_name;
-        mainPosSelect.appendChild(opt);
-      });
-
-      posCount = positions.length;
-      // Update tile label if present
-      if (tile) {
-        const label = tile.querySelector('.attraction-label');
-        if (label) label.textContent = savedSnapshot.ride.ride_name || label.textContent;
-      }
-      showToast('Changes discarded', 'error');
-    } else if (tile) {
-      // No snapshot: reload from server
-      selectAttraction(tile, '', currentRideId).then(data => {
-        if (data && data.success) {
-          const label = tile.querySelector('.attraction-label');
-          if (label) label.textContent = data.ride.ride_name || label.textContent;
-        }
-        showToast('Changes discarded', 'error');
-      }).catch(() => showToast('Changes discarded', 'error'));
-    } else {
-      // As fallback, fetch the data and repopulate directly
-      fetch('api.php?action=getAttractionData&ride_id=' + currentRideId)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            showToast('Failed to reload data', 'error');
-            return;
-          }
-          // Populate UI with returned data
-          document.getElementById('attractionName').value = data.ride.ride_name || '';
-          const statusEl = document.getElementById('attractionStatus');
-          if (statusEl) statusEl.value = data.ride.ride_status || 'up';
-          const rotationEl = document.getElementById('attractionInRotation');
-          if (rotationEl) rotationEl.checked = data.ride.ride_is_placed_on_canvas == 1;
-          const certsEl = document.getElementById('requiredCerts');
-          if (certsEl) certsEl.value = data.ride.ride_required_certs || '';
-
-          // Rebuild positions
-          const posList = document.getElementById('positionList');
-          posList.innerHTML = '';
-          const mainPosSelect = document.getElementById('mainPosition');
-          mainPosSelect.innerHTML = '';
-          data.positions.forEach(pos => {
-            const row = document.createElement('div');
-            row.className = 'position-row';
-            row.setAttribute('data-pos-id', pos.pos_id);
-            row.innerHTML = `
-              <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
-              <div class="divider">→</div>
-              <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
-            `;
-            posList.appendChild(row);
-
-            const opt = document.createElement('option');
-            opt.value = pos.pos_id;
-            opt.textContent = pos.pos_name;
-            mainPosSelect.appendChild(opt);
-          });
-
-          posCount = data.positions.length;
-          showToast('Changes discarded', 'error');
-        })
-        .catch(err => {
-          console.error('Discard error:', err);
-          showToast('Failed to discard changes', 'error');
-        });
-    }
-  });
-
-  // Reset Defaults handler — restore the tile/UI to the original saved snapshot
-  document.getElementById('resetDefaultsBtn').addEventListener('click', function () {
-    if (!currentRideId) {
-      showToast('No attraction selected', 'error');
-      return;
-    }
-
-    if (!savedSnapshot || !savedSnapshot.ride) {
-      showToast('No defaults available', 'error');
-      return;
-    }
-
-    // Use snapshot to restore
-    const ride = savedSnapshot.ride;
-    const positions = savedSnapshot.positions || [];
-
-    // Reset trackers
-    deletedPosIds = [];
-
-    // Update UI
-    document.getElementById('attractionName').value = ride.ride_name || '';
-    const statusEl = document.getElementById('attractionStatus');
-    if (statusEl) statusEl.value = ride.ride_status || 'up';
-    const rotationEl = document.getElementById('attractionInRotation');
-    if (rotationEl) rotationEl.checked = ride.ride_is_placed_on_canvas == 1;
-    const certsEl = document.getElementById('requiredCerts');
-    if (certsEl) certsEl.value = ride.ride_required_certs || '';
-
-    // Rebuild positions and main position
-    const posList = document.getElementById('positionList');
-    posList.innerHTML = '';
-    const mainPosSelect = document.getElementById('mainPosition');
-    mainPosSelect.innerHTML = '';
-    positions.forEach(pos => {
-      const row = document.createElement('div');
-      row.className = 'position-row';
-      row.setAttribute('data-pos-id', pos.pos_id);
-      row.innerHTML = `
-        <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
-        <div class="divider">→</div>
-        <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
-      `;
-      posList.appendChild(row);
-
-      const opt = document.createElement('option');
-      opt.value = pos.pos_id;
-      opt.textContent = pos.pos_name;
-      mainPosSelect.appendChild(opt);
-    });
-
-    posCount = positions.length;
-
-    // Update left tile label if present
-    const tile = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + currentRideId + '"]');
-    if (tile) {
-      const label = tile.querySelector('.attraction-label');
-      if (label) label.textContent = ride.ride_name || label.textContent;
-    }
-
-    showToast('Defaults restored', 'info');
-  });
-
-  // Delete attraction handler — confirm by typing the attraction name, then call API
-  document.getElementById('deleteBtn').addEventListener('click', function () {
-    if (!currentRideId) {
-      showToast('No attraction selected', 'error');
-      return;
-    }
-
-    const currentName = (document.getElementById('attractionName') && document.getElementById('attractionName').value) ? document.getElementById('attractionName').value.trim() : (savedSnapshot && savedSnapshot.ride ? (savedSnapshot.ride.ride_name || '') : '');
-
-    if (currentName) {
-      showInputModal('Type the attraction name to confirm deletion:', currentName)
-        .then(val => {
-          if (!val || val !== currentName) {
-            showToast('Deletion cancelled', 'info');
-            return;
-          }
-          performDelete();
-        });
-    } else {
-      // Fallback: require typing DELETE
-      showInputModal('Type DELETE to confirm deletion', 'Type DELETE to confirm')
-        .then(val => {
-          if (!val || val !== 'DELETE') {
-            showToast('Deletion cancelled', 'info');
-            return;
-          }
-          performDelete();
-        });
-    }
-
-    function performDelete() {
-      const formData = new FormData();
-      formData.append('action', 'deleteAttraction');
-      formData.append('ride_id', currentRideId);
-
-      fetch('api.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            showToast('Failed to delete: ' + (data.error || 'Unknown error'), 'error');
-            return;
-          }
-
-          // Remove tile from grid if present
-          const sel = document.querySelector('.attraction-thumb.selected');
-          const tile = sel || document.querySelector('[data-id="ride' + currentRideId + '"]');
-          if (tile) tile.remove();
-
-          // Clear right panel and trackers
-          currentRideId = null;
-          savedSnapshot = null;
-          deletedPosIds = [];
-          const nameEl = document.getElementById('attractionName'); if (nameEl) nameEl.value = '';
-          const posList = document.getElementById('positionList'); if (posList) posList.innerHTML = '';
-          const mainPosSelect = document.getElementById('mainPosition'); if (mainPosSelect) mainPosSelect.innerHTML = '';
-
-          showToast('Attraction deleted', 'success');
-        })
-        .catch(err => {
-          console.error('Delete error:', err);
-          showToast('Failed to delete attraction', 'error');
-        });
-    }
-  });
 </script>
-<style>
-  #toastContainer { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 10000; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
-  .toast { pointer-events:auto; min-width:160px; max-width:360px; padding:10px 14px; border-radius:8px; color:#fff; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.12); background:#333; opacity:0; }
-  .toast.success { background: linear-gradient(90deg,#12b886,#07924b); }
-  .toast.info { background: linear-gradient(90deg,#2b8cff,#1565c0); }
-  .toast.error { background: linear-gradient(90deg,#ff6b6b,#d64545); }
-  /* Input modal styles */
-  .input-overlay { position: fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.35); z-index:10005; }
-  .input-modal { background:#fff; padding:18px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.25); width:360px; max-width:92%; }
-  .input-title { font-weight:700; margin-bottom:8px; }
-  .input-field { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #ddd; margin-bottom:12px; font-size:14px; }
-  .input-actions { display:flex; gap:8px; justify-content:flex-end; }
-  .input-actions .btn { padding:6px 10px; font-size:13px; }
-  /* Ensure modal and input text is readable (black) */
-  .input-modal, .input-modal .input-title { color: #000; }
-  .input-field { color: #000; }
-  /* Make form inputs and textarea text black for clarity */
-  #positionList .position-row input,
-  #positionList .position-row input::placeholder,
-  input[type="text"],
-  select,
-  textarea { color: #000; }
-</style>
 </body>
 </html>
+ 
