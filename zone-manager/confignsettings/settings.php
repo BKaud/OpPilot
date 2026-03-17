@@ -277,9 +277,9 @@
 
         <!-- Save bar -->
         <div class="save-bar">
-          <button class="btn btn-danger">Discard Changes</button>
+          <button id="discardBtn" class="btn btn-danger">Discard Changes</button>
           <button class="btn btn-gray">Reset Defaults</button>
-          <button class="btn btn-teal">Save Settings</button>
+          <button id="saveSettingsBtn" class="btn btn-teal">Save Settings</button>
         </div>
 
       </div>
@@ -315,6 +315,7 @@
 
   // Attraction selector — fetch ride data from DB and populate right panel
   let currentRideId = null;
+  let savedSnapshot = null; // stores last-loaded ride data for discard
 
   function selectAttraction(el, name, rideId) {
     document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
@@ -322,11 +323,10 @@
 
     if (!rideId) return;
     currentRideId = rideId;
-
-    fetch('api.php?action=getAttractionData&ride_id=' + rideId)
+    return fetch('api.php?action=getAttractionData&ride_id=' + rideId)
       .then(res => res.json())
       .then(data => {
-        if (!data.success) return;
+        if (!data.success) return data;
 
         const ride = data.ride;
         const positions = data.positions;
@@ -342,6 +342,10 @@
         const rotationEl = document.getElementById('attractionInRotation');
         if (rotationEl) rotationEl.checked = ride.ride_is_placed_on_canvas == 1;
 
+        // Populate required certs if present
+        const certsEl = document.getElementById('requiredCerts');
+        if (certsEl && ride.ride_required_certs !== undefined) certsEl.value = ride.ride_required_certs || '';
+
         // Build position list
         const posList = document.getElementById('positionList');
         posList.innerHTML = '';
@@ -356,7 +360,7 @@
           row.setAttribute('data-pos-id', pos.pos_id);
           const holder = pos.acc_name ? ` (${pos.acc_name})` : '';
           row.innerHTML = `
-            <input type="text" placeholder="Position Name" value="${pos.pos_name}" readonly />
+            <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
             <div class="divider">→</div>
             <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
           `;
@@ -374,8 +378,14 @@
         }
 
         posCount = positions.length;
+        // Save snapshot for discard/rollback
+        savedSnapshot = { ride: ride, positions: positions };
+        return data;
       })
-      .catch(err => console.error('Failed to load attraction data:', err));
+      .catch(err => {
+        console.error('Failed to load attraction data:', err);
+        return { success: false, error: err.message };
+      });
   }
 
   function addAttraction() {
@@ -433,6 +443,7 @@
 
   // Position management
   let posCount = 0;
+  let deletedPosIds = [];
   function addPosition() {
     if (!currentRideId) {
       alert('Select an attraction first.');
@@ -442,6 +453,7 @@
     const list = document.getElementById('positionList');
     const row = document.createElement('div');
     row.className = 'position-row';
+    row.setAttribute('data-pos-id', '0');
     row.innerHTML = `
       <input type="text" placeholder="Position Name" value="Position ${posCount}" />
       <div class="divider">→</div>
@@ -452,17 +464,21 @@
     // Add to main position dropdown
     const mainPosSelect = document.getElementById('mainPosition');
     const opt = document.createElement('option');
+    opt.value = '';
     opt.textContent = 'Position ' + posCount;
     mainPosSelect.appendChild(opt);
   }
 
   function removePosition() {
     const list = document.getElementById('positionList');
-    if (list.children.length > 1) {
-      list.removeChild(list.lastChild);
-      posCount--;
+    if (list.children.length > 0) {
+      const last = list.lastChild;
+      const pid = parseInt(last.getAttribute('data-pos-id') || '0', 10);
+      if (pid > 0) deletedPosIds.push(pid);
+      list.removeChild(last);
+      if (posCount > 0) posCount--;
 
-      // Remove last option from main position dropdown
+      // Remove last option from main position dropdown if present
       const mainPosSelect = document.getElementById('mainPosition');
       if (mainPosSelect.options.length > 0) {
         mainPosSelect.remove(mainPosSelect.options.length - 1);
@@ -544,6 +560,210 @@
 
   // Load on page ready
   loadAttractions(1);
+
+  // Toast helper
+  function showToast(message, type = 'info', timeout = 3000) {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(12px)';
+    container.appendChild(toast);
+
+    // Force reflow then animate in
+    void toast.offsetWidth;
+    toast.style.transition = 'opacity 220ms ease, transform 220ms ease';
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(12px)';
+      setTimeout(() => toast.remove(), 240);
+    }, timeout);
+  }
+
+  // Save settings handler
+  document.getElementById('saveSettingsBtn').addEventListener('click', function () {
+    if (!currentRideId) {
+      alert('Select an attraction first.');
+      return;
+    }
+
+    const name = document.getElementById('attractionName').value.trim();
+    const status = document.getElementById('attractionStatus') ? document.getElementById('attractionStatus').value : 'up';
+    const isPlaced = document.getElementById('attractionInRotation') && document.getElementById('attractionInRotation').checked ? 1 : 0;
+
+    // Collect positions
+    const positions = [];
+    document.querySelectorAll('#positionList .position-row').forEach((row, idx) => {
+      const pid = parseInt(row.getAttribute('data-pos-id') || '0', 10);
+      const nameInput = row.querySelector('input[type="text"]');
+      const pname = nameInput ? nameInput.value.trim() : '';
+      positions.push({ pos_id: pid, pos_name: pname, pos_order: idx + 1 });
+    });
+
+    const mainPosition = document.getElementById('mainPosition') ? document.getElementById('mainPosition').value : '';
+    const requiredCerts = document.getElementById('requiredCerts') ? document.getElementById('requiredCerts').value.trim() : '';
+
+    const formData = new FormData();
+    formData.append('action', 'saveAttractionSettings');
+    formData.append('ride_id', currentRideId);
+    formData.append('ride_name', name);
+    formData.append('ride_status', status);
+    formData.append('ride_is_placed_on_canvas', isPlaced);
+    formData.append('positions', JSON.stringify(positions));
+    formData.append('deleted_positions', JSON.stringify(deletedPosIds));
+    formData.append('main_position', mainPosition);
+    formData.append('required_certs', requiredCerts);
+
+    fetch('api.php', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert('Failed to save: ' + (data.error || 'Unknown error'));
+          return;
+        }
+
+        // Update selected tile label
+        const sel = document.querySelector('.attraction-thumb.selected .attraction-label');
+        if (sel) sel.textContent = name || data.ride_name || sel.textContent;
+
+        showToast('Settings saved', 'success');
+      })
+      .catch(err => {
+        console.error('Save error:', err);
+        alert('Failed to save settings.');
+      });
+  });
+
+  // Discard changes handler — reload saved data for current ride
+  document.getElementById('discardBtn').addEventListener('click', function () {
+    if (!currentRideId) {
+      showToast('No attraction selected', 'error');
+      return;
+    }
+
+    // Reset deleted/new position trackers
+    deletedPosIds = [];
+
+    // Find the tile element for current ride
+    let tile = document.querySelector('.attraction-thumb.selected');
+    if (!tile) tile = document.querySelector('[data-id="ride' + currentRideId + '"]');
+
+    // If we have a saved snapshot for this ride, use it to revert immediately
+    if (savedSnapshot && savedSnapshot.ride && parseInt(savedSnapshot.ride.ride_id, 10) === parseInt(currentRideId, 10)) {
+      // Repopulate UI from snapshot
+      const ride = savedSnapshot.ride;
+      const positions = savedSnapshot.positions || [];
+      document.getElementById('attractionName').value = ride.ride_name || '';
+      const statusEl = document.getElementById('attractionStatus');
+      if (statusEl) statusEl.value = ride.ride_status || 'up';
+      const rotationEl = document.getElementById('attractionInRotation');
+      if (rotationEl) rotationEl.checked = ride.ride_is_placed_on_canvas == 1;
+      const certsEl = document.getElementById('requiredCerts');
+      if (certsEl) certsEl.value = ride.ride_required_certs || '';
+
+      const posList = document.getElementById('positionList');
+      posList.innerHTML = '';
+      const mainPosSelect = document.getElementById('mainPosition');
+      mainPosSelect.innerHTML = '';
+      positions.forEach(pos => {
+        const row = document.createElement('div');
+        row.className = 'position-row';
+        row.setAttribute('data-pos-id', pos.pos_id);
+        row.innerHTML = `
+          <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
+          <div class="divider">→</div>
+          <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
+        `;
+        posList.appendChild(row);
+
+        const opt = document.createElement('option');
+        opt.value = pos.pos_id;
+        opt.textContent = pos.pos_name;
+        mainPosSelect.appendChild(opt);
+      });
+
+      posCount = positions.length;
+      // Update tile label if present
+      if (tile) {
+        const label = tile.querySelector('.attraction-label');
+        if (label) label.textContent = savedSnapshot.ride.ride_name || label.textContent;
+      }
+      showToast('Changes discarded', 'error');
+    } else if (tile) {
+      // No snapshot: reload from server
+      selectAttraction(tile, '', currentRideId).then(data => {
+        if (data && data.success) {
+          const label = tile.querySelector('.attraction-label');
+          if (label) label.textContent = data.ride.ride_name || label.textContent;
+        }
+        showToast('Changes discarded', 'error');
+      }).catch(() => showToast('Changes discarded', 'error'));
+    } else {
+      // As fallback, fetch the data and repopulate directly
+      fetch('api.php?action=getAttractionData&ride_id=' + currentRideId)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            showToast('Failed to reload data', 'error');
+            return;
+          }
+          // Populate UI with returned data
+          document.getElementById('attractionName').value = data.ride.ride_name || '';
+          const statusEl = document.getElementById('attractionStatus');
+          if (statusEl) statusEl.value = data.ride.ride_status || 'up';
+          const rotationEl = document.getElementById('attractionInRotation');
+          if (rotationEl) rotationEl.checked = data.ride.ride_is_placed_on_canvas == 1;
+          const certsEl = document.getElementById('requiredCerts');
+          if (certsEl) certsEl.value = data.ride.ride_required_certs || '';
+
+          // Rebuild positions
+          const posList = document.getElementById('positionList');
+          posList.innerHTML = '';
+          const mainPosSelect = document.getElementById('mainPosition');
+          mainPosSelect.innerHTML = '';
+          data.positions.forEach(pos => {
+            const row = document.createElement('div');
+            row.className = 'position-row';
+            row.setAttribute('data-pos-id', pos.pos_id);
+            row.innerHTML = `
+              <input type="text" placeholder="Position Name" value="${pos.pos_name}" />
+              <div class="divider">→</div>
+              <input type="text" placeholder="Assigned" value="${pos.acc_name || 'Unassigned'}" readonly />
+            `;
+            posList.appendChild(row);
+
+            const opt = document.createElement('option');
+            opt.value = pos.pos_id;
+            opt.textContent = pos.pos_name;
+            mainPosSelect.appendChild(opt);
+          });
+
+          posCount = data.positions.length;
+          showToast('Changes discarded', 'error');
+        })
+        .catch(err => {
+          console.error('Discard error:', err);
+          showToast('Failed to discard changes', 'error');
+        });
+    }
+  });
 </script>
+<style>
+  #toastContainer { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 10000; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+  .toast { pointer-events:auto; min-width:160px; max-width:360px; padding:10px 14px; border-radius:8px; color:#fff; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.12); background:#333; opacity:0; }
+  .toast.success { background: linear-gradient(90deg,#12b886,#07924b); }
+  .toast.info { background: linear-gradient(90deg,#2b8cff,#1565c0); }
+  .toast.error { background: linear-gradient(90deg,#ff6b6b,#d64545); }
+</style>
 </body>
 </html>
