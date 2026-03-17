@@ -22,6 +22,9 @@ switch ($action) {
     case 'saveAttractionSettings':
         saveAttractionSettings();
         break;
+    case 'deleteAttraction':
+        deleteAttraction();
+        break;
     default:
         echo json_encode(['success' => false, 'error' => 'Invalid action']);
 }
@@ -304,6 +307,81 @@ function saveAttractionSettings() {
 
         $conn->commit();
         echo json_encode(['success' => true, 'ride_id' => $rideId, 'ride_name' => $name]);
+        return;
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        return;
+    } finally {
+        $conn->close();
+    }
+}
+
+/**
+ * Delete an attraction (ride) and clean up linked data
+ * Expects POST: ride_id (int)
+ */
+function deleteAttraction() {
+    $conn = getDbConnection();
+    $rideId = intval($_POST['ride_id'] ?? 0);
+
+    if ($rideId === 0) {
+        echo json_encode(['success' => false, 'error' => 'ride_id is required']);
+        $conn->close();
+        return;
+    }
+
+    try {
+        $conn->begin_transaction();
+
+        // Get all pos_ids linked to this ride
+        $stmt = $conn->prepare("SELECT ride_pos_pos_id FROM ride_pos WHERE ride_pos_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $posIds = [];
+        while ($r = $res->fetch_assoc()) {
+            $posIds[] = intval($r['ride_pos_pos_id']);
+        }
+        $stmt->close();
+
+        // Delete ride_pos links for this ride
+        $stmt = $conn->prepare("DELETE FROM ride_pos WHERE ride_pos_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        // For each pos, delete if no longer linked to any ride
+        foreach ($posIds as $pid) {
+            $stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM ride_pos WHERE ride_pos_pos_id = ?");
+            $stmt->bind_param("i", $pid);
+            $stmt->execute();
+            $cnt = $stmt->get_result()->fetch_assoc()['cnt'] ?? 0;
+            $stmt->close();
+
+            if (intval($cnt) === 0) {
+                $stmt = $conn->prepare("DELETE FROM position WHERE pos_id = ?");
+                $stmt->bind_param("i", $pid);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+
+        // Remove zone_ride links
+        $stmt = $conn->prepare("DELETE FROM zone_ride WHERE zone_ride_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        // Finally remove ride
+        $stmt = $conn->prepare("DELETE FROM ride WHERE ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        $conn->commit();
+        echo json_encode(['success' => true, 'ride_id' => $rideId]);
         return;
 
     } catch (Exception $e) {
