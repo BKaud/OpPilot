@@ -24,33 +24,24 @@
   <aside class="sidebar">
     <div class="nav-section">
       <div class="nav-upper">
-        <!-- Homepage -->
-          <div class="nav-item">
-            <a href="../dashboard/dashboard.php" class="nav-link active" id="home-link">
-              <div class="nav-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 12L12 3l9 9"/>
-                  <path d="M9 21V12h6v9"/>
-                </svg>
-              </div>
-              <span class="nav-text">Homepage</span>
-            </a>
-          </div>
-        <!-- Zones -->
+        <div class="nav-item">
+          <a href="#" class="nav-link">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
+            <span class="nav-text">Homepage</span>
+          </a>
+        </div>
         <div class="nav-item expandable" id="zones">
-          <a href="#" class="nav-link expanded">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            </div>
+          <a href="#" class="nav-link" id="zones-toggle">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
             <span class="nav-text">Zones</span>
           </a>
           <div class="sub-nav expanded" id="zones-sub">
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">
-                <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
+                <a href="dashboard.php" class="zone-sub-link active">Dashboard</a>
                 <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
-                <a href="settings.php" class="zone-sub-link active">Settings & Config</a>
+                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
             <div class="zone-item expandable" id="rides2-zone">
@@ -63,28 +54,29 @@
             </div>
           </div>
         </div>
+        <div class="nav-item">
+          <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <span class="nav-text">Management</span>
+          </a>
+        </div>
       </div>
       <div class="nav-lower">
         <div class="nav-item">
           <a href="#" class="nav-link">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            </div>
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
             <span class="nav-text">Account Settings</span>
           </a>
         </div>
         <div class="nav-item">
           <a href="#" class="nav-link">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </div>
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <span class="nav-text">Changelog</span>
           </a>
         </div>
       </div>
     </div>
   </aside>
-
   <!-- CONTENT -->
   <div class="content">
     <div class="page-header">
