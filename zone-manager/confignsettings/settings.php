@@ -138,9 +138,9 @@
 <div class="attraction-grid" id="attractionGrid">
 <!-- Attraction tiles loaded dynamically from DB -->
 <div class="attraction-thumb" data-id="add" onclick="addAttraction()">
-<div class="thumb-bg">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8bGluZSB4MT0iMTIiIHkxPSI1IiB4Mj0iMTIiIHkyPSIxOSIvPgogIDxsaW5lIHgxPSI1IiB5MT0iMTIiIHgyPSIxOSIgeTI9IjEyIi8+Cjwvc3ZnPg==" style="width:100%;height:100%;object-fit:cover;" />
-                  </div>
+<div class="thumb-bg" style="background: linear-gradient(135deg, #b0b0b0, #a0a0a0);">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</div>
 <div class="attraction-label">Add New</div>
 </div>
 </div>
@@ -325,8 +325,16 @@
           posList.innerHTML = '<div style="color:#888;font-size:12px;padding:6px 0;">No positions assigned to this ride.</div>';
         }
         posCount = positions.length;
-        // Save snapshot for discard/rollback
-        savedSnapshot = { ride: ride, positions: positions };
+        // Save deep-copy snapshot for discard/rollback (avoid accidental mutation)
+        try {
+          savedSnapshot = { ride: JSON.parse(JSON.stringify(ride)), positions: JSON.parse(JSON.stringify(positions)) };
+        } catch (e) {
+          savedSnapshot = { ride: ride, positions: positions };
+        }
+        // Restore main position selection if provided
+        if (ride.ride_main_pos_id) {
+          try { mainPosSelect.value = ride.ride_main_pos_id; } catch (e) {}
+        }
         return data;
       })
       .catch(err => {
@@ -343,12 +351,23 @@
       formData.append('name', name);
       formData.append('zone_id', 1); // Current zone ID
       fetch('api.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            showToast('Error saving attraction: ' + (data.error || 'Unknown error'), 'error');
+        .then(res => res.text())
+        .then(text => {
+          let data = null;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            // Server returned non-JSON (likely PHP error or warning)
+            console.error('Non-JSON response from server:', text);
+            showToast('Server error: ' + (text || 'Empty response'), 'error');
             return;
           }
+
+          if (!data || !data.success) {
+            showToast('Error saving attraction: ' + (data && data.error ? data.error : 'Unknown error'), 'error');
+            return;
+          }
+
           // Add the tile to the grid after successful DB insert
           const grid = document.getElementById("attractionGrid");
           const newTile = document.createElement("div");
@@ -356,8 +375,9 @@
           newTile.setAttribute("data-id", "ride" + data.ride_id);
           newTile.innerHTML = `
 <div class="thumb-bg">
-<img src="${ride.ride_image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41Ii8+Cjwvc3ZnPg=='}" style="width:100%;height:100%;object-fit:cover;" />
-            </div>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+<circle cx="12" cy="12" r="10"/>
+</svg>
 </div>
 <div class="thumb-check">
 <svg viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="2">
@@ -635,6 +655,10 @@
         opt.textContent = pos.pos_name;
         mainPosSelect.appendChild(opt);
       });
+      // Restore main position selection from snapshot
+      if (ride.ride_main_pos_id) {
+        try { mainPosSelect.value = ride.ride_main_pos_id; } catch (e) {}
+      }
       posCount = positions.length;
       // Update tile label if present
       if (tile) {
@@ -688,7 +712,11 @@
             opt.textContent = pos.pos_name;
             mainPosSelect.appendChild(opt);
           });
-          posCount = data.positions.length;
+            // Restore main position selection if present
+            if (data.ride && data.ride.ride_main_pos_id) {
+              try { mainPosSelect.value = data.ride.ride_main_pos_id; } catch (e) {}
+            }
+            posCount = data.positions.length;
           showToast('Changes discarded', 'error');
         })
         .catch(err => {
@@ -741,6 +769,10 @@
       mainPosSelect.appendChild(opt);
     });
     posCount = positions.length;
+    // Ensure main position selected when restoring defaults
+    if (ride.ride_main_pos_id) {
+      try { mainPosSelect.value = ride.ride_main_pos_id; } catch (e) {}
+    }
     // Update left tile label if present
     const tile = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + currentRideId + '"]');
     if (tile) {

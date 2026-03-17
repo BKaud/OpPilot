@@ -19,6 +19,12 @@ switch ($action) {
     case 'getAttractionData':
         getAttractionData();
         break;
+    case 'saveAttractionSettings':
+        saveAttractionSettings();
+        break;
+    case 'deleteAttraction':
+        deleteAttraction();
+        break;
     default:
         echo json_encode(['success' => false, 'error' => 'Invalid action']);
 }
@@ -130,8 +136,10 @@ function getAttractionData() {
         return;
     }
 
-    // Get ride info
-    $stmt = $conn->prepare("SELECT ride_id, ride_name, ride_status, ride_is_placed_on_canvas, ride_canvas_order FROM ride WHERE ride_id = ?");
+// saveAttractionSettings moved below to keep function definitions top-level
+
+    // Get ride info (include required certs and main position)
+    $stmt = $conn->prepare("SELECT ride_id, ride_name, ride_status, ride_is_placed_on_canvas, ride_canvas_order, ride_required_certs, ride_main_pos_id FROM ride WHERE ride_id = ?");
     $stmt->bind_param("i", $rideId);
     $stmt->execute();
     $ride = $stmt->get_result()->fetch_assoc();
@@ -176,6 +184,215 @@ function getAttractionData() {
         'ride' => $ride,
         'positions' => $positions
     ]);
+}
+
+/**
+ * Delete an attraction (ride) and clean up linked data
+ * Expects POST: ride_id (int)
+ */
+function deleteAttraction() {
+    $conn = getDbConnection();
+    $rideId = intval($_POST['ride_id'] ?? 0);
+
+    if ($rideId === 0) {
+        echo json_encode(['success' => false, 'error' => 'ride_id is required']);
+        $conn->close();
+        return;
+    }
+
+    try {
+        $conn->begin_transaction();
+
+        // Collect position ids linked to this ride
+        $stmt = $conn->prepare("SELECT ride_pos_pos_id FROM ride_pos WHERE ride_pos_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $posIds = [];
+        while ($r = $res->fetch_assoc()) {
+            $posIds[] = intval($r['ride_pos_pos_id']);
+        }
+        $stmt->close();
+
+        // Delete ride_pos links for this ride
+        $stmt = $conn->prepare("DELETE FROM ride_pos WHERE ride_pos_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        // For each position, delete if not linked to any other ride
+        foreach ($posIds as $pid) {
+            $stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM ride_pos WHERE ride_pos_pos_id = ?");
+            $stmt->bind_param("i", $pid);
+            $stmt->execute();
+            $cnt = $stmt->get_result()->fetch_assoc()['cnt'] ?? 0;
+            $stmt->close();
+
+            if (intval($cnt) === 0) {
+                $stmt = $conn->prepare("DELETE FROM position WHERE pos_id = ?");
+                $stmt->bind_param("i", $pid);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+
+        // Remove zone_ride links
+        $stmt = $conn->prepare("DELETE FROM zone_ride WHERE zone_ride_ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        // Remove the ride
+        $stmt = $conn->prepare("DELETE FROM ride WHERE ride_id = ?");
+        $stmt->bind_param("i", $rideId);
+        $stmt->execute();
+        $stmt->close();
+
+        $conn->commit();
+        echo json_encode(['success' => true, 'ride_id' => $rideId]);
+        return;
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        return;
+    } finally {
+        $conn->close();
+    }
+}
+
+/**
+ * Save attraction (ride) settings
+ * Expects POST: ride_id (int), ride_name (string), ride_status (string), ride_is_placed_on_canvas (0|1), positions (json), deleted_positions (json), main_position, required_certs
+ */
+function saveAttractionSettings() {
+    $conn = getDbConnection();
+
+    $rideId = intval($_POST['ride_id'] ?? 0);
+    $name = trim($_POST['ride_name'] ?? '');
+    $status = $_POST['ride_status'] ?? 'up';
+    $isPlaced = intval($_POST['ride_is_placed_on_canvas'] ?? 0);
+
+    $positions = json_decode($_POST['positions'] ?? '[]', true);
+    $deleted = json_decode($_POST['deleted_positions'] ?? '[]', true);
+    $mainPositionRaw = $_POST['main_position'] ?? '';
+    $mainPosition = ($mainPositionRaw === '' ? null : intval($mainPositionRaw));
+    $requiredCerts = $_POST['required_certs'] ?? '';
+
+    if ($rideId === 0) {
+        echo json_encode(['success' => false, 'error' => 'ride_id is required']);
+        $conn->close();
+        return;
+    }
+
+    try {
+        $conn->begin_transaction();
+
+        // Ensure ride has columns for required certs and main position
+        $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_required_certs'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE ride ADD COLUMN ride_required_certs TEXT NULL");
+        }
+        $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_main_pos_id'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE ride ADD COLUMN ride_main_pos_id INT NULL");
+        }
+
+        // Update ride row (including newly ensured columns)
+        $stmt = $conn->prepare("UPDATE ride SET ride_name = ?, ride_status = ?, ride_is_placed_on_canvas = ?, ride_required_certs = ?, ride_main_pos_id = ? WHERE ride_id = ?");
+        if (!$stmt) throw new Exception('DB prepare failed for ride update');
+        $stmt->bind_param("ssisis", $name, $status, $isPlaced, $requiredCerts, $mainPosition, $rideId);
+        if (!$stmt->execute()) throw new Exception('Failed to update ride: ' . $stmt->error);
+        $stmt->close();
+
+        // Handle deleted positions: unlink and remove
+        if (is_array($deleted) && count($deleted) > 0) {
+            foreach ($deleted as $did) {
+                $did = intval($did);
+                $stmt = $conn->prepare("DELETE FROM ride_pos WHERE ride_pos_pos_id = ? AND ride_pos_ride_id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("ii", $did, $rideId);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+                $stmt = $conn->prepare("DELETE FROM position WHERE pos_id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("i", $did);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
+        }
+
+        // Handle positions: update existing, insert new and link
+        if (is_array($positions)) {
+            foreach ($positions as $pos) {
+                $pid = intval($pos['pos_id'] ?? 0);
+                $pname = trim($pos['pos_name'] ?? '');
+                $porder = intval($pos['pos_order'] ?? 0);
+
+                if ($pid > 0) {
+                    $stmt = $conn->prepare("UPDATE position SET pos_name = ?, pos_order = ? WHERE pos_id = ?");
+                    if ($stmt) {
+                        $stmt->bind_param("sii", $pname, $porder, $pid);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+
+                    // Ensure link exists in ride_pos
+                    $stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM ride_pos WHERE ride_pos_pos_id = ? AND ride_pos_ride_id = ?");
+                    if ($stmt) {
+                        $stmt->bind_param("ii", $pid, $rideId);
+                        $stmt->execute();
+                        $cnt = $stmt->get_result()->fetch_assoc()['cnt'] ?? 0;
+                        $stmt->close();
+                        if (intval($cnt) === 0) {
+                            $result = $conn->query("SELECT COALESCE(MAX(ride_pos_id),0)+1 AS next_id FROM ride_pos");
+                            $nextRidePosId = $result->fetch_assoc()['next_id'];
+                            $stmt = $conn->prepare("INSERT INTO ride_pos (ride_pos_id, ride_pos_pos_id, ride_pos_posholder, ride_pos_ride_id) VALUES (?, ?, NULL, ?)");
+                            if ($stmt) {
+                                $stmt->bind_param("iii", $nextRidePosId, $pid, $rideId);
+                                $stmt->execute();
+                                $stmt->close();
+                            }
+                        }
+                    }
+
+                } else {
+                    // Insert new position (determine next pos_id)
+                    $result = $conn->query("SELECT COALESCE(MAX(pos_id),0)+1 AS next_id FROM position");
+                    $newPosId = $result->fetch_assoc()['next_id'];
+                    $stmt = $conn->prepare("INSERT INTO position (pos_id, pos_name, pos_order) VALUES (?, ?, ?)");
+                    if ($stmt) {
+                        $stmt->bind_param("isi", $newPosId, $pname, $porder);
+                        $stmt->execute();
+                        $stmt->close();
+
+                        // Link into ride_pos
+                        $result2 = $conn->query("SELECT COALESCE(MAX(ride_pos_id),0)+1 AS next_id FROM ride_pos");
+                        $nextRidePosId = $result2->fetch_assoc()['next_id'];
+                        $stmt = $conn->prepare("INSERT INTO ride_pos (ride_pos_id, ride_pos_pos_id, ride_pos_posholder, ride_pos_ride_id) VALUES (?, ?, NULL, ?)");
+                        if ($stmt) {
+                            $stmt->bind_param("iii", $nextRidePosId, $newPosId, $rideId);
+                            $stmt->execute();
+                            $stmt->close();
+                        }
+                    }
+                }
+            }
+        }
+
+        $conn->commit();
+        echo json_encode(['success' => true, 'ride_id' => $rideId, 'ride_name' => $name]);
+        return;
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        return;
+    } finally {
+        $conn->close();
+    }
 }
 ?>
  
