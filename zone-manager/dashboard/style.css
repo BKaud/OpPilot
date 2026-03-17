@@ -407,11 +407,6 @@
   border: 1px solid rgba(26,143,122,0.25);
   margin-top: 3px;
 }
-.sched-item-badge.warn {
-  background: rgba(230,168,23,0.15); color: var(--accent-yellow);
-  border-color: rgba(230,168,23,0.3);
-}
-
 /* Current time indicator in list */
 .now-line {
   height: 2px; background: var(--teal);

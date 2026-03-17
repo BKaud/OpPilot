@@ -103,6 +103,170 @@
           <div class="time-preview-tag" id="previewTag">⚡ PREVIEW MODE</div>
         </div>
 
+        <!-- Section: Rotation Concepts -->
+        <div class="attraction-section">
+          <div class="section-label">Rotation Display Ideas</div>
+          <div class="attraction-row" id="rotationRow">
+            
+            <!-- CONCEPT 1: Circular Position Wheel -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a9d7f, #1a6f5a); position: relative;">
+                <div class="card-status-dot"></div>
+                <svg viewBox="0 0 80 80" style="width: 50px; height: 50px; opacity: 0.9;" fill="none" stroke="#fff" stroke-width="1.5">
+                  <circle cx="40" cy="40" r="35" />
+                  <circle cx="40" cy="40" r="20" />
+                  <!-- Position markers -->
+                  <circle cx="40" cy="12" r="3" fill="#fff"/>
+                  <circle cx="62" cy="40" r="3" fill="#26c9a0"/>
+                  <circle cx="40" cy="68" r="3" fill="#fff"/>
+                  <circle cx="18" cy="40" r="3" fill="#fff"/>
+                  <!-- Pointer -->
+                  <line x1="40" y1="40" x2="62" y2="40" stroke="#26c9a0" stroke-width="2"/>
+                </svg>
+                <div class="card-num">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Thunder Mountain</div>
+                <div class="card-meta"><span>11:00 AM • ROTATION D</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">M. Torres (Ride Ops)</span>
+                  <span class="pos-chip assigned">D. Reyes (Dispatch)</span>
+                  <span class="pos-chip assigned">L. Chen (Station)</span>
+                </div>
+                <div class="card-operator">Next: Rotation E at 12:00 PM</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 2: Timeline Progress View -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a7a9d, #1a5a6f); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <div class="card-status-dot"></div>
+                <div style="width: 70%; height: 24px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); position: relative;">
+                  <div style="height: 100%; width: 65%; background: linear-gradient(90deg, #26c9a0, #1a8f7a); transition: width 0.3s;"></div>
+                  <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #fff; font-size: 10px; font-weight: bold;">65%</div>
+                </div>
+                <div class="card-num" style="font-size: 16px; opacity: 0.8;">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Space Coaster</div>
+                <div class="card-meta"><span>11:00 AM • Halfway through cycle</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">J. Monroe (Lead)</span>
+                  <span class="pos-chip assigned">P. Vega (Control)</span>
+                  <span class="pos-chip assigned">A. Kim (Queue)</span>
+                  <span class="pos-chip assigned">R. Patel (Station)</span>
+                </div>
+                <div class="card-operator">Started: 11:00 AM • Est. End: 11:45 AM</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 3: Position Grid Layout -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #7a2a9d, #5a1a6f); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 10px;">
+                <div class="card-status-dot"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; max-width: 35px;">
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: #26c9a0; border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: #26c9a0; border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"></div>
+                </div>
+                <div class="card-num" style="margin-left: 5px;">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Bumper Cars</div>
+                <div class="card-meta"><span>11:00 AM • 2 of 4 Positions</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">✓ S. Brown</span>
+                  <span class="pos-chip empty">✗ C. Liu</span>
+                  <span class="pos-chip assigned">✓ T. Nair</span>
+                  <span class="pos-chip empty">✗ K. Wong</span>
+                </div>
+                <div class="card-operator">Staffing: 50% • 2 of 4 positions filled</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 4: Radial Status Indicator -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #9d7a2a, #6f5a1a); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div class="card-status-dot"></div>
+                <svg viewBox="0 0 80 80" style="width: 50px; height: 50px;" fill="none">
+                  <!-- Outer ring progress -->
+                  <circle cx="40" cy="40" r="32" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                  <circle cx="40" cy="40" r="32" stroke="#f59e0b" stroke-width="2" 
+                          stroke-dasharray="100" stroke-dashoffset="35" stroke-linecap="round"
+                          style="transform: rotate(-90deg); transform-origin: 40px 40px;"/>
+                  <!-- Center text -->
+                  <text x="40" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">ROT</text>
+                  <text x="40" y="50" text-anchor="middle" font-size="18" font-weight="bold" fill="#f59e0b">D</text>
+                </svg>
+                <div class="card-num" style="opacity: 0;"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Log Flume</div>
+                <div class="card-meta"><span>11:00 AM • ROTATION D Active</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">E. Martinez (Load)</span>
+                  <span class="pos-chip assigned">F. Jensen (Unload)</span>
+                  <span class="pos-chip assigned">G. Wang (Ops)</span>
+                </div>
+                <div class="card-operator">Full staffing • All positions filled</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 5: Position + Station Layout -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a6f9d, #1a4f6f); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div class="card-status-dot"></div>
+                <div style="text-align: center;">
+                  <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">ROTATION D</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Pirate Ship</div>
+                <div class="card-meta"><span>ROTATION D • 3 of 4 Positions</span></div>
+                
+                <!-- Position/Station Boxes - Stacked Vertical -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0;">
+                  <!-- Station 1 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 1</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">H. Brown</div>
+                  </div>
+
+                  <!-- Station 2 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 2</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">J. Kim</div>
+                  </div>
+
+                  <!-- Station 3 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 3</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">M. Lee</div>
+                  </div>
+
+                  <!-- Station 4 (Empty) -->
+                  <div style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--accent-red); text-transform: uppercase; letter-spacing: 0.2px;">Station 4</div>
+                  </div>
+                  <div style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--accent-red);">EMPTY</div>
+                  </div>
+                </div>
+
+                <div class="card-operator" style="border-top: 1px solid #ddd; padding-top: 6px; margin-top: 6px;">Next: Rotation E at 12:00 PM</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <!-- Section: Top row -->
         <div class="attraction-section">
           <div class="section-label">Active Attractions</div>
@@ -322,9 +486,19 @@
       card.className = 'attraction-card';
       
       const positionsHTML = attraction.positions.map(pos => {
-        const chipClass = pos.operator ? 'assigned' : 'empty';
-        const operatorText = pos.operator ? pos.operator : 'Unassigned';
-        return `<span class="pos-chip ${chipClass}">${pos.name}: ${operatorText}</span>`;
+        const bgClass = pos.operator ? 'teal' : 'red';
+        const textColor = pos.operator ? 'var(--teal)' : 'var(--accent-red)';
+        const bgColor = pos.operator ? 'var(--teal-glow)' : 'rgba(192, 57, 43, 0.1)';
+        const borderColor = pos.operator ? 'var(--teal)' : 'rgba(192, 57, 43, 0.3)';
+        const operatorText = pos.operator ? pos.operator : 'EMPTY';
+        return `
+          <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 3px 5px; text-align: center;">
+            <div style="font-size: 7px; font-weight: 700; color: ${textColor}; text-transform: uppercase; letter-spacing: 0.2px;">${pos.name}</div>
+          </div>
+          <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 3px 5px; text-align: center;">
+            <div style="font-size: 7px; font-weight: 600; color: ${textColor};">${operatorText}</div>
+          </div>
+        `;
       }).join('');
 
       const leadOperator = attraction.positions.find(p => p.name.toLowerCase().includes('control') || p.name.toLowerCase().includes('lead'));
@@ -340,7 +514,7 @@
         <div class="card-body">
           <div class="card-name">${attraction.name}</div>
           <div class="card-meta"><span>${posCount} positions</span><span>Tier 1</span></div>
-          <div class="card-positions">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0;">
             ${positionsHTML}
           </div>
           <div class="card-operator">Lead: ${leadName}</div>
