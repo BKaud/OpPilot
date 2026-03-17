@@ -50,6 +50,12 @@
             </div>
           </div>
         </div>
+        <div class="nav-item">
+          <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <span class="nav-text">Management</span>
+          </a>
+        </div>
       </div>
       <div class="nav-lower">
         <div class="nav-item">

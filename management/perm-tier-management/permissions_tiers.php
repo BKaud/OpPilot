@@ -33,6 +33,12 @@
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav" id="rides1-sub">
+        </div>
+        <div class="nav-item">
+          <a href="../management-dashboard/management-dashboard.php" class="nav-link">
+            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <span class="nav-text">Management</span>
+          </a>
                 <a href="../../zone-manager/dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
                 <a href="../../zone-manager/EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
                 <a href="../../zone-manager/confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
