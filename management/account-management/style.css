@@ -1,0 +1,38 @@
+:root{
+  --teal:#1a8f7a;--teal-glow:rgba(26,143,122,0.12);--bg-card:#eef6fb;--text-dark:#222;--border-panel:#bbb;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#1a1a1a;color:#f0f0f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.navbar{height:44px;background:#0d0d0d;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:42px;background:#111;border-right:1px solid #222}
+.sidebar:hover{width:160px}
+.content{flex:1;display:flex;flex-direction:column;background:#c8c8c8}
+
+/* header */
+.page-header{padding:14px 24px;background:#d0d0d0;border-bottom:1px solid var(--border-panel);display:flex;justify-content:space-between;align-items:flex-end}
+.page-header h1{font-family:'Rajdhani',sans-serif;color:var(--text-dark)}
+
+/* body layout */
+.dashboard-body{flex:1;display:flex;overflow:hidden}
+.zone-area{flex:1;padding:18px;overflow:auto}
+
+/* hero card */
+.attraction-card{background:linear-gradient(180deg,#eef6fb,#e6f1f7);border:1px solid rgba(58,160,214,0.12);border-radius:6px;overflow:hidden}
+.card-thumb{height:72px;background:linear-gradient(135deg,#a3cbe6,#3aa0d6);display:flex;align-items:center;justify-content:center}
+.card-body{padding:12px}
+.card-name{font-family:'Rajdhani',sans-serif;color:var(--text-dark)}
+
+/* toolbar + search */
+.user-toolbar{display:flex;gap:8px;margin-top:12px;align-items:center}
+.user-search{flex:1;background:var(--bg-card);padding:6px 8px;border-radius:4px;border:1px solid var(--border-panel);color:var(--text-dark)}
+
+/* user list */
+.user-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.user-row{display:flex;align-items:center;gap:12px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid rgba(0,0,0,0.04)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.user-meta{flex:1}
+.user-actions .btn{padding:4px 8px;font-size:12px}
+
+/* small alternation */
+.user-row:nth-child(odd){background:#fbfeff}

@@ -77,9 +77,8 @@
 
     </div>
 
-    <div class="edit-body">
+    <div class="edit-body resizable-layout">
       <div class="canvas-col">
-
         <div class="edit-toolbar">
           <button class="tool-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Undo
@@ -94,10 +93,8 @@
             <span class="node-counter">RIDES ON CANVAS: <span id="slotCount">0</span></span>
           </div>
         </div>
-
         <div class="canvas-wrap" id="canvasWrap">
           <div id="ci" style="position:relative;width:100%;min-height:100%;padding:16px;box-sizing:border-box;">
-            
             <!-- Single Rotation Zone -->
             <div class="rot-zone" id="mainZone">
               <div class="rot-zone-label">Rotation Zone · Rides 1</div>
@@ -105,12 +102,11 @@
                 <!-- Template boxes will be generated dynamically -->
               </div>
             </div>
-
           </div>
         </div>
-
         <!-- BOTTOM TRAY -->
-        <div class="bottom-tray">
+        <div class="bottom-tray resizable-vertical" id="bottomTray">
+          <div class="resize-handle-vertical" id="bottomTrayResize" title="Drag to resize">|||</div>
           <!-- Return Drop Zone -->
           <div class="return-drop-zone" id="returnDropZone">
             <div class="return-drop-zone-content">
@@ -121,25 +117,27 @@
               Return to Attraction Bar
             </div>
           </div>
-          
-          <div class="tray-section">
+          <div class="tray-section resizable-vertical" id="attractionsTray">
+            <div class="resize-handle-vertical" id="attractionsResize" title="Drag to resize">|||</div>
             <div class="tray-header">Attractions</div>
             <div class="tray-scroll">
               <!-- Attractions will be loaded dynamically from database -->
             </div>
           </div>
-          <div class="tray-section">
+          <div class="tray-section resizable-vertical" id="operatorsTray">
+            <div class="resize-handle-vertical" id="operatorsResize" title="Drag to resize">|||</div>
             <div class="tray-header">Unassigned Operators</div>
             <div class="tray-scroll">
               <!-- Operators will be loaded dynamically from database -->
             </div>
           </div>
         </div>
-
       </div><!-- /canvas-col -->
-
-      <!-- PROPERTIES PANEL -->
-      <div class="props-panel">
+      <div class="props-panel resizable-horizontal" id="propsPanel">
+        <div class="resize-handle-horizontal" id="propsResize" title="Drag to resize">|||</div>
+              <div style="position:absolute;top:48px;right:24px;z-index:10000;background:#fff;color:#1a8f7a;padding:8px 16px;border-radius:8px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-family:'Rajdhani',sans-serif;">
+                <b>Tip:</b> Drag the teal bars to resize panels!
+              </div>
         <div class="props-header">Properties</div>
         <div class="props-empty" id="propsEmpty">
           <div class="props-empty-msg">Select a ride on the canvas to view its positions.</div>
@@ -157,7 +155,6 @@
           </div>
         </div>
       </div>
-
     </div><!-- /edit-body -->
   </div><!-- /content -->
 </div><!-- /main -->
@@ -467,6 +464,7 @@ function updatePositionOperator(idx, operatorId) {
 // Auto-save with visual feedback
 let saveTimeout = null;
 async function autoSaveLayout(message = 'Saving...') {
+  console.log('[autoSaveLayout] Triggered with message:', message);
   // Clear any pending save
   if (saveTimeout) clearTimeout(saveTimeout);
   
@@ -513,6 +511,8 @@ function showSaveIndicator(message) {
 // Save layout to database
 async function saveLayoutToDb() {
   try {
+    console.log('[saveLayoutToDb] Sending data to API:', { zone_id: ZONE_ID, attractions: rideSlots });
+    
     const response = await fetch('api.php?action=saveLayout', {
       method: 'POST',
       headers: {
@@ -525,6 +525,7 @@ async function saveLayoutToDb() {
     });
     
     const data = await response.json();
+    console.log('[saveLayoutToDb] API Response:', data);
     
     if (data.success) {
       showSaveIndicator('✓ Saved successfully');
@@ -740,6 +741,111 @@ document.getElementById('ci').addEventListener('click', (e) => {
 
 // Initial render - load data from database
 loadZoneData();
+
+// ── Resizable Panels ──
+// Horizontal resize for Properties panel
+const propsPanel = document.getElementById('propsPanel');
+const propsResize = document.getElementById('propsResize');
+let isResizingProps = false;
+let startXProps = 0;
+let startWidthProps = 0;
+propsResize.addEventListener('mousedown', function(e) {
+  isResizingProps = true;
+  startXProps = e.clientX;
+  startWidthProps = propsPanel.offsetWidth;
+  document.body.style.cursor = 'ew-resize';
+});
+document.addEventListener('mousemove', function(e) {
+  if (isResizingProps) {
+    let newWidth = startWidthProps + (e.clientX - startXProps);
+    newWidth = Math.max(220, Math.min(600, newWidth));
+    propsPanel.style.width = newWidth + 'px';
+  }
+});
+document.addEventListener('mouseup', function() {
+  if (isResizingProps) {
+    isResizingProps = false;
+    document.body.style.cursor = '';
+  }
+});
+
+// Vertical resize for bottom tray
+const bottomTray = document.getElementById('bottomTray');
+const bottomTrayResize = document.getElementById('bottomTrayResize');
+let isResizingTray = false;
+let startYTray = 0;
+let startHeightTray = 0;
+bottomTrayResize.addEventListener('mousedown', function(e) {
+  isResizingTray = true;
+  startYTray = e.clientY;
+  startHeightTray = bottomTray.offsetHeight;
+  document.body.style.cursor = 'ns-resize';
+});
+document.addEventListener('mousemove', function(e) {
+  if (isResizingTray) {
+    let newHeight = startHeightTray + (startYTray - e.clientY);
+    newHeight = Math.max(120, Math.min(window.innerHeight * 0.6, newHeight));
+    bottomTray.style.height = newHeight + 'px';
+  }
+});
+document.addEventListener('mouseup', function() {
+  if (isResizingTray) {
+    isResizingTray = false;
+    document.body.style.cursor = '';
+  }
+});
+
+// Vertical resize for Attractions tray
+const attractionsTray = document.getElementById('attractionsTray');
+const attractionsResize = document.getElementById('attractionsResize');
+let isResizingAttractions = false;
+let startYAttractions = 0;
+let startHeightAttractions = 0;
+attractionsResize.addEventListener('mousedown', function(e) {
+  isResizingAttractions = true;
+  startYAttractions = e.clientY;
+  startHeightAttractions = attractionsTray.offsetHeight;
+  document.body.style.cursor = 'ns-resize';
+});
+document.addEventListener('mousemove', function(e) {
+  if (isResizingAttractions) {
+    let newHeight = startHeightAttractions + (startYAttractions - e.clientY);
+    newHeight = Math.max(60, Math.min(window.innerHeight * 0.5, newHeight));
+    attractionsTray.style.height = newHeight + 'px';
+  }
+});
+document.addEventListener('mouseup', function() {
+  if (isResizingAttractions) {
+    isResizingAttractions = false;
+    document.body.style.cursor = '';
+  }
+});
+
+// Vertical resize for Operators tray
+const operatorsTray = document.getElementById('operatorsTray');
+const operatorsResize = document.getElementById('operatorsResize');
+let isResizingOperators = false;
+let startYOperators = 0;
+let startHeightOperators = 0;
+operatorsResize.addEventListener('mousedown', function(e) {
+  isResizingOperators = true;
+  startYOperators = e.clientY;
+  startHeightOperators = operatorsTray.offsetHeight;
+  document.body.style.cursor = 'ns-resize';
+});
+document.addEventListener('mousemove', function(e) {
+  if (isResizingOperators) {
+    let newHeight = startHeightOperators + (startYOperators - e.clientY);
+    newHeight = Math.max(60, Math.min(window.innerHeight * 0.5, newHeight));
+    operatorsTray.style.height = newHeight + 'px';
+  }
+});
+document.addEventListener('mouseup', function() {
+  if (isResizingOperators) {
+    isResizingOperators = false;
+    document.body.style.cursor = '';
+  }
+});
 </script>
 </body>
 </html>

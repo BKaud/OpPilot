@@ -107,149 +107,7 @@
         <div class="attraction-section">
           <div class="section-label">Active Attractions</div>
           <div class="attraction-row" id="attractionRow">
-
-            <!-- Card 1 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v8M8 12h8"/></svg>
-                <div class="card-num">1</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Tidal Twist</div>
-                <div class="card-meta"><span>4 positions</span><span>Tier 1</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip assigned">Station 2</span>
-                  <span class="pos-chip break">Load Plt</span>
-                  <span class="pos-chip assigned">Control</span>
-                </div>
-                <div class="card-operator">Lead: M. Torres</div>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v8M8 12h8"/></svg>
-                <div class="card-num">2</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Tidal Twist</div>
-                <div class="card-meta"><span>4 positions</span><span>Tier 1</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip assigned">Station 2</span>
-                  <span class="pos-chip assigned">Load Plt</span>
-                  <span class="pos-chip empty">Control</span>
-                </div>
-                <div class="card-operator">Lead: D. Reyes</div>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 17l5-10 4 6 3-4 6 8"/></svg>
-                <div class="card-num">3</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Space Coaster</div>
-                <div class="card-meta"><span>3 positions</span><span>Tier 2</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Load</span>
-                  <span class="pos-chip break">Unload</span>
-                  <span class="pos-chip assigned">Control</span>
-                </div>
-                <div class="card-operator">Lead: A. Kim</div>
-              </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot warn"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="9" width="20" height="8" rx="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-                <div class="card-num">4</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Bumper Cars</div>
-                <div class="card-meta"><span>2 positions</span><span>Tier 1</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Floor</span>
-                  <span class="pos-chip break">Control</span>
-                </div>
-                <div class="card-operator">Lead: —</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Section: Second row -->
-        <div class="attraction-section">
-          <div class="section-label">Additional Attractions</div>
-          <div class="attraction-row">
-
-            <!-- Card 5 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-                <div class="card-num">5</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Carousel</div>
-                <div class="card-meta"><span>2 positions</span><span>Tier 1</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Platform</span>
-                  <span class="pos-chip assigned">Control</span>
-                </div>
-                <div class="card-operator">Lead: P. Vega</div>
-              </div>
-            </div>
-
-            <!-- Card 6 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="2" x2="12" y2="22"/><polyline points="7,17 12,22 17,17"/></svg>
-                <div class="card-num">6</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Drop Tower</div>
-                <div class="card-meta"><span>3 positions</span><span>Tier 2</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Load 1</span>
-                  <span class="pos-chip assigned">Load 2</span>
-                  <span class="pos-chip assigned">Control</span>
-                </div>
-                <div class="card-operator">Lead: S. Okoro</div>
-              </div>
-            </div>
-
-            <!-- Card 7 -->
-            <div class="attraction-card">
-              <div class="card-thumb">
-                <div class="card-status-dot warn"></div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <div class="card-num">7</div>
-              </div>
-              <div class="card-body">
-                <div class="card-name">Thunder Mtn</div>
-                <div class="card-meta"><span>4 positions</span><span>Tier 3</span></div>
-                <div class="card-positions">
-                  <span class="pos-chip assigned">Station 1</span>
-                  <span class="pos-chip empty">Station 2</span>
-                  <span class="pos-chip break">Dispatch</span>
-                  <span class="pos-chip assigned">Control</span>
-                </div>
-                <div class="card-operator">Lead: J. Marsh</div>
-              </div>
-            </div>
-
+            <!-- Cards will be generated dynamically from database -->
           </div>
         </div>
 
@@ -279,8 +137,13 @@
 
       </div>
 
+      <!-- RESIZE HANDLE -->
+      <div id="scheduleResizeHandle" style="width: 20px; height: 50px; background: transparent; cursor: ew-resize; flex: 0 0 20px; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ccc; border-right: 1px solid #ccc; z-index: 100; position: relative; user-select: none; pointer-events: auto;">
+        <div style="width: 3px; height: 15px; background: #555; border-radius: 2px; box-shadow: 0 -10px 0 #555, 0 10px 0 #555; pointer-events: none;"></div>
+      </div>
+
       <!-- SCHEDULE SIDEBAR -->
-      <div class="schedule-bar">
+      <div class="schedule-bar" id="scheduleBar">
         <div class="schedule-header">Schedule &amp; Timeline</div>
         <div class="schedule-time-display">
           <div class="sched-clock" id="schedClock">10:32 AM</div>
@@ -390,6 +253,14 @@
 </div>
 
 <script>
+  // Initial debug log
+  console.log('[Dashboard] Script loaded - beginning initialization');
+  console.log('[Dashboard] About to load zone data');
+  
+  // Zone configuration
+  const ZONE_ID = 1; // Default to Rides 1
+  let zoneData = null;
+
   // Sidebar expand/collapse
   const sidebar = document.querySelector('.sidebar');
 
@@ -403,6 +274,98 @@
       item.querySelector('.zone-sub-nav').classList.toggle('expanded');
     });
   });
+
+  // Load zone data from database on page load
+  async function loadZoneData() {
+    console.log('[loadZoneData] Checking for updates...');
+    try {
+      const response = await fetch(`../EditMode/api.php?action=getZoneData&zone_id=${ZONE_ID}`);
+      const data = await response.json();
+      console.log('[loadZoneData] Response received:', data);
+      
+      if (data.success && data.attractions) {
+        // Check if data has changed
+        const newDataString = JSON.stringify(data.attractions);
+        const oldDataString = JSON.stringify(zoneData);
+        
+        if (newDataString !== oldDataString) {
+          console.log('[loadZoneData] Data changed! Updating dashboard');
+          zoneData = data.attractions;
+          populateDashboard(zoneData);
+        } else {
+          console.log('[loadZoneData] No changes detected');
+        }
+      } else {
+        console.warn('No zone data found, using sample data');
+      }
+    } catch (error) {
+      console.error('Error loading zone data:', error);
+    }
+  }
+
+  // Auto-refresh every 30 seconds
+  console.log('[Dashboard] Setting up auto-refresh every 30 seconds');
+  setInterval(loadZoneData, 30000);
+
+  // Populate dashboard with real data from database
+  function populateDashboard(attractions) {
+    const attractionRow = document.getElementById('attractionRow');
+    
+    // Clear ALL existing cards completely
+    attractionRow.innerHTML = '';
+
+    // Create cards from database data
+    attractions.forEach((attraction, index) => {
+      if (!attraction.isPlaced) return; // Skip attractions not placed on canvas
+      
+      const card = document.createElement('div');
+      card.className = 'attraction-card';
+      
+      const positionsHTML = attraction.positions.map(pos => {
+        const chipClass = pos.operator ? 'assigned' : 'empty';
+        const operatorText = pos.operator ? pos.operator : 'Unassigned';
+        return `<span class="pos-chip ${chipClass}">${pos.name}: ${operatorText}</span>`;
+      }).join('');
+
+      const leadOperator = attraction.positions.find(p => p.name.toLowerCase().includes('control') || p.name.toLowerCase().includes('lead'));
+      const leadName = leadOperator?.operator || '—';
+      const posCount = attraction.positions.length;
+
+      card.innerHTML = `
+        <div class="card-thumb">
+          <div class="card-status-dot"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v8M8 12h8"/></svg>
+          <div class="card-num">${index + 1}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${attraction.name}</div>
+          <div class="card-meta"><span>${posCount} positions</span><span>Tier 1</span></div>
+          <div class="card-positions">
+            ${positionsHTML}
+          </div>
+          <div class="card-operator">Lead: ${leadName}</div>
+          <div class="rotation-change-preview">
+            <div class="rotation-label">
+              <span class="rotation-time-badge">11:00 AM</span>
+              <span class="rotation-text">Rotation D</span>
+            </div>
+            <div class="rotation-staff">
+              ${attraction.positions.map(pos => `<div class="staff-item">${pos.name}: ${pos.operator || 'TBD'}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      attractionRow.appendChild(card);
+    });
+  }
+
+  // Load data when page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadZoneData);
+  } else {
+    loadZoneData();
+  }
 
   // Live clock
   function padZ(n) { return String(n).padStart(2,'0'); }
@@ -466,7 +429,8 @@
     if (countdownSecs < 0) countdownSecs = 900;
     const m = Math.floor(countdownSecs / 60);
     const s = countdownSecs % 60;
-    document.getElementById('rotCountdown').textContent = `${padZ(m)}:${padZ(s)}`;
+    const timeStr = `${padZ(m)}:${padZ(s)}`;
+    document.getElementById('rotCountdown').textContent = timeStr;
   }, 1000);
 
   // Preview mode toggle button
@@ -485,6 +449,7 @@
   let dragging = false;
 
   function setScrubberPct(pct) {
+    if (!scrubTrack) return; // Safety check
     pct = Math.max(0, Math.min(1, pct));
     const trackH = scrubTrack.clientHeight;
     const dotH = 14;
@@ -497,41 +462,111 @@
   }
 
   function pctFromEvent(e) {
+    if (!scrubTrack) return 0; // Safety check
     const rect = scrubTrack.getBoundingClientRect();
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return (clientY - rect.top) / rect.height;
   }
 
-  scrubDot.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    const pct = pctFromEvent(e);
-    isPreview = true;
-    const mins = DAY_START + pct * DAY_SPAN;
-    previewMinutes = mins;
-    updateDisplay(mins);
-    setScrubberPct(pct);
-  });
-  document.addEventListener('mouseup', () => { dragging = false; });
+  // Setup scrubber controls only if elements exist
+  if (scrubDot) {
+    scrubDot.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const pct = pctFromEvent(e);
+      isPreview = true;
+      const mins = DAY_START + pct * DAY_SPAN;
+      previewMinutes = mins;
+      updateDisplay(mins);
+      setScrubberPct(pct);
+    });
+    document.addEventListener('mouseup', () => { dragging = false; });
 
-  scrubDot.addEventListener('touchstart', e => { dragging = true; }, { passive: true });
-  document.addEventListener('touchmove', e => {
-    if (!dragging) return;
-    const pct = pctFromEvent(e);
-    isPreview = true;
-    const mins = DAY_START + pct * DAY_SPAN;
-    updateDisplay(mins);
-    setScrubberPct(pct);
-  }, { passive: true });
-  document.addEventListener('touchend', () => { dragging = false; });
+    scrubDot.addEventListener('touchstart', e => { dragging = true; }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const pct = pctFromEvent(e);
+      isPreview = true;
+      const mins = DAY_START + pct * DAY_SPAN;
+      updateDisplay(mins);
+      setScrubberPct(pct);
+    }, { passive: true });
+    document.addEventListener('touchend', () => { dragging = false; });
+  }
 
   // Click on schedule items
+  console.log('[Dashboard] About to set up schedule item clicks');
   document.querySelectorAll('.sched-item').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.sched-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
     });
   });
+  console.log('[Dashboard] Schedule clicks done - NOW STARTING RESIZE SETUP');
+  console.log('[Resize] TEST 1');
+  alert('TEST ALERT - Resize code section reached!');
+
+  // ===== RESIZE HANDLE SETUP =====
+  console.log('[Resize] Resize code loaded');
+  console.log('[Resize] Looking for elements...');
+  
+  const resizeHandle = document.getElementById('scheduleResizeHandle');
+  const scheduleBar = document.getElementById('scheduleBar');
+  
+  console.log('[Resize] Handle element found:', !!resizeHandle);
+  console.log('[Resize] Bar element found:', !!scheduleBar);
+  
+  if (!resizeHandle) {
+    console.error('[Resize] ERROR - scheduleResizeHandle NOT FOUND!');
+  }
+  if (!scheduleBar) {
+    console.error('[Resize] ERROR - scheduleBar NOT FOUND!');
+  }
+  
+  if (resizeHandle && scheduleBar) {
+    console.log('[Resize] *** Both elements found! Attaching event listeners...');
+    
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+    
+    resizeHandle.onmousedown = function(e) {
+      console.log('[Resize] *** MOUSEDOWN FIRED - X:', e.clientX);
+      if (e.button !== 0) return;
+      
+      isResizing = true;
+      startX = e.clientX;
+      startWidth = scheduleBar.offsetWidth;
+      
+      console.log('[Resize] READY TO DRAG - width:', startWidth);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'ew-resize';
+      e.preventDefault();
+    };
+    
+    document.onmousemove = function(e) {
+      if (!isResizing) return;
+      
+      const diff = startX - e.clientX;
+      const newWidth = Math.max(150, Math.min(600, startWidth + diff));
+      
+      console.log('[Resize] DRAGGING - diff:', diff, 'new:', newWidth);
+      scheduleBar.style.width = newWidth + 'px';
+      scheduleBar.style.flex = '0 0 ' + newWidth + 'px';
+    };
+    
+    document.onmouseup = function(e) {
+      if (isResizing) {
+        console.log('[Resize] MOUSEUP - Done');
+        isResizing = false;
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      }
+    };
+    
+    console.log('[Resize] Event listeners attached!');
+  }
+
 </script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+:root{
+  --teal:#1a8f7a;--teal-glow:rgba(26,143,122,0.12);--bg-card:#f3fbf9;--text-dark:#222;--border-panel:#bbb;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#1a1a1a;color:#f0f0f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.navbar{height:44px;background:#0d0d0d;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:42px;background:#111;border-right:1px solid #222}
+.sidebar:hover{width:160px}
+.content{flex:1;display:flex;flex-direction:column;background:#c8c8c8}
+
+/* header */
+.page-header{padding:14px 24px;background:#d0d0d0;border-bottom:1px solid var(--border-panel);display:flex;justify-content:space-between;align-items:flex-end}
+.page-header h1{font-family:'Rajdhani',sans-serif;color:var(--text-dark)}
+
+/* body */
+.dashboard-body{flex:1;display:flex;overflow:hidden}
+.zone-area{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.attraction-card{background:linear-gradient(180deg,#f3fbf9,#e7f6f0);border-left:4px solid var(--teal);border-radius:6px;overflow:hidden}
+.card-thumb{height:70px;background:linear-gradient(135deg,#9ad1be,#22b09a);display:flex;align-items:center;justify-content:center}
+.card-body{padding:12px}
+
+/* tier chips */
+.tier-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tier-chip{background:#fff;color:var(--teal);border:1px solid rgba(26,143,122,0.12);padding:6px 8px;border-radius:4px;font-weight:700}
+
+/* tier detail */
+.tier-detail{margin-top:12px;background:#fff;padding:10px;border-radius:4px;border:1px solid rgba(0,0,0,0.04)}
+.btn{font-family:'Rajdhani',sans-serif;padding:6px 10px;border-radius:4px}

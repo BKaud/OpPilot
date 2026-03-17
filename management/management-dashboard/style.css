@@ -1,0 +1,85 @@
+:root{
+  --teal: #1a8f7a;
+  --teal-light: #22b09a;
+  --teal-glow: rgba(26,143,122,0.18);
+  --accent-red: #c0392b;
+  --accent-yellow: #e6a817;
+  --bg-content: #c8c8c8;
+  --bg-sidebar: #111111;
+  --bg-card: #d8d8d8;
+  --text-main: #f0f0f0;
+  --text-dark: #222;
+  --text-muted: #888;
+  --text-label: #555;
+  --border-panel: #bbb;
+  --nav-w: 42px;
+  --sidebar-w: 160px;
+}
+
+/* Basic reset + layout */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: 'Inter', sans-serif;
+  background: #1a1a1a;
+  color:var(--text-main);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* NAVBAR */
+.navbar{
+  height:44px;background:#0d0d0d;border-bottom:1px solid #2a2a2a;
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:100;
+}
+.logo-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff}
+.logo-name span{color:var(--teal)}
+.navbar-login{display:flex;align-items:center;gap:6px}
+.navbar-login input{background:#1e1e1e;border:1px solid #333;color:#ccc;padding:4px 8px;border-radius:3px;width:110px}
+.login-btn{background:var(--teal);color:#fff;padding:5px 14px;border-radius:3px;border:none;cursor:pointer}
+
+/* MAIN + SIDEBAR */
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{
+  width:var(--nav-w);background:var(--bg-sidebar);border-right:1px solid #2a2a2a;
+  display:flex;flex-direction:column;transition:width .22s;overflow:hidden;flex-shrink:0;z-index:50;
+}
+.sidebar:hover{width:var(--sidebar-w)}
+.nav-text{opacity:0;visibility:hidden;transition:opacity .2s}
+.sidebar:hover .nav-text{opacity:1;visibility:visible}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg-content)}
+
+/* PAGE HEADER */
+.page-header{background:#d0d0d0;border-bottom:1px solid var(--border-panel);padding:14px 24px 10px;display:flex;align-items:flex-end;justify-content:space-between}
+.page-header h1{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--text-dark)}
+.breadcrumb{font-size:11px;color:var(--text-label)}
+.mode-badge{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;background:var(--teal);color:#fff;padding:4px 10px;border-radius:3px}
+
+/* DASHBOARD BODY */
+.dashboard-body{flex:1;display:flex;overflow:hidden}
+.zone-area{flex:1;overflow-y:auto;padding:28px 24px}
+.schedule-bar{width:260px;flex-shrink:0;background:#d8d8d8;border-left:1px solid var(--border-panel);display:flex;flex-direction:column}
+
+/* ATTRACTION CARD (used as tile) */
+.attraction-row{display:flex;gap:20px;flex-wrap:wrap}
+.attraction-card{
+  background:linear-gradient(180deg,var(--bg-card),#cfcfcf);
+  border:1px solid var(--border-panel);border-radius:8px;width:220px;min-width:200px;overflow:hidden;flex-shrink:0;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.attraction-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,0.18)}
+.card-thumb{height:92px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.card-thumb svg{width:36px;height:36px;opacity:0.9}
+.card-num{position:absolute;top:8px;right:10px;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:rgba(255,255,255,0.9)}
+.card-body{padding:9px}
+.card-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-meta{font-size:11px;color:var(--text-dark);margin-top:4px}
+
+/* make links full-card */
+.attraction-card a, .attraction-card{display:block;color:inherit;text-decoration:none}
+
+/* right info */
+.schedule-header{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--teal);padding:10px 12px;border-bottom:1px solid var(--border-panel);background:#d0d0d0}
+.schedule-time-display{padding:8px 12px;border-bottom:1px solid var(--border-panel);background:#ccc;flex-shrink:0}
+
+/* Small responsive fix */
+@media (max-width:900px){.attraction-row{justify-content:center}}

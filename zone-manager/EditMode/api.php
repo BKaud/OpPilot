@@ -146,12 +146,16 @@ function saveLayout() {
     $conn = getDbConnection();
     $data = json_decode(file_get_contents('php://input'), true);
     
+    error_log('[saveLayout] Received data: ' . json_encode($data));
+    
     if (!$data || !isset($data['attractions'])) {
+        error_log('[saveLayout] ERROR: Invalid data format');
         echo json_encode(['success' => false, 'error' => 'Invalid data']);
         return;
     }
     
     $zoneId = $data['zone_id'] ?? 1;
+    error_log('[saveLayout] Processing zone_id: ' . $zoneId);
     
     // Start transaction
     $conn->begin_transaction();
@@ -209,10 +213,12 @@ function saveLayout() {
         }
         
         $conn->commit();
+        error_log('[saveLayout] SUCCESS: Layout saved for ' . count($data['attractions']) . ' attractions');
         echo json_encode(['success' => true, 'message' => 'Layout saved successfully']);
         
     } catch (Exception $e) {
         $conn->rollback();
+        error_log('[saveLayout] ERROR: ' . $e->getMessage());
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
     
