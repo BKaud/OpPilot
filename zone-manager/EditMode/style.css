@@ -573,6 +573,17 @@ body {
   letter-spacing:0.3px;
 }
 
+/* Prevent text selection/highlighting and touch highlight inside bottom tray and resize handles */
+.bottom-tray, .bottom-tray *,
+.tray-section, .tray-section *,
+.tray-scroll, .return-drop-zone, .tray-header,
+.resize-handle-horizontal, .resize-handle-vertical {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Operator chips */
 .op-chip { flex-shrink:0; background:#d0d0d0; border:1px solid #b8b8b8; border-radius:3px; padding:3px 7px; cursor:grab; transition:border-color 0.13s; user-select:none; }
 .op-chip:hover { border-color:var(--teal); }

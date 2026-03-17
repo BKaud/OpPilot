@@ -1,5 +1,3 @@
-session_start();
-
 <?php
 require_once '../DBfiles/db_config.php';
 session_start();

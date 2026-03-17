@@ -135,9 +135,9 @@
       </div><!-- /canvas-col -->
       <div class="props-panel resizable-horizontal" id="propsPanel">
         <div class="resize-handle-horizontal" id="propsResize" title="Drag to resize">|||</div>
-              <div style="position:absolute;top:48px;right:24px;z-index:10000;background:#fff;color:#1a8f7a;padding:8px 16px;border-radius:8px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-family:'Rajdhani',sans-serif;">
+              <div id="resizeTip" role="button" aria-label="Dismiss tip" style="position:absolute;top:48px;right:24px;z-index:10000;background:#fff;color:#1a8f7a;padding:8px 16px;border-radius:8px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-family:'Rajdhani',sans-serif;cursor:pointer;">
                 <b>Tip:</b> Drag the teal bars to resize panels!
-              </div>
+                    </div>
         <div class="props-header">Properties</div>
         <div class="props-empty" id="propsEmpty">
           <div class="props-empty-msg">Select a ride on the canvas to view its positions.</div>
@@ -750,14 +750,19 @@ let isResizingProps = false;
 let startXProps = 0;
 let startWidthProps = 0;
 propsResize.addEventListener('mousedown', function(e) {
+  e.preventDefault();
   isResizingProps = true;
   startXProps = e.clientX;
   startWidthProps = propsPanel.offsetWidth;
   document.body.style.cursor = 'ew-resize';
+  // Prevent text selection while dragging
+  document.body.style.userSelect = 'none';
 });
 document.addEventListener('mousemove', function(e) {
   if (isResizingProps) {
-    let newWidth = startWidthProps + (e.clientX - startXProps);
+    // Invert delta so the panel resizes in the direction the mouse moves
+    // (handle is positioned on the left edge of the panel).
+    let newWidth = startWidthProps + (startXProps - e.clientX);
     newWidth = Math.max(220, Math.min(600, newWidth));
     propsPanel.style.width = newWidth + 'px';
   }
@@ -766,6 +771,7 @@ document.addEventListener('mouseup', function() {
   if (isResizingProps) {
     isResizingProps = false;
     document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   }
 });
 
@@ -776,10 +782,12 @@ let isResizingTray = false;
 let startYTray = 0;
 let startHeightTray = 0;
 bottomTrayResize.addEventListener('mousedown', function(e) {
+  e.preventDefault();
   isResizingTray = true;
   startYTray = e.clientY;
   startHeightTray = bottomTray.offsetHeight;
   document.body.style.cursor = 'ns-resize';
+  document.body.style.userSelect = 'none';
 });
 document.addEventListener('mousemove', function(e) {
   if (isResizingTray) {
@@ -792,6 +800,7 @@ document.addEventListener('mouseup', function() {
   if (isResizingTray) {
     isResizingTray = false;
     document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   }
 });
 
@@ -802,14 +811,17 @@ let isResizingAttractions = false;
 let startYAttractions = 0;
 let startHeightAttractions = 0;
 attractionsResize.addEventListener('mousedown', function(e) {
+  e.preventDefault();
   isResizingAttractions = true;
   startYAttractions = e.clientY;
   startHeightAttractions = attractionsTray.offsetHeight;
   document.body.style.cursor = 'ns-resize';
+  document.body.style.userSelect = 'none';
 });
 document.addEventListener('mousemove', function(e) {
   if (isResizingAttractions) {
-    let newHeight = startHeightAttractions + (startYAttractions - e.clientY);
+    // Resize follows mouse direction: dragging down increases height
+    let newHeight = startHeightAttractions + (e.clientY - startYAttractions);
     newHeight = Math.max(60, Math.min(window.innerHeight * 0.5, newHeight));
     attractionsTray.style.height = newHeight + 'px';
   }
@@ -818,6 +830,7 @@ document.addEventListener('mouseup', function() {
   if (isResizingAttractions) {
     isResizingAttractions = false;
     document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   }
 });
 
@@ -828,14 +841,17 @@ let isResizingOperators = false;
 let startYOperators = 0;
 let startHeightOperators = 0;
 operatorsResize.addEventListener('mousedown', function(e) {
+  e.preventDefault();
   isResizingOperators = true;
   startYOperators = e.clientY;
   startHeightOperators = operatorsTray.offsetHeight;
   document.body.style.cursor = 'ns-resize';
+  document.body.style.userSelect = 'none';
 });
 document.addEventListener('mousemove', function(e) {
   if (isResizingOperators) {
-    let newHeight = startHeightOperators + (startYOperators - e.clientY);
+    // Resize follows mouse direction: dragging down increases height
+    let newHeight = startHeightOperators + (e.clientY - startYOperators);
     newHeight = Math.max(60, Math.min(window.innerHeight * 0.5, newHeight));
     operatorsTray.style.height = newHeight + 'px';
   }
@@ -844,8 +860,36 @@ document.addEventListener('mouseup', function() {
   if (isResizingOperators) {
     isResizingOperators = false;
     document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   }
 });
+
+// Tip: dismissible and auto-hide after 30s
+const resizeTip = document.getElementById('resizeTip');
+if (resizeTip) {
+  // Allow keyboard users to dismiss with Enter/Space
+  resizeTip.tabIndex = 0;
+  const hideTip = () => {
+    resizeTip.style.transition = 'opacity 0.18s';
+    resizeTip.style.opacity = '0';
+    setTimeout(() => { try { resizeTip.style.display = 'none'; } catch(e){} }, 200);
+  };
+
+  let tipTimeout = setTimeout(hideTip, 30000);
+
+  resizeTip.addEventListener('click', () => {
+    clearTimeout(tipTimeout);
+    hideTip();
+  });
+
+  resizeTip.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault();
+      clearTimeout(tipTimeout);
+      hideTip();
+    }
+  });
+}
 </script>
 </body>
 </html>
