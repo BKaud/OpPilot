@@ -302,9 +302,7 @@
       </div>
 
       <!-- RESIZE HANDLE -->
-      <div id="scheduleResizeHandle" style="width: 20px; height: 50px; background: transparent; cursor: ew-resize; flex: 0 0 20px; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ccc; border-right: 1px solid #ccc; z-index: 100; position: relative; user-select: none; pointer-events: auto;">
-        <div style="width: 3px; height: 15px; background: #555; border-radius: 2px; box-shadow: 0 -10px 0 #555, 0 10px 0 #555; pointer-events: none;"></div>
-      </div>
+      <div id="scheduleResizeHandle" style="width: 20px; cursor: ew-resize; flex: 0 0 20px; display: flex; align-items: center; justify-content: center; z-index: 100; position: relative; user-select: none; pointer-events: auto; background: transparent;" title="Drag to resize">|||</div>
 
       <!-- SCHEDULE SIDEBAR -->
       <div class="schedule-bar" id="scheduleBar">
@@ -582,6 +580,26 @@
     document.getElementById('modeBadge').style.background = isPreview ? '#888' : 'var(--teal)';
   }
 
+  // Scrubber setup - MUST be before tick() is called
+  const scrubTrack = document.getElementById('scrubTrack');
+  const scrubDot   = document.getElementById('scrubDot');
+  const scrubLine  = document.getElementById('scrubLine');
+
+  let dragging = false;
+
+  function setScrubberPct(pct) {
+    if (!scrubTrack) return; // Safety check
+    pct = Math.max(0, Math.min(1, pct));
+    const trackH = scrubTrack.clientHeight;
+    const dotH = 14;
+    const offset = pct * (trackH - dotH);
+    scrubDot.style.top = offset + 'px';
+    scrubLine.style.top = (offset + dotH / 2) + 'px';
+    // Sync schedule list scroll
+    const list = document.getElementById('scheduleList');
+    list.scrollTop = pct * (list.scrollHeight - list.clientHeight);
+  }
+
   function tick() {
     if (!isPreview) {
       const now = new Date();
@@ -616,25 +634,6 @@
   }
 
   // Scrubber drag
-  const scrubTrack = document.getElementById('scrubTrack');
-  const scrubDot   = document.getElementById('scrubDot');
-  const scrubLine  = document.getElementById('scrubLine');
-
-  let dragging = false;
-
-  function setScrubberPct(pct) {
-    if (!scrubTrack) return; // Safety check
-    pct = Math.max(0, Math.min(1, pct));
-    const trackH = scrubTrack.clientHeight;
-    const dotH = 14;
-    const offset = pct * (trackH - dotH);
-    scrubDot.style.top = offset + 'px';
-    scrubLine.style.top = (offset + dotH / 2) + 'px';
-    // Sync schedule list scroll
-    const list = document.getElementById('scheduleList');
-    list.scrollTop = pct * (list.scrollHeight - list.clientHeight);
-  }
-
   function pctFromEvent(e) {
     if (!scrubTrack) return 0; // Safety check
     const rect = scrubTrack.getBoundingClientRect();
@@ -677,70 +676,107 @@
     });
   });
   console.log('[Dashboard] Schedule clicks done - NOW STARTING RESIZE SETUP');
-  console.log('[Resize] TEST 1');
-  alert('TEST ALERT - Resize code section reached!');
-
-  // ===== RESIZE HANDLE SETUP =====
-  console.log('[Resize] Resize code loaded');
-  console.log('[Resize] Looking for elements...');
-  
-  const resizeHandle = document.getElementById('scheduleResizeHandle');
-  const scheduleBar = document.getElementById('scheduleBar');
-  
-  console.log('[Resize] Handle element found:', !!resizeHandle);
-  console.log('[Resize] Bar element found:', !!scheduleBar);
-  
-  if (!resizeHandle) {
-    console.error('[Resize] ERROR - scheduleResizeHandle NOT FOUND!');
-  }
-  if (!scheduleBar) {
-    console.error('[Resize] ERROR - scheduleBar NOT FOUND!');
-  }
-  
-  if (resizeHandle && scheduleBar) {
-    console.log('[Resize] *** Both elements found! Attaching event listeners...');
-    
+  // ===== RESIZE HANDLE SETUP (Horizontal - Schedule Bar) =====
+  // Wrap in try-catch to ensure it runs even if other code has errors
+  try {
+    const resizeHandle = document.getElementById('scheduleResizeHandle');
+    const scheduleBar = document.getElementById('scheduleBar');
     let isResizing = false;
     let startX = 0;
     let startWidth = 0;
-    
-    resizeHandle.onmousedown = function(e) {
-      console.log('[Resize] *** MOUSEDOWN FIRED - X:', e.clientX);
-      if (e.button !== 0) return;
-      
-      isResizing = true;
-      startX = e.clientX;
-      startWidth = scheduleBar.offsetWidth;
-      
-      console.log('[Resize] READY TO DRAG - width:', startWidth);
-      document.body.style.userSelect = 'none';
-      document.body.style.cursor = 'ew-resize';
-      e.preventDefault();
-    };
-    
-    document.onmousemove = function(e) {
-      if (!isResizing) return;
-      
-      const diff = startX - e.clientX;
-      const newWidth = Math.max(150, Math.min(600, startWidth + diff));
-      
-      console.log('[Resize] DRAGGING - diff:', diff, 'new:', newWidth);
-      scheduleBar.style.width = newWidth + 'px';
-      scheduleBar.style.flex = '0 0 ' + newWidth + 'px';
-    };
-    
-    document.onmouseup = function(e) {
-      if (isResizing) {
-        console.log('[Resize] MOUSEUP - Done');
-        isResizing = false;
-        document.body.style.userSelect = '';
-        document.body.style.cursor = '';
-      }
-    };
-    
-    console.log('[Resize] Event listeners attached!');
+
+    console.log('[Dashboard Resize] Handle found:', !!resizeHandle);
+    console.log('[Dashboard Resize] Schedule bar found:', !!scheduleBar);
+    console.log('[Dashboard Resize] Schedule bar current width:', scheduleBar?.offsetWidth);
+    console.log('[Dashboard Resize] Schedule bar flex:', window.getComputedStyle(scheduleBar).flex);
+
+    if (resizeHandle && scheduleBar) {
+      resizeHandle.addEventListener('mousedown', function(e) {
+        console.log('[Resize] Mousedown fired');
+        e.preventDefault();
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = scheduleBar.offsetWidth;
+        console.log('[Resize] Starting drag - startX:', startX, 'startWidth:', startWidth);
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor = 'ew-resize';
+      });
+
+      document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+        
+        const diff = startX - e.clientX;
+        const newWidth = Math.max(150, Math.min(600, startWidth + diff));
+        
+        console.log('[Resize] Moving - diff:', diff, 'newWidth:', newWidth);
+        scheduleBar.style.setProperty('width', newWidth + 'px', 'important');
+        scheduleBar.style.setProperty('flex', '0 0 ' + newWidth + 'px', 'important');
+        scheduleBar.style.setProperty('flex-basis', newWidth + 'px', 'important');
+      });
+
+      document.addEventListener('mouseup', function() {
+        if (isResizing) {
+          console.log('[Resize] Mouse up - stopping');
+          isResizing = false;
+          document.body.style.userSelect = '';
+          document.body.style.cursor = '';
+        }
+      });
+    } else {
+      console.error('[Resize] Missing elements - handle:', !!resizeHandle, 'bar:', !!scheduleBar);
+    }
+  } catch (err) {
+    console.error('[Resize] Error during setup:', err);
   }
 
 </script>
+
+<!-- Resize handler in separate script for reliability -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('[Resize Init] DOM loaded - initializing resize');
+  
+  const handle = document.getElementById('scheduleResizeHandle');
+  const bar = document.getElementById('scheduleBar');
+  
+  console.log('[Resize Init] Elements:', { handle: !!handle, bar: !!bar });
+  
+  if (!handle || !bar) {
+    console.error('[Resize Init] Elements not found!');
+    return;
+  }
+  
+  let resizing = false;
+  let startX = 0;
+  let startWidth = 0;
+  
+  handle.addEventListener('mousedown', (e) => {
+    console.log('[ResizeInit] DOWN', e.clientX);
+    resizing = true;
+    startX = e.clientX;
+    startWidth = bar.offsetWidth;
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!resizing) return;
+    const diff = startX - e.clientX;
+    const newW = Math.max(150, Math.min(600, startWidth + diff));
+    console.log('[ResizeInit] MOVE', newW);
+    bar.style.setProperty('width', newW + 'px', 'important');
+    bar.style.setProperty('flex', '0 0 ' + newW + 'px', 'important');
+    bar.style.setProperty('flex-basis', newW + 'px', 'important');
+  });
+  
+  document.addEventListener('mouseup', () => {
+    if (resizing) {
+      console.log('[ResizeInit] UP');
+      resizing = false;
+      document.body.style.cursor = '';
+    }
+  });
+});
+
 </body>
 </html>

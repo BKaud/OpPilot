@@ -246,7 +246,7 @@
 }
 
 .schedule-bar {
-  flex: 0 0 200px !important;
+  flex: 0 0 200px;
   min-width: 150px; 
   max-width: 600px;
   background: #d0d0d0;
@@ -419,4 +419,18 @@
   color: var(--teal);
   position: absolute; left: 8px; top: -8px;
   letter-spacing: 0.5px;
+}
+
+/* Resize Handle Styling */
+#scheduleResizeHandle {
+  color: var(--teal);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -2px;
+  transition: background 0.15s, color 0.15s;
+}
+
+#scheduleResizeHandle:hover {
+  background: rgba(26, 143, 122, 0.1);
+  color: var(--teal-light);
 }
