@@ -722,6 +722,7 @@
       
       const card = document.createElement('div');
       card.className = 'attraction-card';
+      card.setAttribute('data-attraction-name', attraction.name);
       
       const positionsHTML = attraction.positions.map(pos => {
         const bgClass = pos.operator ? 'teal' : 'red';
@@ -765,7 +766,22 @@
               <span class="rotation-text">Rotation D</span>
             </div>
             <div class="rotation-staff">
-              ${attraction.positions.map(pos => `<div class="staff-item">${pos.name}: ${pos.operator || 'TBD'}</div>`).join('')}
+              ${attraction.positions.map(pos => {
+                const operator = pos.operator || 'EMPTY';
+                const bgColor = pos.operator ? 'var(--teal-glow)' : 'rgba(192, 57, 43, 0.1)';
+                const borderColor = pos.operator ? 'var(--teal)' : 'rgba(192, 57, 43, 0.3)';
+                const textColor = pos.operator ? 'var(--teal)' : 'var(--accent-red)';
+                return `
+                  <div style="border: 2px solid #999; border-radius: 3px; overflow: visible; display: flex; gap: 2px;">
+                    <div style="flex: 1; background: transparent; border: 1px solid #bbb; border-radius: 2px; padding: 2px 4px; text-align: center;">
+                      <div style="font-size: 8px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.2px;">${pos.name}</div>
+                    </div>
+                    <div style="flex: 1; background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 2px 4px; text-align: center;">
+                      <div style="font-size: 8px; font-weight: 600; color: ${textColor};">${operator}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
             </div>
           </div>
         </div>
@@ -779,22 +795,35 @@
   }
 
   // Get next rotation info based on current time (in minutes from midnight)
-  function getNextRotation(mins) {
+  // Optional: filter by attraction positions
+  function getNextRotation(mins, attractionPositions = null) {
     const allRotations = [...rotationSchedule.morning, ...rotationSchedule.afternoon];
+    
+    // Filter rotations: if attractionPositions provided, only include rotations with matching assignments
+    let candidateRotations = allRotations;
+    if (attractionPositions && attractionPositions.length > 0) {
+      candidateRotations = allRotations.filter(rot => {
+        // Check if this rotation has assignments that match the attraction's position names
+        return rot.assignments && rot.assignments.some(assign => 
+          attractionPositions.includes(assign.position)
+        );
+      });
+    }
+    
     // Find the first rotation after current time
-    const nextRot = allRotations.find(rot => {
+    const nextRot = candidateRotations.find(rot => {
       const [h, m] = rot.time.split(':').map(Number);
       const rotMins = h * 60 + m;
       return rotMins > mins;
     });
-    // If no rotation found, wrap to first (9am)
-    return nextRot || allRotations[0];
+    
+    // If no rotation found, wrap to first in the candidates
+    return nextRot || candidateRotations[0] || allRotations[0];
   }
 
   // Update attraction card rotation preview sections dynamically
   function updateAttractionRotationPreviews() {
     const currentMins = isPreview ? previewMinutes : minutesFromMidnight(new Date());
-    const nextRot = getNextRotation(currentMins);
     
     // Update all rotation preview sections in attraction cards
     const cards = document.querySelectorAll('.rotation-change-preview');
@@ -802,25 +831,25 @@
       const timeBadge = card.querySelector('.rotation-time-badge');
       const rotText = card.querySelector('.rotation-text');
       
-      if (timeBadge) timeBadge.textContent = nextRot.label;
-      
       // Get the attraction card and extract its actual position names
       const attractionCard = card.closest('.attraction-card');
       let attractionPositions = [];
       
       if (attractionCard) {
-        // Find all the position boxes (divs with border: 2px solid #999)
-        const cardBody = attractionCard.querySelector('.card-body');
-        if (cardBody) {
-          // Get the positions container (the flex column div before rotation-change-preview)
-          const allDivs = Array.from(cardBody.querySelectorAll('div'));
-          const posBoxes = allDivs.filter(div => {
+        // Find all the position boxes BEFORE the rotation-change-preview
+        const rotationPreview = attractionCard.querySelector('.rotation-change-preview');
+        if (rotationPreview) {
+          // Get siblings of rotation-change-preview that are position boxes
+          const posChildDivs = Array.from(rotationPreview.parentElement.children);
+          const previewIndex = posChildDivs.indexOf(rotationPreview);
+          // Get only the divs BEFORE the rotation-change-preview (these are position boxes)
+          const posBoxesBefore = posChildDivs.slice(0, previewIndex).filter(div => {
             const style = div.getAttribute('style');
-            return style && style.includes('border: 2px solid #999');
+            return style && style.includes('border: 2px solid #999') && style.includes('display: flex');
           });
           
           // Extract position name from each box
-          posBoxes.forEach(box => {
+          posBoxesBefore.forEach(box => {
             const nameDiv = box.querySelector('div[style*="text-transform: uppercase"]');
             if (nameDiv) {
               attractionPositions.push(nameDiv.textContent.trim());
@@ -829,16 +858,37 @@
         }
       }
       
+      // Get next rotation FOR THIS ATTRACTION only
+      const nextRot = getNextRotation(currentMins, attractionPositions);
+      
+      if (timeBadge) timeBadge.textContent = nextRot.label;
+      
       // Count filled positions (those with an operator assigned)
       let filledCount = 0;
       const staffHTML = attractionPositions.map((posName, idx) => {
         const operator = nextRot.assignments[idx]?.operator || '';
+        let bgColor, borderColor, textColor;
         if (operator && operator.trim()) {
           filledCount++;
-          return `<div class="staff-item">${posName}: ${operator}</div>`;
+          bgColor = 'var(--teal-glow)';
+          borderColor = 'var(--teal)';
+          textColor = 'var(--teal)';
         } else {
-          return `<div class="staff-item" style="opacity: 0.6;">${posName}: <span style="font-style: italic; color: #999;">EMPTY</span></div>`;
+          bgColor = 'rgba(192, 57, 43, 0.1)';
+          borderColor = 'rgba(192, 57, 43, 0.3)';
+          textColor = 'var(--accent-red)';
         }
+        const displayOperator = operator && operator.trim() ? operator : 'EMPTY';
+        return `
+          <div style="border: 2px solid #999; border-radius: 3px; overflow: visible; display: flex; gap: 2px;">
+            <div style="flex: 1; background: transparent; border: 1px solid #bbb; border-radius: 2px; padding: 2px 4px; text-align: center;">
+              <div style="font-size: 8px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.2px;">${posName}</div>
+            </div>
+            <div style="flex: 1; background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 2px 4px; text-align: center;">
+              <div style="font-size: 8px; font-weight: 600; color: ${textColor};">${displayOperator}</div>
+            </div>
+          </div>
+        `;
       }).join('');
       
       // Update rotation text with position count
@@ -853,11 +903,20 @@
       } else if (staffDiv && nextRot.assignments) {
         // Fallback: show all rotation assignments with EMPTY indicator
         const fallbackHTML = nextRot.assignments.map(assign => {
-          if (assign.operator && assign.operator.trim()) {
-            return `<div class="staff-item">${assign.position}: ${assign.operator}</div>`;
-          } else {
-            return `<div class="staff-item" style="opacity: 0.6;">${assign.position}: <span style="font-style: italic; color: #999;">EMPTY</span></div>`;
-          }
+          const bgColor = assign.operator ? 'var(--teal-glow)' : 'rgba(192, 57, 43, 0.1)';
+          const borderColor = assign.operator ? 'var(--teal)' : 'rgba(192, 57, 43, 0.3)';
+          const textColor = assign.operator ? 'var(--teal)' : 'var(--accent-red)';
+          const displayOp = assign.operator && assign.operator.trim() ? assign.operator : 'EMPTY';
+          return `
+            <div style="border: 2px solid #999; border-radius: 3px; overflow: visible; display: flex; gap: 2px;">
+              <div style="flex: 1; background: transparent; border: 1px solid #bbb; border-radius: 2px; padding: 2px 4px; text-align: center;">
+                <div style="font-size: 8px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.2px;">${assign.position}</div>
+              </div>
+              <div style="flex: 1; background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 2px 4px; text-align: center;">
+                <div style="font-size: 8px; font-weight: 600; color: ${textColor};">${displayOp}</div>
+              </div>
+            </div>
+          `;
         }).join('');
         staffDiv.innerHTML = fallbackHTML;
       }
