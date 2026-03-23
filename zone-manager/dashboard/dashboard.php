@@ -30,39 +30,31 @@
     <div class="nav-section">
       <div class="nav-upper">
         <div class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="../../home/home.php" class="nav-link">
             <div class="nav-icon">
               <!-- home.svg inline for color control -->
-              <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2796 3.71579C12.097 3.66261 11.903 3.66261 11.7203 3.71579C11.6678 3.7311 11.5754 3.7694 11.3789 3.91817C11.1723 4.07463 10.9193 4.29855 10.5251 4.64896L5.28544 9.3064C4.64309 9.87739 4.46099 10.0496 4.33439 10.24C4.21261 10.4232 4.12189 10.6252 4.06588 10.8379C4.00765 11.0591 3.99995 11.3095 3.99995 12.169V17.17C3.99995 18.041 4.00076 18.6331 4.03874 19.0905C4.07573 19.536 4.14275 19.7634 4.22513 19.9219C4.41488 20.2872 4.71272 20.5851 5.07801 20.7748C5.23658 20.8572 5.46397 20.9242 5.90941 20.9612C6.36681 20.9992 6.95893 21 7.82995 21H7.99995V18C7.99995 15.7909 9.79081 14 12 14C14.2091 14 16 15.7909 16 18V21H16.17C17.041 21 17.6331 20.9992 18.0905 20.9612C18.5359 20.9242 18.7633 20.8572 18.9219 20.7748C19.2872 20.5851 19.585 20.2872 19.7748 19.9219C19.8572 19.7634 19.9242 19.536 19.9612 19.0905C19.9991 18.6331 20 18.041 20 17.17V12.169C20 11.3095 19.9923 11.0591 19.934 10.8379C19.878 10.6252 19.7873 10.4232 19.6655 10.24C19.5389 10.0496 19.3568 9.87739 18.7145 9.3064L13.4748 4.64896C13.0806 4.29855 12.8276 4.07463 12.621 3.91817C12.4245 3.7694 12.3321 3.7311 12.2796 3.71579Z"/>
-              </svg>
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/home.svg" alt="Home Icon">
             </div>
             <span class="nav-text">Homepage</span>
           </a>
         </div>
         <div class="nav-item expandable" id="zones">
-          <a href="#" class="nav-link" id="zones-toggle">
+          <a href="../../zones-dash/zone-dash.php" class="nav-link" id="zones-toggle">
             <div class="nav-icon">
               <!-- zones.svg -->
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8.70938C3 7.23584 3 6.49907 3.39264 6.06935C3.53204 5.91678 3.70147 5.79466 3.89029 5.71066C4.42213 5.47406 5.12109 5.70705 6.51901 6.17302C7.58626 6.52877 8.11989 6.70665 8.6591 6.68823C8.85714 6.68147 9.05401 6.65511 9.24685 6.60952C9.77191 6.48541 10.2399 6.1734 11.176 5.54937L12.5583 4.62778C13.7574 3.82843 14.3569 3.42876 15.0451 3.3366C15.7333 3.24444 16.4168 3.47229 17.7839 3.92799L18.9487 4.31624C19.9387 4.64625 20.4337 4.81126 20.7169 5.20409C21 5.59692 21 6.11871 21 7.16229V15.2907C21 16.7642 21 17.501 20.6074 17.9307C20.468 18.0833 20.2985 18.2054 20.1097 18.2894C19.5779 18.526 18.8789 18.293 17.481 17.827C16.4137 17.4713 15.8801 17.2934 15.3409 17.3118C15.1429 17.3186 14.946 17.3449 14.7532 17.3905C14.2281 17.5146 13.7601 17.8266 12.824 18.4507L11.4417 19.3722C10.2426 20.1716 9.64311 20.5713 8.95493 20.6634C8.26674 20.7556 7.58319 20.5277 6.21609 20.072L5.05132 19.6838C4.06129 19.3538 3.56627 19.1888 3.28314 18.7959C3 18.4031 3 17.8813 3 16.8377V8.70938Z" stroke="#1C274C" stroke-width="1.5"/><path d="M9 6.63867V20.5" stroke="#1C274C" stroke-width="1.5"/><path d="M15 3V17" stroke="#1C274C" stroke-width="1.5"/></svg>
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/zones.svg" alt="Zones Icon">
             </div>
             <span class="nav-text">Zones</span>
           </a>
           <div class="sub-nav expanded" id="zones-sub">
             <!-- Zone Dashboard section -->
-            <div class="zone-dashboard-section" style="margin: 8px 0 8px 16px;">
-              <a href="dashboard.php" class="zone-dashboard-link" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--teal);">
-                <span class="zone-dashboard-icon" style="display: flex; align-items: center;">
-                  <!-- zonedash.svg -->
-                  <svg width="16" height="16" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 5.75C9.91421 5.75 10.25 5.41421 10.25 5C10.25 4.58579 9.91421 4.25 9.5 4.25V5.75ZM4.75 11C4.75 11.4142 5.08579 11.75 5.5 11.75C5.91421 11.75 6.25 11.4142 6.25 11H4.75ZM9.5 4.25C9.08579 4.25 8.75 4.58579 8.75 5C8.75 5.41421 9.08579 5.75 9.5 5.75V4.25ZM18.75 11C18.75 11.4142 19.0858 11.75 19.5 11.75C19.9142 11.75 20.25 11.4142 20.25 11H18.75ZM10.25 5C10.25 4.58579 9.91421 4.25 9.5 4.25C9.08579 4.25 8.75 4.58579 8.75 5H10.25ZM8.75 11C8.75 11.4142 9.08579 11.75 9.5 11.75C9.91421 11.75 10.25 11.4142 10.25 11H8.75ZM9.5 11.75C9.91421 11.75 10.25 11.4142 10.25 11C10.25 10.5858 9.91421 10.25 9.5 10.25V11.75ZM5.5 10.25C5.08579 10.25 4.75 10.5858 4.75 11C4.75 11.4142 5.08579 11.75 5.5 11.75V10.25ZM9.5 10.25C9.08579 10.25 8.75 10.5858 8.75 11C8.75 11.4142 9.08579 11.75 9.5 11.75V10.25ZM19.5 11.75C19.9142 11.75 20.25 11.4142 20.25 11C20.25 10.5858 19.9142 10.25 19.5 10.25V11.75ZM6.25 11C6.25 10.5858 5.91421 10.25 5.5 10.25C5.08579 10.25 4.75 10.5858 4.75 11H6.25ZM20.25 11C20.25 10.5858 19.9142 10.25 19.5 10.25C19.0858 10.25 18.75 10.5858 18.75 11H20.25ZM9.5 4.25C6.87665 4.25 4.75 6.37665 4.75 9H6.25C6.25 7.20507 7.70507 5.75 9.5 5.75V4.25ZM4.75 9V11H6.25V9H4.75ZM9.5 5.75H15.5V4.25H9.5V5.75ZM15.5 5.75C17.2949 5.75 18.75 7.20507 18.75 9H20.25C20.25 6.37665 18.1234 4.25 15.5 4.25V5.75ZM18.75 9V11H20.25V9H18.75ZM8.75 5V11H10.25V5H8.75ZM9.5 10.25H5.5V11.75H9.5V10.25ZM9.5 11.75H19.5V10.25H9.5V11.75ZM4.75 11V15H6.25V11H4.75ZM4.75 15C4.75 17.6234 6.87665 19.75 9.5 19.75V18.25C7.70507 18.25 6.25 16.7949 6.25 15H4.75ZM9.5 19.75H15.5V18.25H9.5V19.75ZM15.5 19.75C18.1234 19.75 20.25 17.6234 20.25 15H18.75C18.75 16.7949 17.2949 18.25 15.5 18.25V19.75ZM20.25 15V11H18.75V15H20.25Z" fill="#000000"/></svg>
-                </span>
-                <span>Zones Dashboard</span>
-              </a>
+            <div class="zone-item" id="rides1-zone">
+              <a href="../../zones-dash/zone-dash.php" class="sub-nav-link" >Zones Dashboard</a>
             </div>
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">
-                <a href="dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
                 <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
                 <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
@@ -70,9 +62,9 @@
             <div class="zone-item expandable" id="rides2-zone">
               <a href="#" class="sub-nav-link expandable">Rides 2</a>
               <div class="zone-sub-nav" id="rides2-sub">
-                <a href="#" class="zone-sub-link">Dashboard</a>
-                <a href="#" class="zone-sub-link">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Settings & Config</a>
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
+                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
           </div>
@@ -81,7 +73,7 @@
           <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
             <div class="nav-icon">
               <!-- manage.svg -->
-              <svg width="22" height="22" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40,47H8a2,2,0,0,1-2-2V3A2,2,0,0,1,8,1H40a2,2,0,0,1,2,2V45A2,2,0,0,1,40,47ZM10,43H38V5H10Z"/><path d="M15,19a2,2,0,0,1-1.41-3.41l4-4a2,2,0,0,1,2.31-.37l2.83,1.42,5-4.16A2,2,0,0,1,30.2,8.4l4,3a2,2,0,1,1-2.4,3.2l-2.73-2.05-4.79,4a2,2,0,0,1-2.17.25L19.4,15.43l-3,3A2,2,0,0,1,15,19Z"/><circle cx="15" cy="24" r="2"/><circle cx="15" cy="31" r="2"/><circle cx="15" cy="38" r="2"/><path d="M33,26H22a2,2,0,0,1,0-4H33a2,2,0,0,1,0,4Z"/><path d="M33,33H22a2,2,0,0,1,0-4H33a2,2,0,0,1,0,4Z"/><path d="M33,40H22a2,2,0,0,1,0-4H33a2,2,0,0,1,0,4Z"/></svg>
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/manage.svg" alt="Manage Icon">
             </div>
             <span class="nav-text">Management</span>
           </a>
@@ -89,19 +81,19 @@
       </div>
       <div class="nav-lower">
         <div class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="../../acc-sets/account-settings.php" class="nav-link">
             <div class="nav-icon">
               <!-- acc.svg -->
-              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Dribbble-Light-Preview" transform="translate(-140.000000, -2159.000000)" fill="#000000"><g id="icons" transform="translate(56.000000, 160.000000)"><path d="M100.562548,2016.99998 L87.4381713,2016.99998 C86.7317804,2016.99998 86.2101535,2016.30298 86.4765813,2015.66198 C87.7127655,2012.69798 90.6169306,2010.99998 93.9998492,2010.99998 C97.3837885,2010.99998 100.287954,2012.69798 101.524138,2015.66198 C101.790566,2016.30298 101.268939,2016.99998 100.562548,2016.99998 M89.9166645,2004.99998 C89.9166645,2002.79398 91.7489936,2000.99998 93.9998492,2000.99998 C96.2517256,2000.99998 98.0830339,2002.79398 98.0830339,2004.99998 C98.0830339,2007.20598 96.2517256,2008.99998 93.9998492,2008.99998 C91.7489936,2008.99998 89.9166645,2007.20598 89.9166645,2004.99998 M103.955674,2016.63598 C103.213556,2013.27698 100.892265,2010.79798 97.837022,2009.67298 C99.4560048,2008.39598 100.400241,2006.33098 100.053171,2004.06998 C99.6509769,2001.44698 97.4235996,1999.34798 94.7348224,1999.04198 C91.0232075,1998.61898 87.8750721,2001.44898 87.8750721,2004.99998 C87.8750721,2006.88998 88.7692896,2008.57398 90.1636971,2009.67298 C87.1074334,2010.79798 84.7871636,2013.27698 84.044024,2016.63598 C83.7745338,2017.85698 84.7789973,2018.99998 86.0539717,2018.99998 L101.945727,2018.99998 C103.221722,2018.99998 104.226185,2017.85698 103.955674,2016.63598" id="profile_round-[#1342]"></path></g></g></g></svg>
+              <img class="filter-999" width="19" height="19" src="../../assets/images/icons/acc.svg" alt="Account Icon">
             </div>
             <span class="nav-text">Account Settings</span>
           </a>
         </div>
         <div class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="../../changelog/changelog.php" class="nav-link">
             <div class="nav-icon">
               <!-- changelog.svg -->
-              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke="#535358" stroke-linejoin="round" stroke-width="2" d="M6 5a2 2 0 012-2h16a2 2 0 012 2v22a2 2 0 01-2 2H8a2 2 0 01-2-2V5z"/><path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9h4M10 16h12M10 20h12M10 24h4"/><circle cx="22" cy="9" r="1" fill="#535358"/></svg>
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/changelog.svg" alt="Changelog Icon">
             </div>
             <span class="nav-text">Changelog</span>
           </a>

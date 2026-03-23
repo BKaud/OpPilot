@@ -9,70 +9,98 @@
 <link rel="stylesheet" href="../assets/css/theme.css" />
 </head>
 <body>
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="navbar-logo">
     <div class="logo-icon"></div>
     <span class="logo-name">O<span>P</span>ilot</span>
   </div>
+  <div class="navbar-login">
+    <input type="text" placeholder="Username" />
+    <input type="password" placeholder="Password" />
+    <button class="login-btn">Login</button>
+  </div>
 </nav>
 
 <div class="main">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="nav-section">
       <div class="nav-upper">
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
+          <a href="../../home/home.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- home.svg inline for color control -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/home.svg" alt="Home Icon">
+            </div>
             <span class="nav-text">Homepage</span>
           </a>
         </div>
-        <div class="nav-item">
-          <a href="#" class="nav-link" id="zones-toggle">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+        <div class="nav-item expandable" id="zones">
+          <a href="../../zones-dash/zone-dash.php" class="nav-link" id="zones-toggle">
+            <div class="nav-icon">
+              <!-- zones.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/zones.svg" alt="Zones Icon">
+            </div>
             <span class="nav-text">Zones</span>
           </a>
           <div class="sub-nav expanded" id="zones-sub">
+            <!-- Zone Dashboard section -->
             <div class="zone-item" id="rides1-zone">
-              <a href="#" class="sub-nav-link" id="r1-toggle">Rides 1</a>
-              <div class="zone-sub-nav expanded">
-                <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
-                <a href="editmode.php" class="zone-sub-link active">Edit Mode</a>
+              <a href="../../zones-dash/zone-dash.php" class="sub-nav-link" >Zones Dashboard</a>
+            </div>
+            <div class="zone-item expandable" id="rides1-zone">
+              <a href="#" class="sub-nav-link expandable">Rides 1</a>
+              <div class="zone-sub-nav expanded" id="rides1-sub">
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
                 <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
-            <div class="zone-item" id="rides2-zone">
-              <a href="#" class="sub-nav-link" id="r2-toggle">Rides 2</a>
-              <div class="zone-sub-nav expanded">
-                <a href="#" class="zone-sub-link">Dashboard</a>
-                <a href="#" class="zone-sub-link">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Settings & Config</a>
+            <div class="zone-item expandable" id="rides2-zone">
+              <a href="#" class="sub-nav-link expandable">Rides 2</a>
+              <div class="zone-sub-nav" id="rides2-sub">
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
+                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
           </div>
         </div>
         <div class="nav-item">
           <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <div class="nav-icon">
+              <!-- manage.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/manage.svg" alt="Manage Icon">
+            </div>
             <span class="nav-text">Management</span>
           </a>
         </div>
       </div>
       <div class="nav-lower">
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+          <a href="../../acc-sets/account-settings.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- acc.svg -->
+              <img class="filter-999" width="19" height="19" src="../../assets/images/icons/acc.svg" alt="Account Icon">
+            </div>
             <span class="nav-text">Account Settings</span>
           </a>
         </div>
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <a href="../../changelog/changelog.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- changelog.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/changelog.svg" alt="Changelog Icon">
+            </div>
             <span class="nav-text">Changelog</span>
           </a>
         </div>
       </div>
     </div>
   </aside>
+
 
   <div class="content">
     <div class="page-header">
