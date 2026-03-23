@@ -30,21 +30,31 @@
     <div class="nav-section">
       <div class="nav-upper">
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
+          <a href="../../home/home.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- home.svg inline for color control -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/home.svg" alt="Home Icon">
+            </div>
             <span class="nav-text">Homepage</span>
           </a>
         </div>
         <div class="nav-item expandable" id="zones">
-          <a href="#" class="nav-link" id="zones-toggle">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+          <a href="../../zones-dash/zone-dash.php" class="nav-link" id="zones-toggle">
+            <div class="nav-icon">
+              <!-- zones.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/zones.svg" alt="Zones Icon">
+            </div>
             <span class="nav-text">Zones</span>
           </a>
           <div class="sub-nav expanded" id="zones-sub">
+            <!-- Zone Dashboard section -->
+            <div class="zone-item" id="rides1-zone">
+              <a href="../../zones-dash/zone-dash.php" class="sub-nav-link" >Zones Dashboard</a>
+            </div>
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">
-                <a href="dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
                 <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
                 <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
@@ -52,24 +62,39 @@
             <div class="zone-item expandable" id="rides2-zone">
               <a href="#" class="sub-nav-link expandable">Rides 2</a>
               <div class="zone-sub-nav" id="rides2-sub">
-                <a href="#" class="zone-sub-link">Dashboard</a>
-                <a href="#" class="zone-sub-link">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Settings & Config</a>
+                <a href="../dashboard/dashboard.php" class="zone-sub-link active">Dashboard</a>
+                <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
+                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
               </div>
             </div>
           </div>
         </div>
+        <div class="nav-item">
+          <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- manage.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/manage.svg" alt="Manage Icon">
+            </div>
+            <span class="nav-text">Management</span>
+          </a>
+        </div>
       </div>
       <div class="nav-lower">
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+          <a href="../../acc-sets/account-settings.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- acc.svg -->
+              <img class="filter-999" width="19" height="19" src="../../assets/images/icons/acc.svg" alt="Account Icon">
+            </div>
             <span class="nav-text">Account Settings</span>
           </a>
         </div>
         <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <a href="../../changelog/changelog.php" class="nav-link">
+            <div class="nav-icon">
+              <!-- changelog.svg -->
+              <img class="filter-999" width="22" height="22" src="../../assets/images/icons/changelog.svg" alt="Changelog Icon">
+            </div>
             <span class="nav-text">Changelog</span>
           </a>
         </div>
@@ -101,6 +126,170 @@
             <div class="breadcrumb" style="font-size:10px;">Next rotation in <strong id="rotCountdown">12:44</strong></div>
           </div>
           <div class="time-preview-tag" id="previewTag">⚡ PREVIEW MODE</div>
+        </div>
+
+        <!-- Section: Rotation Concepts -->
+        <div class="attraction-section">
+          <div class="section-label">Rotation Display Ideas</div>
+          <div class="attraction-row" id="rotationRow">
+            
+            <!-- CONCEPT 1: Circular Position Wheel -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a9d7f, #1a6f5a); position: relative;">
+                <div class="card-status-dot"></div>
+                <svg viewBox="0 0 80 80" style="width: 50px; height: 50px; opacity: 0.9;" fill="none" stroke="#fff" stroke-width="1.5">
+                  <circle cx="40" cy="40" r="35" />
+                  <circle cx="40" cy="40" r="20" />
+                  <!-- Position markers -->
+                  <circle cx="40" cy="12" r="3" fill="#fff"/>
+                  <circle cx="62" cy="40" r="3" fill="#26c9a0"/>
+                  <circle cx="40" cy="68" r="3" fill="#fff"/>
+                  <circle cx="18" cy="40" r="3" fill="#fff"/>
+                  <!-- Pointer -->
+                  <line x1="40" y1="40" x2="62" y2="40" stroke="#26c9a0" stroke-width="2"/>
+                </svg>
+                <div class="card-num">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Thunder Mountain</div>
+                <div class="card-meta"><span>11:00 AM • ROTATION D</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">M. Torres (Ride Ops)</span>
+                  <span class="pos-chip assigned">D. Reyes (Dispatch)</span>
+                  <span class="pos-chip assigned">L. Chen (Station)</span>
+                </div>
+                <div class="card-operator">Next: Rotation E at 12:00 PM</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 2: Timeline Progress View -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a7a9d, #1a5a6f); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <div class="card-status-dot"></div>
+                <div style="width: 70%; height: 24px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); position: relative;">
+                  <div style="height: 100%; width: 65%; background: linear-gradient(90deg, #26c9a0, #1a8f7a); transition: width 0.3s;"></div>
+                  <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #fff; font-size: 10px; font-weight: bold;">65%</div>
+                </div>
+                <div class="card-num" style="font-size: 16px; opacity: 0.8;">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Space Coaster</div>
+                <div class="card-meta"><span>11:00 AM • Halfway through cycle</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">J. Monroe (Lead)</span>
+                  <span class="pos-chip assigned">P. Vega (Control)</span>
+                  <span class="pos-chip assigned">A. Kim (Queue)</span>
+                  <span class="pos-chip assigned">R. Patel (Station)</span>
+                </div>
+                <div class="card-operator">Started: 11:00 AM • Est. End: 11:45 AM</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 3: Position Grid Layout -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #7a2a9d, #5a1a6f); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 10px;">
+                <div class="card-status-dot"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; max-width: 35px;">
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: #26c9a0; border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: #26c9a0; border: 1px solid rgba(255,255,255,0.3);"></div>
+                  <div style="width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);"></div>
+                </div>
+                <div class="card-num" style="margin-left: 5px;">D</div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Bumper Cars</div>
+                <div class="card-meta"><span>11:00 AM • 2 of 4 Positions</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">✓ S. Brown</span>
+                  <span class="pos-chip empty">✗ C. Liu</span>
+                  <span class="pos-chip assigned">✓ T. Nair</span>
+                  <span class="pos-chip empty">✗ K. Wong</span>
+                </div>
+                <div class="card-operator">Staffing: 50% • 2 of 4 positions filled</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 4: Radial Status Indicator -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #9d7a2a, #6f5a1a); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div class="card-status-dot"></div>
+                <svg viewBox="0 0 80 80" style="width: 50px; height: 50px;" fill="none">
+                  <!-- Outer ring progress -->
+                  <circle cx="40" cy="40" r="32" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                  <circle cx="40" cy="40" r="32" stroke="#f59e0b" stroke-width="2" 
+                          stroke-dasharray="100" stroke-dashoffset="35" stroke-linecap="round"
+                          style="transform: rotate(-90deg); transform-origin: 40px 40px;"/>
+                  <!-- Center text -->
+                  <text x="40" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">ROT</text>
+                  <text x="40" y="50" text-anchor="middle" font-size="18" font-weight="bold" fill="#f59e0b">D</text>
+                </svg>
+                <div class="card-num" style="opacity: 0;"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Log Flume</div>
+                <div class="card-meta"><span>11:00 AM • ROTATION D Active</span></div>
+                <div class="card-positions">
+                  <span class="pos-chip assigned">E. Martinez (Load)</span>
+                  <span class="pos-chip assigned">F. Jensen (Unload)</span>
+                  <span class="pos-chip assigned">G. Wang (Ops)</span>
+                </div>
+                <div class="card-operator">Full staffing • All positions filled</div>
+              </div>
+            </div>
+
+            <!-- CONCEPT 5: Position + Station Layout -->
+            <div class="attraction-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #2a6f9d, #1a4f6f); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div class="card-status-dot"></div>
+                <div style="text-align: center;">
+                  <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">ROTATION D</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Pirate Ship</div>
+                <div class="card-meta"><span>ROTATION D • 3 of 4 Positions</span></div>
+                
+                <!-- Position/Station Boxes - Stacked Vertical -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0;">
+                  <!-- Station 1 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 1</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">H. Brown</div>
+                  </div>
+
+                  <!-- Station 2 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 2</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">J. Kim</div>
+                  </div>
+
+                  <!-- Station 3 -->
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.2px;">Station 3</div>
+                  </div>
+                  <div style="background: var(--teal-glow); border: 1px solid var(--teal); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--teal);">M. Lee</div>
+                  </div>
+
+                  <!-- Station 4 (Empty) -->
+                  <div style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 700; color: var(--accent-red); text-transform: uppercase; letter-spacing: 0.2px;">Station 4</div>
+                  </div>
+                  <div style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); border-radius: 2px; padding: 3px 5px; text-align: center;">
+                    <div style="font-size: 7px; font-weight: 600; color: var(--accent-red);">EMPTY</div>
+                  </div>
+                </div>
+
+                <div class="card-operator" style="border-top: 1px solid #ddd; padding-top: 6px; margin-top: 6px;">Next: Rotation E at 12:00 PM</div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <!-- Section: Top row -->
@@ -322,9 +511,19 @@
       card.className = 'attraction-card';
       
       const positionsHTML = attraction.positions.map(pos => {
-        const chipClass = pos.operator ? 'assigned' : 'empty';
-        const operatorText = pos.operator ? pos.operator : 'Unassigned';
-        return `<span class="pos-chip ${chipClass}">${pos.name}: ${operatorText}</span>`;
+        const bgClass = pos.operator ? 'teal' : 'red';
+        const textColor = pos.operator ? 'var(--teal)' : 'var(--accent-red)';
+        const bgColor = pos.operator ? 'var(--teal-glow)' : 'rgba(192, 57, 43, 0.1)';
+        const borderColor = pos.operator ? 'var(--teal)' : 'rgba(192, 57, 43, 0.3)';
+        const operatorText = pos.operator ? pos.operator : 'EMPTY';
+        return `
+          <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 3px 5px; text-align: center;">
+            <div style="font-size: 7px; font-weight: 700; color: ${textColor}; text-transform: uppercase; letter-spacing: 0.2px;">${pos.name}</div>
+          </div>
+          <div style="background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 2px; padding: 3px 5px; text-align: center;">
+            <div style="font-size: 7px; font-weight: 600; color: ${textColor};">${operatorText}</div>
+          </div>
+        `;
       }).join('');
 
       const leadOperator = attraction.positions.find(p => p.name.toLowerCase().includes('control') || p.name.toLowerCase().includes('lead'));
@@ -340,7 +539,7 @@
         <div class="card-body">
           <div class="card-name">${attraction.name}</div>
           <div class="card-meta"><span>${posCount} positions</span><span>Tier 1</span></div>
-          <div class="card-positions">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0;">
             ${positionsHTML}
           </div>
           <div class="card-operator">Lead: ${leadName}</div>
