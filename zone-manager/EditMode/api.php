@@ -55,6 +55,7 @@ function getZoneData() {
         SELECT 
             r.ride_id,
             r.ride_name,
+            r.ride_image_url,
             COALESCE(r.ride_is_placed_on_canvas, 0) as is_placed_on_canvas,
             COALESCE(r.ride_canvas_order, 0) as canvas_order,
             p.pos_id,
@@ -92,6 +93,7 @@ function getZoneData() {
             $attractions[$rideId] = [
                 'id' => 'ride' . $rideId,
                 'name' => $row['ride_name'],
+                'imageUrl' => $row['ride_image_url'],
                 'isPlaced' => (bool)$row['is_placed_on_canvas'],
                 'positions' => []
             ];

@@ -749,6 +749,24 @@
       card.className = 'attraction-card';
       card.setAttribute('data-attraction-name', attraction.name);
       
+      // Build card thumbnail with image if available
+      let thumbContent = '';
+      if (attraction.imageUrl) {
+        thumbContent = `
+          <div style="position:relative;width:100%;height:100%;">
+            <img src="${attraction.imageUrl}" alt="${attraction.name}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" />
+            <div class="card-status-dot" style="position:absolute;top:8px;right:8px;"></div>
+            <div class="card-num" style="position:absolute;bottom:8px;left:8px;">${index + 1}</div>
+          </div>
+        `;
+      } else {
+        thumbContent = `
+          <div class="card-status-dot"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v8M8 12h8"/></svg>
+          <div class="card-num">${index + 1}</div>
+        `;
+      }
+      
       const positionsHTML = attraction.positions.map(pos => {
         const bgClass = pos.operator ? 'teal' : 'red';
         const textColor = pos.operator ? 'var(--teal)' : 'var(--accent-red)';
@@ -776,9 +794,7 @@
 
       card.innerHTML = `
         <div class="card-thumb">
-          <div class="card-status-dot"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 8v8M8 12h8"/></svg>
-          <div class="card-num">${index + 1}</div>
+          ${thumbContent}
         </div>
         <div class="card-body">
           <div class="card-name">${attraction.name}</div>
