@@ -43,7 +43,7 @@
 </a>
 <div class="sub-nav expanded" id="zones-sub">
 <div class="zone-item expandable" id="rides1-zone">
-<a href="#" class="sub-nav-link expandable">Rides 1</a>
+<a href="#" class="sub-nav-link expandable">Rides 1 <span id="zoneLockIndicator-1" class="zone-lock-indicator" title="Zone lock" aria-hidden="true"></span></a>
 <div class="zone-sub-nav expanded" id="rides1-sub">
 <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
 <a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
@@ -123,7 +123,7 @@
 </div>
 <div class="toggle-wrap">
 <label class="toggle">
-<input type="checkbox" />
+<input type="checkbox" id="zoneLockDuringMaint" />
 <span class="toggle-slider"></span>
 </label>
 <span class="toggle-label">Lock Zone During Maintenance</span>
@@ -168,10 +168,10 @@
 <input type="text" id="attractionName" value="Tidal Twist 1" style="flex:1;" />
 <button class="btn btn-gray btn-sm">Edit Name</button>
 </div>
-<div style="display:flex;gap:6px;margin-top:4px;">
-<input type="text" placeholder="Link to other ride…" style="flex:1;" />
-<button class="btn btn-gray btn-sm">Link Ride</button>
-</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                <input type="text" id="attractionLink" placeholder="Link to other ride…" style="flex:1;" />
+                <button id="linkRideBtn" class="btn btn-gray btn-sm">Link Ride</button>
+                </div>
 </div>
 </div>
 <hr class="section-sep" />
@@ -216,8 +216,8 @@
 <div id="positionList">
 </div>
 <div class="inline-btn-row">
-<button class="btn btn-gray btn-sm" onclick="addPosition()">+ Add Position</button>
-<button class="btn btn-danger btn-sm" onclick="removePosition()">– Remove</button>
+<button id="addPositionBtn" class="btn btn-gray btn-sm" onclick="addPosition()">+ Add Position</button>
+<button id="removePositionBtn" class="btn btn-danger btn-sm" onclick="removePosition()">– Remove</button>
 </div>
 <div style="margin-top:12px;">
 <button id="deleteBtn" class="btn btn-danger">Delete Attraction</button>
@@ -289,6 +289,11 @@
         const positions = data.positions;
         // Populate attraction name
         document.getElementById('attractionName').value = ride.ride_name;
+        // Populate link field for this ride (per-tile)
+        try {
+          const linkEl = document.getElementById('attractionLink');
+          if (linkEl) linkEl.value = ride.ride_link_url || ride.ride_link || '';
+        } catch (e) {}
         // Populate status
         const statusEl = document.getElementById('attractionStatus');
         if (statusEl) statusEl.value = ride.ride_status || 'up';
@@ -325,6 +330,39 @@
           posList.innerHTML = '<div style="color:#888;font-size:12px;padding:6px 0;">No positions assigned to this ride.</div>';
         }
         posCount = positions.length;
+        // Load ride image into preview and the left tile if the server returned one
+        try {
+          const previewEl = document.getElementById('attractionImagePreview');
+          const placeholderEl = document.getElementById('attractionImagePlaceholder');
+          const tileEl = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + ride.ride_id + '"]');
+          let imageSrc = null;
+          if (ride.ride_image_url) imageSrc = ride.ride_image_url;
+          else if (ride.ride_image) imageSrc = ride.ride_image;
+            if (imageSrc) {
+            if (previewEl) { previewEl.src = imageSrc; previewEl.style.display = 'block'; if (placeholderEl) placeholderEl.style.display = 'none'; }
+            if (tileEl) {
+              const thumb = tileEl.querySelector('.thumb-bg');
+              if (thumb) {
+                thumb.style.backgroundImage = 'url("' + imageSrc + '")';
+                thumb.style.backgroundSize = 'cover';
+                thumb.style.backgroundPosition = 'center';
+                thumb.style.backgroundRepeat = 'no-repeat';
+                const sv = thumb.querySelector('svg'); if (sv) sv.style.display = 'none';
+              }
+              // ensure the tile reflects server status/link for locking and link editing
+              try { tileEl.setAttribute('data-status', ride.ride_status || ''); tileEl.setAttribute('data-link', ride.ride_link_url || ride.ride_link || ''); } catch (e) {}
+            }
+          } else {
+            if (previewEl) { previewEl.style.display = 'none'; if (placeholderEl) placeholderEl.style.display = 'block'; }
+            if (tileEl) {
+              const thumb = tileEl.querySelector('.thumb-bg');
+              if (thumb) {
+                thumb.style.backgroundImage = '';
+                const sv = thumb.querySelector('svg'); if (sv) sv.style.display = '';
+              }
+            }
+          }
+        } catch (e) { /* ignore image errors */ }
         // Save deep-copy snapshot for discard/rollback (avoid accidental mutation)
         try {
           savedSnapshot = { ride: JSON.parse(JSON.stringify(ride)), positions: JSON.parse(JSON.stringify(positions)) };
@@ -373,6 +411,7 @@
           const newTile = document.createElement("div");
           newTile.className = "attraction-thumb";
           newTile.setAttribute("data-id", "ride" + data.ride_id);
+          newTile.setAttribute('data-status', data.ride_status || 'up');
           newTile.innerHTML = `
 <div class="thumb-bg">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -386,9 +425,7 @@
 </div>
 <div class="attraction-label">${data.ride_name}</div>
           `;
-          newTile.onclick = function () {
-            selectAttraction(this, data.ride_name, data.ride_id);
-          };
+          attachTileClick(newTile);
           const addTile = grid.querySelector('[data-id="add"]');
           grid.insertBefore(newTile, addTile);
           // Auto-select the new tile and show success toast
@@ -447,6 +484,46 @@
   function togglePerm(el) {
     el.classList.toggle('active');
   }
+
+  // Attach a safe click handler that respects the maintenance lock
+  function attachTileClick(tile) {
+    tile.onclick = function (e) {
+      if (tile.classList.contains('locked')) {
+        showToast('This attraction is locked for maintenance', 'error');
+        return;
+      }
+      const id = tile.getAttribute('data-id');
+      const rideId = id && id.startsWith('ride') ? id.replace('ride','') : null;
+      selectAttraction(tile, tile.querySelector('.attraction-label') ? tile.querySelector('.attraction-label').textContent : '', rideId);
+    };
+  }
+
+  // Enable/disable right panel inputs when a ride is locked
+  function setRightPanelEditable(enabled) {
+    const fields = ['#attractionName','#attractionStatus','#attractionInRotation','#attractionRequiresCert','#mainPosition','#requiredCerts','#attractionLink'];
+    fields.forEach(s => { const el = document.querySelector(s); if (el) el.disabled = !enabled; });
+    document.querySelectorAll('#positionList input[type="text"]').forEach(i => i.disabled = !enabled);
+    ['saveSettingsBtn','deleteBtn','resetDefaultsBtn','addPositionBtn','removePositionBtn'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = !enabled; });
+    const imgUpload = document.querySelector('.img-upload'); if (imgUpload) { imgUpload.style.pointerEvents = enabled ? '' : 'none'; imgUpload.style.opacity = enabled ? '' : '0.6'; }
+  }
+
+  // Apply lock state across tiles (called on toggle change and after load/save)
+  function updateMaintenanceLocking() {
+    const lock = document.getElementById('zoneLockDuringMaint') && document.getElementById('zoneLockDuringMaint').checked;
+    document.querySelectorAll('.attraction-thumb').forEach(tile => {
+      if (tile.getAttribute('data-id') === 'add') return;
+      const status = tile.getAttribute('data-status') || '';
+      if (lock && status === 'maint') tile.classList.add('locked'); else tile.classList.remove('locked');
+      // reattach click wrapper to ensure behavior
+      attachTileClick(tile);
+    });
+    const selected = document.querySelector('.attraction-thumb.selected');
+    if (selected && selected.classList.contains('locked')) {
+      setRightPanelEditable(false);
+    } else {
+      setRightPanelEditable(true);
+    }
+  }
   // ── Load attraction grid from DB on page load ──
   function loadAttractions(zoneId = 1) {
     fetch('api.php?action=getZoneAttractions&zone_id=' + zoneId)
@@ -455,15 +532,15 @@
         if (!data.success) return;
         const grid = document.getElementById('attractionGrid');
         const addTile = grid.querySelector('[data-id="add"]');
-        // Remove all existing tiles except the "Add New" tile
-        Array.from(grid.children).forEach(child => {
-          if (child !== addTile) child.remove();
-        });
+        // For each attraction from server, add it only if it doesn't already exist
         data.attractions.forEach((ride, index) => {
-          const tile = document.createElement('div');
-          tile.className = 'attraction-thumb' + (index === 0 ? ' selected' : '');
-          tile.setAttribute('data-id', 'ride' + ride.ride_id);
-          tile.innerHTML = `
+          const id = 'ride' + ride.ride_id;
+          let tile = grid.querySelector('[data-id="' + id + '"]');
+          if (!tile) {
+            tile = document.createElement('div');
+            tile.className = 'attraction-thumb';
+            tile.setAttribute('data-id', id);
+            tile.innerHTML = `
 <div class="thumb-bg">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 <circle cx="12" cy="12" r="10"/>
@@ -475,38 +552,139 @@
 </svg>
 </div>
 <div class="attraction-label">${ride.ride_name}</div>
-          `;
-          tile.onclick = function () {
-            selectAttraction(this, ride.ride_name, ride.ride_id);
-          };
-          grid.insertBefore(tile, addTile);
-          // Load data for the first attraction
-          if (index === 0) {
-            selectAttraction(tile, ride.ride_name, ride.ride_id);
+            `;
+            // store status/link on the tile element for locking and quick access
+            tile.setAttribute('data-status', ride.ride_status || '');
+            tile.setAttribute('data-link', ride.ride_link_url || '');
+            attachTileClick(tile);
+            grid.insertBefore(tile, addTile);
+          } else {
+            // Update label if changed
+            const lbl = tile.querySelector('.attraction-label');
+            if (lbl && lbl.textContent !== ride.ride_name) lbl.textContent = ride.ride_name;
           }
+
+          // If ride has an image URL from server, apply it to the thumb
+          try {
+            const imgUrl = ride.ride_image_url || ride.ride_image || null;
+            if (imgUrl) {
+              const thumb = tile.querySelector('.thumb-bg');
+              if (thumb) {
+                thumb.style.backgroundImage = 'url("' + imgUrl + '")';
+                thumb.style.backgroundSize = 'cover';
+                thumb.style.backgroundPosition = 'center';
+                thumb.style.backgroundRepeat = 'no-repeat';
+                const sv = thumb.querySelector('svg'); if (sv) sv.style.display = 'none';
+              }
+            }
+          } catch (e) { /* ignore */ }
         });
+
+        // If there's no currently selected tile, select the first server-provided one
+        if (!document.querySelector('.attraction-thumb.selected') && data.attractions && data.attractions.length > 0) {
+          const first = grid.querySelector('[data-id="ride' + data.attractions[0].ride_id + '"]');
+          if (first) {
+            selectAttraction(first, data.attractions[0].ride_name, data.attractions[0].ride_id).then(() => updateMaintenanceLocking()).catch(() => updateMaintenanceLocking());
+          } else {
+            updateMaintenanceLocking();
+          }
+        } else {
+          // ensure lock state is applied even if nothing selected/changed
+          updateMaintenanceLocking();
+        }
       })
       .catch(err => console.error('Failed to load attractions:', err));
   }
 
-  // Image upload preview
+
+
+  // Image upload preview — also update the left tile background when an image is chosen
   function previewAttractionImage(input) {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
       reader.onload = function(e) {
+        const dataUrl = e.target.result;
         const preview = document.getElementById('attractionImagePreview');
         const placeholder = document.getElementById('attractionImagePlaceholder');
-        preview.src = e.target.result;
+        preview.src = dataUrl;
         preview.style.display = 'block';
-        placeholder.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+
+        // Update corresponding tile background (selected tile or tile for currentRideId)
+        try {
+          const tile = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + currentRideId + '"]');
+          if (tile) {
+            const thumb = tile.querySelector('.thumb-bg');
+            if (thumb) {
+              thumb.style.backgroundImage = 'url("' + dataUrl + '")';
+              thumb.style.backgroundSize = 'cover';
+              thumb.style.backgroundPosition = 'center';
+              thumb.style.backgroundRepeat = 'no-repeat';
+              const sv = thumb.querySelector('svg'); if (sv) sv.style.display = 'none';
+            }
+          }
+        } catch (err) { console.warn('Failed to update tile background:', err); }
       };
       reader.readAsDataURL(file);
     }
   }
   // Load on page ready
   loadAttractions(1);
+  // Hook the zone maintenance lock checkbox so changes apply immediately and persist
+  try {
+    const lockCheckbox = document.getElementById('zoneLockDuringMaint');
+    function saveZoneLockState(checked) {
+      const form = new URLSearchParams();
+      form.append('action', 'saveZoneLock');
+      form.append('zone_id', 1);
+      form.append('locked', checked ? 1 : 0);
+      fetch('api.php', { method: 'POST', body: form })
+        .then(r => r.json())
+        .then(resp => {
+          if (!resp || !resp.success) {
+            showToast('Failed to save zone lock', 'error');
+            return;
+          }
+          updateMaintenanceLocking();
+          showToast('Zone lock saved', 'info');
+        })
+        .catch(err => { console.error('Failed to save zone lock', err); showToast('Failed to save zone lock', 'error'); });
+    }
+
+    function loadZoneLockState() {
+      fetch('api.php?action=getZoneSettings&zone_id=1')
+        .then(r => r.json())
+        .then(resp => {
+          if (!resp || !resp.success) return;
+          try { lockCheckbox.checked = !!resp.zone_lock_during_maint; } catch (e) {}
+          // Update visual indicator in the zone list
+          try {
+            const ind = document.getElementById('zoneLockIndicator-1');
+            if (ind) {
+              if (resp.zone_lock_during_maint) {
+                ind.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0110 0v3"/></svg>';
+                ind.classList.add('locked');
+                ind.title = 'Locked during maintenance';
+              } else {
+                ind.innerHTML = '';
+                ind.classList.remove('locked');
+                ind.title = 'Zone lock';
+              }
+            }
+          } catch (e) {}
+          updateMaintenanceLocking();
+        })
+        .catch(err => console.warn('Failed to load zone settings', err));
+    }
+
+    if (lockCheckbox) {
+      lockCheckbox.addEventListener('change', function () { saveZoneLockState(this.checked); });
+      // Load saved state on page load
+      loadZoneLockState();
+    }
+  } catch (e) {}
   // Toast helper
   function showToast(message, type = 'info', timeout = 3000) {
     let container = document.getElementById('toastContainer');
@@ -586,6 +764,7 @@
     });
     const mainPosition = document.getElementById('mainPosition') ? document.getElementById('mainPosition').value : '';
     const requiredCerts = document.getElementById('requiredCerts') ? document.getElementById('requiredCerts').value.trim() : '';
+    const rideLink = document.getElementById('attractionLink') ? document.getElementById('attractionLink').value.trim() : '';
     const formData = new FormData();
     formData.append('action', 'saveAttractionSettings');
     formData.append('ride_id', currentRideId);
@@ -596,6 +775,14 @@
     formData.append('deleted_positions', JSON.stringify(deletedPosIds));
     formData.append('main_position', mainPosition);
     formData.append('required_certs', requiredCerts);
+    formData.append('ride_link', rideLink);
+    // Append image file if present so server can persist it
+    try {
+      const imgInput = document.getElementById('attractionImageInput');
+      if (imgInput && imgInput.files && imgInput.files[0]) {
+        formData.append('attraction_image', imgInput.files[0]);
+      }
+    } catch (e) { console.warn('No image to append', e); }
     fetch('api.php', { method: 'POST', body: formData })
       .then(res => res.json())
       .then(data => {
@@ -606,6 +793,34 @@
         // Update selected tile label
         const sel = document.querySelector('.attraction-thumb.selected .attraction-label');
         if (sel) sel.textContent = name || data.ride_name || sel.textContent;
+        // If server returned an image URL, update the tile background
+        if (data.ride_image_url) {
+          const tile = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + currentRideId + '"]');
+          if (tile) {
+            const thumb = tile.querySelector('.thumb-bg');
+            if (thumb) {
+              thumb.style.backgroundImage = 'url("' + data.ride_image_url + '")';
+              thumb.style.backgroundSize = 'cover';
+              thumb.style.backgroundPosition = 'center';
+              thumb.style.backgroundRepeat = 'no-repeat';
+              const sv = thumb.querySelector('svg'); if (sv) sv.style.display = 'none';
+            }
+          }
+          // update tile attributes for status/link and refresh lock state
+          try {
+            if (tile) { tile.setAttribute('data-status', status); tile.setAttribute('data-link', rideLink); }
+          } catch (e) {}
+          updateMaintenanceLocking();
+          // Also update preview img
+          const preview = document.getElementById('attractionImagePreview');
+          const placeholder = document.getElementById('attractionImagePlaceholder');
+          if (preview) { preview.src = data.ride_image_url; preview.style.display = 'block'; if (placeholder) placeholder.style.display = 'none'; }
+        }
+        else {
+          // even if no image returned, ensure status/link are stored and lock state updated
+          try { const tile = document.querySelector('.attraction-thumb.selected') || document.querySelector('[data-id="ride' + currentRideId + '"]'); if (tile) { tile.setAttribute('data-status', status); tile.setAttribute('data-link', rideLink); } } catch (e) {}
+          updateMaintenanceLocking();
+        }
         showToast('Settings saved', 'success');
       })
       .catch(err => {
@@ -855,6 +1070,9 @@
   /* Ensure modal and input text is readable (black) */
   .input-modal, .input-modal .input-title { color: #000; }
   .input-field { color: #000; }
+  /* Zone lock indicator in sidebar */
+  .zone-lock-indicator { display:inline-block; width:14px; height:14px; margin-left:6px; vertical-align:middle; opacity:0.9; color:#d64545; }
+  .zone-lock-indicator svg { display:block; }
   /* Make form inputs and textarea text black for clarity */
   #positionList .position-row input,
   #positionList .position-row input::placeholder,

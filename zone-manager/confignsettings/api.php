@@ -19,8 +19,14 @@ switch ($action) {
     case 'getAttractionData':
         getAttractionData();
         break;
+    case 'getZoneSettings':
+        getZoneSettings();
+        break;
     case 'saveAttractionSettings':
         saveAttractionSettings();
+        break;
+    case 'saveZoneLock':
+        saveZoneLock();
         break;
     case 'deleteAttraction':
         deleteAttraction();
@@ -99,7 +105,7 @@ function getZoneAttractions() {
     $zoneId = intval($_GET['zone_id'] ?? 1);
 
     $stmt = $conn->prepare("
-        SELECT r.ride_id, r.ride_name, r.ride_status
+        SELECT r.ride_id, r.ride_name, r.ride_status, r.ride_image_url, r.ride_link_url
         FROM zone_ride zr
         JOIN ride r ON r.ride_id = zr.zone_ride_ride_id
         WHERE zr.zone_ride_zone_id = ?
@@ -139,7 +145,7 @@ function getAttractionData() {
 // saveAttractionSettings moved below to keep function definitions top-level
 
     // Get ride info (include required certs and main position)
-    $stmt = $conn->prepare("SELECT ride_id, ride_name, ride_status, ride_is_placed_on_canvas, ride_canvas_order, ride_required_certs, ride_main_pos_id FROM ride WHERE ride_id = ?");
+    $stmt = $conn->prepare("SELECT ride_id, ride_name, ride_status, ride_is_placed_on_canvas, ride_canvas_order, ride_required_certs, ride_main_pos_id, ride_image_url, ride_link_url FROM ride WHERE ride_id = ?");
     $stmt->bind_param("i", $rideId);
     $stmt->execute();
     $ride = $stmt->get_result()->fetch_assoc();
@@ -278,6 +284,7 @@ function saveAttractionSettings() {
     $mainPositionRaw = $_POST['main_position'] ?? '';
     $mainPosition = ($mainPositionRaw === '' ? null : intval($mainPositionRaw));
     $requiredCerts = $_POST['required_certs'] ?? '';
+    $rideLink = $_POST['ride_link'] ?? '';
 
     if ($rideId === 0) {
         echo json_encode(['success' => false, 'error' => 'ride_id is required']);
@@ -288,7 +295,7 @@ function saveAttractionSettings() {
     try {
         $conn->begin_transaction();
 
-        // Ensure ride has columns for required certs and main position
+        // Ensure ride has columns for required certs, main position and link
         $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_required_certs'");
         if ($res && $res->num_rows == 0) {
             $conn->query("ALTER TABLE ride ADD COLUMN ride_required_certs TEXT NULL");
@@ -297,11 +304,21 @@ function saveAttractionSettings() {
         if ($res && $res->num_rows == 0) {
             $conn->query("ALTER TABLE ride ADD COLUMN ride_main_pos_id INT NULL");
         }
+            // Ensure ride has column to store image URL
+            $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_image_url'");
+            if ($res && $res->num_rows == 0) {
+                $conn->query("ALTER TABLE ride ADD COLUMN ride_image_url VARCHAR(255) NULL");
+            }
+            // Ensure ride has column to store link URL
+            $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_link_url'");
+            if ($res && $res->num_rows == 0) {
+                $conn->query("ALTER TABLE ride ADD COLUMN ride_link_url VARCHAR(255) NULL");
+            }
 
         // Update ride row (including newly ensured columns)
-        $stmt = $conn->prepare("UPDATE ride SET ride_name = ?, ride_status = ?, ride_is_placed_on_canvas = ?, ride_required_certs = ?, ride_main_pos_id = ? WHERE ride_id = ?");
+        $stmt = $conn->prepare("UPDATE ride SET ride_name = ?, ride_status = ?, ride_is_placed_on_canvas = ?, ride_required_certs = ?, ride_main_pos_id = ?, ride_link_url = ? WHERE ride_id = ?");
         if (!$stmt) throw new Exception('DB prepare failed for ride update');
-        $stmt->bind_param("ssisis", $name, $status, $isPlaced, $requiredCerts, $mainPosition, $rideId);
+        $stmt->bind_param("ssisisi", $name, $status, $isPlaced, $requiredCerts, $mainPosition, $rideLink, $rideId);
         if (!$stmt->execute()) throw new Exception('Failed to update ride: ' . $stmt->error);
         $stmt->close();
 
@@ -382,8 +399,37 @@ function saveAttractionSettings() {
             }
         }
 
+        // Handle uploaded image file (if provided)
+        if (isset($_FILES['attraction_image']) && $_FILES['attraction_image']['error'] === UPLOAD_ERR_OK) {
+            $upload = $_FILES['attraction_image'];
+            $tmp = $upload['tmp_name'];
+            $origName = basename($upload['name']);
+            $mime = mime_content_type($tmp);
+            $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+            if (isset($allowed[$mime])) {
+                $ext = $allowed[$mime];
+                $uploadDir = __DIR__ . '/../../assets/images/attractions';
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+                $filename = 'ride_' . $rideId . '_' . time() . '.' . $ext;
+                $destPath = $uploadDir . '/' . $filename;
+                if (move_uploaded_file($tmp, $destPath)) {
+                    // Create web-accessible URL (adjust if your site root differs)
+                    $webUrl = '/OPilot/assets/images/attractions/' . $filename;
+                    $stmt = $conn->prepare("UPDATE ride SET ride_image_url = ? WHERE ride_id = ?");
+                    if ($stmt) {
+                        $stmt->bind_param('si', $webUrl, $rideId);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                    $imageUrlToReturn = $webUrl;
+                }
+            }
+        }
+
         $conn->commit();
-        echo json_encode(['success' => true, 'ride_id' => $rideId, 'ride_name' => $name]);
+        $response = ['success' => true, 'ride_id' => $rideId, 'ride_name' => $name];
+        if (!empty($imageUrlToReturn)) $response['ride_image_url'] = $imageUrlToReturn;
+        echo json_encode($response);
         return;
 
     } catch (Exception $e) {
@@ -392,6 +438,74 @@ function saveAttractionSettings() {
         return;
     } finally {
         $conn->close();
+    }
+}
+
+/**
+ * Get zone settings (currently only lock state)
+ * Expects GET: zone_id (int)
+ */
+function getZoneSettings() {
+    $conn = getDbConnection();
+    $zoneId = intval($_GET['zone_id'] ?? 1);
+
+    // Ensure column exists in zone table (non-fatal if it doesn't)
+    try {
+        $res = $conn->query("SHOW COLUMNS FROM zone LIKE 'zone_lock_during_maint'");
+        if ($res && $res->num_rows == 0) {
+            // Add column with default 0
+            $conn->query("ALTER TABLE zone ADD COLUMN zone_lock_during_maint TINYINT(1) NULL DEFAULT 0");
+        }
+    } catch (Exception $e) {
+        // ignore schema change errors
+    }
+
+    $stmt = $conn->prepare("SELECT zone_lock_during_maint FROM zone WHERE zone_id = ?");
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'error' => 'DB prepare failed']);
+        $conn->close();
+        return;
+    }
+    $stmt->bind_param('i', $zoneId);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+
+    $locked = ($row && isset($row['zone_lock_during_maint'])) ? intval($row['zone_lock_during_maint']) : 0;
+    echo json_encode(['success' => true, 'zone_id' => $zoneId, 'zone_lock_during_maint' => $locked]);
+}
+
+/**
+ * Save zone lock state
+ * Expects POST: zone_id (int), locked (0|1)
+ */
+function saveZoneLock() {
+    $conn = getDbConnection();
+    $zoneId = intval($_POST['zone_id'] ?? 1);
+    $locked = intval($_POST['locked'] ?? 0);
+
+    try {
+        // Ensure column exists
+        $res = $conn->query("SHOW COLUMNS FROM zone LIKE 'zone_lock_during_maint'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE zone ADD COLUMN zone_lock_during_maint TINYINT(1) NULL DEFAULT 0");
+        }
+
+        $stmt = $conn->prepare("UPDATE zone SET zone_lock_during_maint = ? WHERE zone_id = ?");
+        if (!$stmt) throw new Exception('DB prepare failed');
+        $stmt->bind_param('ii', $locked, $zoneId);
+        $stmt->execute();
+        $affected = $stmt->affected_rows;
+        $stmt->close();
+        $conn->close();
+
+        echo json_encode(['success' => true, 'zone_id' => $zoneId, 'zone_lock_during_maint' => $locked, 'affected' => $affected]);
+        return;
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        $conn->close();
+        return;
     }
 }
 ?>
