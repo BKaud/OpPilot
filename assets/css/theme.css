@@ -204,3 +204,8 @@ body {
   opacity: 1;
 }
 .zone-sub-link { padding-left: 48px; }
+.filter-teal-light {
+filter: brightness(0) saturate(100%) invert(54%) sepia(84%) saturate(407%) hue-rotate(121deg) brightness(91%) contrast(84%);
+}
+.filter-999 {
+filter: brightness(0) saturate(100%) invert(68%) sepia(3%) saturate(0%) hue-rotate(5deg) brightness(91%) contrast(87%);}
