@@ -1,5 +1,9 @@
 name: Deploy to Bitnami via SSH
 
+# Opt into Node 24 for JavaScript actions at workflow-level to avoid Node 20 deprecation issues
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   push:
     branches:
@@ -9,9 +13,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # Opt in to Node 24 for JS actions (avoids Node 20 deprecation errors)
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      # App/DB values passed into the runner from repository secrets
       BASE_PATH: ${{ secrets.BASE_PATH }}
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_USER: ${{ secrets.SERVER_USER }}
