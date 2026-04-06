@@ -39,7 +39,7 @@ jobs:
             <?php
             define('BASE_PATH', '');
             define('DB_HOST', 'DB_HOST_PLACEHOLDER');
-            define('DB_PORT', DB_PORT_PLACEHOLDER);
+            define('DB_PORT', 3306);
             define('DB_USER', 'DB_USER_PLACEHOLDER');
             define('DB_PASS', 'DB_PASS_PLACEHOLDER');
             define('DB_NAME', 'DB_NAME_PLACEHOLDER');
@@ -47,7 +47,7 @@ jobs:
 
             # Now substitute the placeholders with real secrets
             sed -i "s|DB_HOST_PLACEHOLDER|${{ secrets.SERVER_HOST }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
-            sed -i "s|DB_PORT_PLACEHOLDER|${{ secrets.SERVER_PORT }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+            sed -i "s|DB_PORT_PLACEHOLDER|3306|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_USER_PLACEHOLDER|${{ secrets.SERVER_USER }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_PASS_PLACEHOLDER|${{ secrets.SERVER_PASS }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_NAME_PLACEHOLDER|${{ secrets.SERVER_DB_NAME }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
