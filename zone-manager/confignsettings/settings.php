@@ -1,3 +1,7 @@
+<?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,11 +16,11 @@
 </head>
 
 <body>
-    <?php
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/partials/sidebar.php';
+<?php
+$root = dirname($_SERVER['DOCUMENT_ROOT']);
+require_once $root . '/bootstrap.php';
+require_once $root . '/partials/sidebar.php';
 ?>
-
     <!-- CONTENT -->
     <div class="content">
         <div class="page-header">
