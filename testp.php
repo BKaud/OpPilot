@@ -9,7 +9,7 @@
     hiiiiiiiiiiiiiiiiiii
 
     <?php
-    echo "hello";
+    echo APP_ROOT;
     ?>
 </body>
 </html>
