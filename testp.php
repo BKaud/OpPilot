@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    hiiiiiiiiiiiiiiiiiii
+    hiiiiiiiiiiiiiiiiiii jiii
 
     <?php
     echo APP_ROOT;
