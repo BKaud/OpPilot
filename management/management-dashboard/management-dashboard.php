@@ -14,13 +14,11 @@
 
 <body>
     <?php
-require_once APP_ROOT . '/bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php'; // This defines APP_ROOT
 require_once APP_ROOT . '/partials/sidebar.php';
 ?>
-    <div class="main">
-        <div class="content">
-            <!-- CONTENT -->
-            <div class="content">
+    <!-- CONTENT -->
+    <div class="content">
                 <div class="page-header">
                     <div>
                         <h1>Management</h1>
@@ -157,8 +155,8 @@ require_once APP_ROOT . '/partials/sidebar.php';
                     </div>
 
                 </div>
-            </div>
         </div>
+    </div>
 
 </body>
 

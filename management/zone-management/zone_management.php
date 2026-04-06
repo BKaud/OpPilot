@@ -12,8 +12,8 @@
 <body>
 <?php
 // home.php (top of file)
-require_once __DIR__ . '/../bootstrap.php';            // ../ from home/ -> OPilot/bootstrap.php
-require_once __DIR__ . '/../partials/sidebar.php';     // ../partials/sidebar.php
+require_once __DIR__ . '/../../bootstrap.php'; // This defines APP_ROOT
+require_once APP_ROOT . '/partials/sidebar.php';
 ?>
 
 

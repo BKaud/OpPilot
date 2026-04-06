@@ -27,13 +27,6 @@ if (!function_exists('nav_active')) {
     }
 }
 ?>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="<?php echo htmlspecialchars(url_path('assets/css/theme.css')); ?>" />
-  <link rel="stylesheet" href="<?php echo htmlspecialchars(url_path('assets/css/style.css')); ?>" />
-</head>
 
 <!-- NAVBAR -->
 <nav class="navbar">
@@ -161,8 +154,6 @@ if (!function_exists('nav_active')) {
       </div>
     </div>
   </aside>
-
-</div>
 
 <!-- Optional: put the JS that toggles expansion in a single file and include it once per page -->
 <script>
