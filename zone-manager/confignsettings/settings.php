@@ -60,6 +60,15 @@
 </div>
 </div>
 </div>
+<!-- Management link placed under Zones -->
+<div class="nav-item">
+  <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
+    <div class="nav-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h8V3H3v10z"/><path d="M14 21h7v-7h-7v7z"/><path d="M14 3v7H21"/></svg>
+    </div>
+    <span class="nav-text">Management</span>
+  </a>
+</div>
 </div>
 <div class="nav-lower">
 <div class="nav-item">

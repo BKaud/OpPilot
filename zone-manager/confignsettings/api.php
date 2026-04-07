@@ -84,14 +84,44 @@ function addAttraction() {
         return;
     }
     $stmt->close();
+    // Optionally handle an uploaded attraction image at creation time
+    $imageUrlToReturn = '';
+    if (isset($_FILES['attraction_image']) && $_FILES['attraction_image']['error'] === UPLOAD_ERR_OK) {
+        $upload = $_FILES['attraction_image'];
+        $tmp = $upload['tmp_name'];
+        $mime = @mime_content_type($tmp);
+        $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+        if ($tmp && isset($allowed[$mime])) {
+            $ext = $allowed[$mime];
+            $uploadDir = __DIR__ . '/../../assets/images/attractions';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            $filename = 'ride_' . $nextRideId . '_' . time() . '.' . $ext;
+            $destPath = $uploadDir . '/' . $filename;
+            if (move_uploaded_file($tmp, $destPath)) {
+                // Web-accessible URL (adjust if site root differs)
+                $webUrl = '/OPilot/assets/images/attractions/' . $filename;
+                $stmt = $conn->prepare("UPDATE ride SET ride_image_url = ? WHERE ride_id = ?");
+                if ($stmt) {
+                    $stmt->bind_param('si', $webUrl, $nextRideId);
+                    $stmt->execute();
+                    $stmt->close();
+                    $imageUrlToReturn = $webUrl;
+                }
+            }
+        }
+    }
+
     $conn->close();
 
-    echo json_encode([
+    $resp = [
         'success' => true,
         'ride_id' => $nextRideId,
         'ride_name' => $name,
         'zone_id' => $zoneId
-    ]);
+    ];
+    if (!empty($imageUrlToReturn)) $resp['ride_image_url'] = $imageUrlToReturn;
+
+    echo json_encode($resp);
 }
 
 /**
