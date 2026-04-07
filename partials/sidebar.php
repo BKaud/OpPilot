@@ -34,12 +34,14 @@ if (!function_exists('nav_active')) {
     <div class="logo-icon"></div>
     <span class="logo-name">O<span>P</span>ilot</span>
   </div>
-  <div class="navbar-login">
-    <input type="text" placeholder="Username" />
-    <input type="password" placeholder="Password" />
-    <button class="login-btn">Login</button>
-  </div>
 </nav>
+
+<?php
+// Widget bar – renders only when slots are configured
+if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
+    require APP_ROOT . '/partials/navbar-widgets.php';
+}
+?>
 
 <div class="main">
 
