@@ -34,12 +34,14 @@ if (!function_exists('nav_active')) {
     <div class="logo-icon"></div>
     <span class="logo-name">O<span>P</span>ilot</span>
   </div>
-  <div class="navbar-login">
-    <input type="text" placeholder="Username" />
-    <input type="password" placeholder="Password" />
-    <button class="login-btn">Login</button>
-  </div>
 </nav>
+
+<?php
+// Widget bar – renders only when slots are configured
+if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
+    require APP_ROOT . '/partials/navbar-widgets.php';
+}
+?>
 
 <div class="main">
 
@@ -97,8 +99,8 @@ if (!function_exists('nav_active')) {
           </div>
         </div>
 
-        <div class="nav-item expandable" id="management">
-          <a href="#" class="nav-link" id="management-toggle">
+        <div class="nav-item" id="management">
+          <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="nav-link <?php echo nav_active('management/management-dashboard/management-dashboard.php'); ?>" id="management-toggle">
             <div class="nav-icon">
               <!-- manage.svg -->
               <svg class="filter-999" style="width:22px; height:22px;" fill="#000000" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -114,14 +116,6 @@ if (!function_exists('nav_active')) {
             </div>
             <span class="nav-text">Management</span>
           </a>
-          <div class="sub-nav" id="management-sub">
-            <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="zone-sub-link">Dashboard</a>
-            <a href="<?php echo htmlspecialchars(url_path('management/account-management/account_management.php')); ?>" class="zone-sub-link">Accounts</a>
-            <a href="<?php echo htmlspecialchars(url_path('management/org-manangement/organization_management.php')); ?>" class="zone-sub-link">Organization</a>
-            <a href="<?php echo htmlspecialchars(url_path('management/perm-management/permissions.php')); ?>" class="zone-sub-link">Permissions</a>
-            <a href="<?php echo htmlspecialchars(url_path('management/perm-tier-management/permissions_tiers.php')); ?>" class="zone-sub-link">Permission Groups</a>
-            <a href="<?php echo htmlspecialchars(url_path('management/zone-management/zone_management.php')); ?>" class="zone-sub-link">Zones</a>
-          </div>
         </div>
       </div>
 
@@ -176,14 +170,5 @@ if (!function_exists('nav_active')) {
         if (sub) sub.classList.toggle('expanded');
       });
     });
-    // Management dropdown
-    var managementToggle = document.getElementById('management-toggle');
-    if (managementToggle) {
-      managementToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        var managementSub = document.getElementById('management-sub');
-        if (managementSub) managementSub.classList.toggle('expanded');
-      });
-    }
   });
 </script>

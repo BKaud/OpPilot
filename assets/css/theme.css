@@ -8,7 +8,7 @@
   --bg-dark:       #1a1a1a;
   --bg-sidebar:    #111111;
   --bg-content:    #c8c8c8;
-  --bg-panel:      #e8e8e8;
+  --bg-panel:      #080707;
   --bg-card:       #d8d8d8;
   --bg-input:      #cecece;
   --text-main:     #f0f0f0;
@@ -209,3 +209,62 @@ filter: brightness(0) saturate(100%) invert(54%) sepia(84%) saturate(407%) hue-r
 }
 .filter-999 {
 filter: brightness(0) saturate(100%) invert(68%) sepia(3%) saturate(0%) hue-rotate(5deg) brightness(91%) contrast(87%);}
+
+/* ── WIDGET BAR ── */
+.widget-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  background: #0a0a0a;
+  border-bottom: 1px solid #1e1e1e;
+  padding: 4px 10px;
+  flex-shrink: 0;
+  min-height: 30px;
+}
+
+.nb-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+
+.nb-w-icon { font-style: normal; font-size: 12px; line-height: 1; }
+.nb-w-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #555;
+  margin-right: 3px;
+}
+.nb-w-val { color: #ccc; font-weight: 500; }
+.nb-w-big { font-size: 14px; font-weight: 700; color: var(--teal-light); }
+
+/* Status pills */
+.nb-w-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.nb-pill--up    { background: rgba(26,143,122,0.15); color: var(--teal-light); }
+.nb-pill--maint { background: rgba(230,168,23,0.15);  color: var(--accent-yellow); }
+.nb-pill--down  { background: rgba(192,57,43,0.15);   color: var(--accent-red); }
+
+/* Quick link */
+.nb-w-link {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 11px;
+}
+.nb-w-link:hover { color: var(--teal-light); }
