@@ -49,10 +49,12 @@ if ($nb_user && isset($mysqli) && $mysqli) {
 }
 
 // ── Pre-fetch data needed by widgets ─────────────────────────
-$nb_ride_counts  = ['up' => 0, 'maint' => 0, 'down' => 0];
-$nb_org_name     = null;
-$nb_zone_leads   = [];   // [zone_id => acc_name]
-$nb_zones_list   = [];   // [zone_id => zone_name]
+$nb_ride_counts    = ['up' => 0, 'maint' => 0, 'down' => 0];
+$nb_rides          = [];   // [ride_id => ['name'=>str,'status'=>str]]
+$nb_org_name       = null;
+$nb_zone_leads     = [];   // [zone_id => acc_name]
+$nb_zones_list     = [];   // [zone_id => zone_name]
+$nb_zone_rotation  = [];   // [zone_id => ['mins'=>int,'start'=>str|null]]
 
 // Check which widgets are actually in use
 $active_keys = array_column(array_values($nb_slots), 'widget_key');
@@ -60,10 +62,21 @@ $active_keys = array_column(array_values($nb_slots), 'widget_key');
 if (isset($mysqli) && $mysqli) {
 
     if (in_array('ride_status', $active_keys) || in_array('open_rides', $active_keys)) {
+        // Aggregate counts for the summary variant
         $r = $mysqli->query("SELECT ride_status, COUNT(*) AS cnt FROM ride GROUP BY ride_status");
         if ($r) {
             while ($row = $r->fetch_assoc()) {
                 $nb_ride_counts[$row['ride_status']] = (int)$row['cnt'];
+            }
+        }
+        // Individual ride data for the specific-ride variant
+        $r = $mysqli->query("SELECT ride_id, ride_name, ride_status FROM ride");
+        if ($r) {
+            while ($row = $r->fetch_assoc()) {
+                $nb_rides[(int)$row['ride_id']] = [
+                    'name'   => $row['ride_name'],
+                    'status' => $row['ride_status'],
+                ];
             }
         }
     }
@@ -81,10 +94,21 @@ if (isset($mysqli) && $mysqli) {
     }
 
     if (in_array('zone_lead', $active_keys) || in_array('zone_rotation', $active_keys)) {
-        $r = $mysqli->query("SELECT zone_id, zone_name FROM zone");
+        // Load zone names + rotation settings (columns added by profile_rotation_migration.sql)
+        $r = $mysqli->query(
+            "SELECT zone_id, zone_name,
+                    COALESCE(zone_rotation_mins, 30) AS zone_rotation_mins,
+                    zone_rotation_start
+             FROM zone"
+        );
         if ($r) {
             while ($row = $r->fetch_assoc()) {
-                $nb_zones_list[(int)$row['zone_id']] = $row['zone_name'];
+                $zid = (int)$row['zone_id'];
+                $nb_zones_list[$zid]    = $row['zone_name'];
+                $nb_zone_rotation[$zid] = [
+                    'mins'  => max(1, (int)$row['zone_rotation_mins']),
+                    'start' => $row['zone_rotation_start'],
+                ];
             }
         }
         // Lead = first staffed ride_pos in the zone's rides (posholder with lowest pos_order)
@@ -95,8 +119,7 @@ if (isset($mysqli) && $mysqli) {
              JOIN position  p  ON p.pos_id            = rp.ride_pos_pos_id
              JOIN account   a  ON a.account_id         = rp.ride_pos_posholder
              WHERE rp.ride_pos_posholder IS NOT NULL
-             ORDER BY zr.zone_ride_zone_id, p.pos_order
-            "
+             ORDER BY zr.zone_ride_zone_id, p.pos_order"
         );
         if ($r) {
             while ($row = $r->fetch_assoc()) {
@@ -138,13 +161,28 @@ function nb_render_widget(string $key, array $cfg, array $ctx): string {
             break;
 
         case 'ride_status':
-            $c     = $ctx['ride_counts'];
-            $html  = '<div class="nb-widget nb-widget--rides" title="Ride status overview">';
-            $html .= '<span class="nb-w-label">Rides</span>';
-            $html .= '<span class="nb-w-pill nb-pill--up">'    . $c['up']    . ' Up</span>';
-            $html .= '<span class="nb-w-pill nb-pill--maint">' . $c['maint'] . ' Maint</span>';
-            $html .= '<span class="nb-w-pill nb-pill--down">'  . $c['down']  . ' Down</span>';
-            $html .= '</div>';
+            $ride_id = (int)($cfg['ride_id'] ?? 0);
+            if ($ride_id > 0 && isset($ctx['rides'][$ride_id])) {
+                // Specific ride status view
+                $rd     = $ctx['rides'][$ride_id];
+                $rname  = htmlspecialchars($rd['name'] ?? 'Ride');
+                $rstatus = strtolower($rd['status'] ?? 'down');
+                $pill_class = 'nb-pill--' . $rstatus;
+                $label  = strtoupper($rstatus);
+                $html  = '<div class="nb-widget nb-widget--ridestat" title="' . $rname . ' status">';
+                $html .= '<span class="nb-w-label">' . $rname . '</span>';
+                $html .= '<span class="nb-w-pill ' . $pill_class . '">' . $label . '</span>';
+                $html .= '</div>';
+            } else {
+                // Summary view (no specific ride configured)
+                $c     = $ctx['ride_counts'];
+                $html  = '<div class="nb-widget nb-widget--rides" title="Ride status overview">';
+                $html .= '<span class="nb-w-label">Rides</span>';
+                $html .= '<span class="nb-w-pill nb-pill--up">'    . $c['up']    . ' Up</span>';
+                $html .= '<span class="nb-w-pill nb-pill--maint">' . $c['maint'] . ' Maint</span>';
+                $html .= '<span class="nb-w-pill nb-pill--down">'  . $c['down']  . ' Down</span>';
+                $html .= '</div>';
+            }
             break;
 
         case 'open_rides':
@@ -166,13 +204,22 @@ function nb_render_widget(string $key, array $cfg, array $ctx): string {
             break;
 
         case 'zone_rotation':
-            $mins  = max(1, (int)($cfg['minutes'] ?? 30));
             $zid   = (int)($cfg['zone_id'] ?? 0);
             $zname = $ctx['zones_list'][$zid] ?? ($zid ? "Zone $zid" : 'Rotation');
-            $uid   = 'nb-rot-' . $zid . '-' . $mins;
-            $html  = '<div class="nb-widget nb-widget--rotation" title="Rotation countdown" data-minutes="' . $mins . '" id="' . $uid . '">';
+            // Read rotation interval and start from zone settings
+            $rot   = $ctx['zone_rotation'][$zid] ?? ['mins' => 30, 'start' => null];
+            $rot_mins  = max(1, $rot['mins']);
+            $cycle_sec = $rot_mins * 60;
+            if (!empty($rot['start'])) {
+                $elapsed   = max(0, time() - strtotime($rot['start']));
+                $remaining = $cycle_sec - ($elapsed % $cycle_sec);
+            } else {
+                $remaining = $cycle_sec; // no start set – show full duration
+            }
+            $uid   = 'nb-rot-' . $zid;
+            $html  = '<div class="nb-widget nb-widget--rotation" title="Rotation countdown" id="' . $uid . '">';
             $html .= '<span class="nb-w-label">' . htmlspecialchars($zname) . '</span>';
-            $html .= '<span class="nb-w-val nb-countdown" data-minutes="' . $mins . '">--:--</span>';
+            $html .= '<span class="nb-w-val nb-countdown" data-seconds="' . (int)$remaining . '" data-cycle="' . $cycle_sec . '">--:--</span>';
             $html .= '</div>';
             break;
 
@@ -200,11 +247,13 @@ function nb_render_widget(string $key, array $cfg, array $ctx): string {
 
 // ── Build context array ───────────────────────────────────────
 $nb_ctx = [
-    'user'        => $nb_user,
-    'ride_counts' => $nb_ride_counts,
-    'org_name'    => $nb_org_name,
-    'zone_leads'  => $nb_zone_leads,
-    'zones_list'  => $nb_zones_list,
+    'user'          => $nb_user,
+    'ride_counts'   => $nb_ride_counts,
+    'rides'         => $nb_rides,
+    'org_name'      => $nb_org_name,
+    'zone_leads'    => $nb_zone_leads,
+    'zones_list'    => $nb_zones_list,
+    'zone_rotation' => $nb_zone_rotation,
 ];
 
 // ── Determine if any slot is occupied ────────────────────────
@@ -241,19 +290,21 @@ endfor; ?>
     }
 
     // ── Rotation countdowns ───────────────────────────────────
+    // data-seconds = server-computed time remaining in current cycle
+    // data-cycle   = full cycle duration in seconds (for auto-reset)
     var countdowns = document.querySelectorAll('.nb-countdown');
     var countdownState = [];
 
     countdowns.forEach(function (el) {
-        var mins = parseInt(el.getAttribute('data-minutes'), 10) || 30;
-        var remaining = mins * 60; // seconds
-        countdownState.push({ el: el, remaining: remaining });
+        var remaining = parseInt(el.getAttribute('data-seconds'), 10) || 1800;
+        var cycle     = parseInt(el.getAttribute('data-cycle'),   10) || remaining;
+        countdownState.push({ el: el, remaining: remaining, cycle: cycle });
     });
 
     if (countdownState.length) {
         function tickCountdowns() {
             countdownState.forEach(function (state) {
-                if (state.remaining <= 0) state.remaining = parseInt(state.el.getAttribute('data-minutes'), 10) * 60;
+                if (state.remaining <= 0) state.remaining = state.cycle;
                 state.remaining--;
                 var m = Math.floor(state.remaining / 60);
                 var s = state.remaining % 60;
