@@ -9,154 +9,143 @@
         href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="../../assets/css/theme.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=2" />
 </head>
-
 <body>
 <?php
 require_once __DIR__ . '/../../bootstrap.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+$sessionUser  = $_SESSION['user']      ?? 'Guest';
+$sessionOrg   = $_SESSION['org_id']    ?? '—';
+$sessionPerm  = $_SESSION['perm_group'] ?? '—';
+// Build initials (up to 2 chars) for avatar
+$nameParts = preg_split('/[\s.]+/', trim($sessionUser));
+$initials  = strtoupper(substr($nameParts[0] ?? 'G', 0, 1));
+if (isset($nameParts[1])) $initials .= strtoupper(substr($nameParts[1], 0, 1));
+
 require_once __DIR__ . '/../../partials/sidebar.php';
 ?>
     <!-- CONTENT -->
     <div class="content">
-                <div class="page-header">
-                    <div>
-                        <h1>Management</h1>
-                        <div class="breadcrumb">Admin › <span>Management</span></div>
-                    </div>
-                    <div class="header-controls">
-                        <span class="mode-badge" id="modeBadge">Live</span>
-                    </div>
-                </div>
 
-                <div class="dashboard-body">
-                    <div class="zone-area" style="padding: 24px;">
-
-                        <div
-                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <div>
-                                <div
-                                    style="font-weight:700; font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text-label)">
-                                    Management Console</div>
-                                <div style="color:var(--text-muted); font-size:13px;">Quick access to administrative
-                                    sections</div>
-                            </div>
-                        </div>
-
-                        <!-- Management grid -->
-                        <div class="attraction-row" style="gap:16px;">
-
-                            <a class="attraction-card" href="../perm-management/permissions.php"
-                                style="text-decoration:none;">
-                                <div class="card-thumb" style="background:linear-gradient(135deg,#6fb4a3,#1a8f7a);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff">
-                                        <path d="M12 2a4 4 0 014 4v2a4 4 0 01-8 0V6a4 4 0 014-4z" />
-                                        <path d="M6 20v-2a6 6 0 0112 0v2" />
-                                    </svg>
-                                    <div class="card-num">P</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-name">Permissions</div>
-                                    <div class="card-meta"><span>Manage user permissions</span></div>
-                                    <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">Define who can
-                                        access which features.</div>
-                                </div>
-                            </a>
-
-                            <a class="attraction-card" href="../perm-tier-management/permissions_tiers.php"
-                                style="text-decoration:none;">
-                                <div class="card-thumb" style="background:linear-gradient(135deg,#9ad1be,#22b09a);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff">
-                                        <path d="M12 2l3 6 6 .9-4.5 4 1 6L12 17l-5.5 2.9 1-6L3 8.9 9 8l3-6z" />
-                                    </svg>
-                                    <div class="card-num">T</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-name">Permissions Tier</div>
-                                    <div class="card-meta"><span>Tiered access groups</span></div>
-                                    <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">Create and
-                                        assign permission tiers.</div>
-                                </div>
-                            </a>
-
-                            <a class="attraction-card" href="../account-management/account_management.php"
-                                style="text-decoration:none;">
-                                <div class="card-thumb" style="background:linear-gradient(135deg,#a3cbe6,#3aa0d6);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff">
-                                        <path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3" />
-                                        <path d="M6 11c-1.66 0-3-1.34-3-3s1.34-3 3-3" />
-                                        <path d="M2 20c0-3.31 4.03-6 9-6s9 2.69 9 6" />
-                                    </svg>
-                                    <div class="card-num">A</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-name">Account Management</div>
-                                    <div class="card-meta"><span>Users and teams</span></div>
-                                    <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">Add/remove
-                                        users, edit profiles.</div>
-                                </div>
-                            </a>
-
-                            <a class="attraction-card" href="../zone-management/zone_management.php"
-                                style="text-decoration:none;">
-                                <div class="card-thumb" style="background:linear-gradient(135deg,#f0c987,#e6a817);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff">
-                                        <rect x="3" y="3" width="7" height="7" />
-                                        <rect x="14" y="3" width="7" height="7" />
-                                    </svg>
-                                    <div class="card-num">Z</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-name">Zone Management</div>
-                                    <div class="card-meta"><span>Zones & configurations</span></div>
-                                    <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">Create/edit
-                                        zones and settings.</div>
-                                </div>
-                            </a>
-
-                            <a class="attraction-card" href="../org-management/organization_management.php"
-                                style="text-decoration:none;">
-                                <div class="card-thumb" style="background:linear-gradient(135deg,#cfa3d6,#9b6fb0);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff">
-                                        <path d="M3 7h18" />
-                                        <path d="M5 21h14v-8H5z" />
-                                        <circle cx="12" cy="4" r="2" />
-                                    </svg>
-                                    <div class="card-num">O</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-name">Organization Management</div>
-                                    <div class="card-meta"><span>Org-wide settings</span></div>
-                                    <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">Manage
-                                        company-wide policies.</div>
-                                </div>
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                    <!-- right schedule sidebar reused as info column -->
-                    <div class="schedule-bar" style="width:240px;">
-                        <div class="schedule-header">Admin Tips</div>
-                        <div class="schedule-time-display">
-                            <div class="sched-clock">Quick Links</div>
-                            <div class="sched-label">Use the tiles to access each area</div>
-                        </div>
-                        <div style="padding:12px; overflow:auto; flex:1;">
-                            <div style="font-size:13px; color:var(--text-muted); line-height:1.4;">
-                                - Permissions: grant or revoke feature access.<br>
-                                - Tiers: group users into roles for faster assignment.<br>
-                                - Accounts: reset passwords, view activity.<br>
-                                - Zones: configure attractions and schedules.<br>
-                                - Organization: billing, integrations, policies.
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+        <div class="page-header">
+            <div>
+                <h1>Management</h1>
+                <div class="breadcrumb">Admin › <span>Management</span></div>
+            </div>
+            <div class="header-controls">
+                <span class="mode-badge">Live</span>
+            </div>
         </div>
+
+        <div class="mgmt-body">
+
+            <!-- Left: configuration panel -->
+            <div class="mgmt-config-panel" id="mgmtConfigPanel">
+                <div class="config-empty-state">
+                    <div class="config-empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                        </svg>
+                    </div>
+                    <div class="config-empty-title">Management Configuration</div>
+                    <div class="config-empty-sub">Select a section from the menu to begin configuring.</div>
+                </div>
+            </div>
+
+            <!-- Right: nav button column -->
+            <aside class="mgmt-nav">
+                <div class="mgmt-nav-label">Management Console</div>
+
+                <button class="mgmt-nav-btn is-active" type="button" data-section="org">
+                    <span class="mgmt-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 010 7.75"/>
+                        </svg>
+                    </span>
+                    <span class="mgmt-nav-text">Organization Management</span>
+                </button>
+
+                <button class="mgmt-nav-btn" type="button" data-section="perms">
+                    <span class="mgmt-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                    </span>
+                    <span class="mgmt-nav-text">Permission Management</span>
+                </button>
+
+                <button class="mgmt-nav-btn" type="button" data-section="perm-groups">
+                    <span class="mgmt-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.2L12 16.9l-5.5 2.6 1-6.2L3 8.9 9 8z"/>
+                        </svg>
+                    </span>
+                    <span class="mgmt-nav-text">Permission Groups Management</span>
+                </button>
+
+                <button class="mgmt-nav-btn" type="button" data-section="accounts">
+                    <span class="mgmt-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <span class="mgmt-nav-text">Account Management</span>
+                </button>
+
+                <button class="mgmt-nav-btn" type="button" data-section="zones">
+                    <span class="mgmt-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 8.7C3 7.2 3 6.5 3.4 6.1a2 2 0 01.5-.4C4.4 5.5 5.1 5.7 6.5 6.2c1.1.4 1.6.5 2.2.5h.3c.5-.1 1-.4 1.9-1L12.6 4.6c1.2-.8 1.8-1.2 2.4-1.3.7-.1 1.4.1 2.8.6l1.2.4c1 .3 1.5.5 1.8.9.3.4.3.9.3 2v8.1c0 1.5 0 2.2-.4 2.6a2 2 0 01-.5.4c-.5.2-1.2 0-2.5-.5-1.1-.4-1.6-.5-2.2-.5h-.3c-.5.1-1 .4-1.9 1L12 17.4c-1.2.8-1.8 1.2-2.5 1.3-.7.1-1.4-.1-2.8-.6l-1.1-.4c-1-.3-1.5-.5-1.8-.9-.3-.4-.3-.9-.3-2V8.7z"/>
+                            <path d="M9 6.6V20.5M15 3V17"/>
+                        </svg>
+                    </span>
+                    <span class="mgmt-nav-text">Zone Management</span>
+                </button>
+
+                <!-- Signed-in user card -->
+                <div class="mgmt-user-card">
+                    <div class="mgmt-user-avatar"><?php echo htmlspecialchars($initials); ?></div>
+                    <div class="mgmt-user-info">
+                        <div class="mgmt-user-name"><?php echo htmlspecialchars($sessionUser); ?></div>
+                        <div class="mgmt-user-tags mgmt-user-tags-vertical">
+                            <span class="mgmt-user-tag">
+                                <span class="tag-label">Org</span>
+                                <span class="tag-value"><?php echo htmlspecialchars($sessionOrg); ?></span>
+                            </span>
+                        </div>
+                        <div class="mgmt-user-tags mgmt-user-tags-vertical">
+                            <span class="mgmt-user-tag">
+                                <span class="tag-label">Perm Groups</span>
+                                <span class="tag-value"><?php echo htmlspecialchars($sessionPerm); ?></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
     </div>
+    </div><!-- /.main -->
+
+<script>
+    document.querySelectorAll('.mgmt-nav-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.mgmt-nav-btn').forEach(function(b) {
+                b.classList.remove('is-active');
+            });
+            btn.classList.add('is-active');
+        });
+    });
+</script>
 
 </body>
 
