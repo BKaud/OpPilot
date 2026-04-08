@@ -18,7 +18,7 @@ jobs:
           script: |
             set -e
 
-            DEPLOY_DIR="/opt/bitnami/apache/htdocs/"
+            DEPLOY_DIR="/opt/bitnami/apache/htdocs"
             REPO_URL="https://github.com/BKaud/OPilot.git"
 
             if [ -d "$DEPLOY_DIR/.git" ]; then
@@ -32,13 +32,25 @@ jobs:
               git clone --branch main "$REPO_URL" "$DEPLOY_DIR"
             fi
 
-            # Update database configuration with production credentials
-            echo "Updating database configuration..."
-            sed -i "s/define('DB_HOST', 'localhost');/define('DB_HOST', '${{ secrets.SERVER_HOST }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
-            sed -i "s/define('DB_PORT', '3306');/define('DB_PORT', '3306');/" "$DEPLOY_DIR/DBfiles/db_config.php"
-            sed -i "s/define('DB_USER', 'root');/define('DB_USER', '${{ secrets.SERVER_USER }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
-            sed -i "s/define('DB_PASS', 'password');/define('DB_PASS', '${{ secrets.SERVER_PASS }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
-            sed -i "s/define('DB_NAME', 'oppilot');/define('DB_NAME', '${{ secrets.SERVER_DB_NAME }}');/" "$DEPLOY_DIR/DBfiles/db_config.php"
+            # Generate app_config.php with production credentials
+            echo "Writing production app_config.php..."
+            mkdir -p "$DEPLOY_DIR/DBfiles"
+            cat > "$DEPLOY_DIR/DBfiles/app_config.php" << 'PHPEOF'
+            <?php
+            define('BASE_PATH', '');
+            define('DB_HOST', 'DB_HOST_PLACEHOLDER');
+            define('DB_PORT', 3306);
+            define('DB_USER', 'DB_USER_PLACEHOLDER');
+            define('DB_PASS', 'DB_PASS_PLACEHOLDER');
+            define('DB_NAME', 'DB_NAME_PLACEHOLDER');
+            PHPEOF
 
-            echo "Database configuration updated successfully."
+            # Now substitute the placeholders with real secrets
+            sed -i "s|DB_HOST_PLACEHOLDER|${{ secrets.SERVER_HOST }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+            sed -i "s|DB_PORT_PLACEHOLDER|3306|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+            sed -i "s|DB_USER_PLACEHOLDER|${{ secrets.SERVER_USER }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+            sed -i "s|DB_PASS_PLACEHOLDER|${{ secrets.SERVER_PASS }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+            sed -i "s|DB_NAME_PLACEHOLDER|${{ secrets.SERVER_DB_NAME }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
+
+            echo "app_config.php written successfully."
             echo "Deployment complete."

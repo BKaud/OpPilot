@@ -34,6 +34,11 @@ $step = isset($_GET['step']) && $_GET['step'] == 2 && isset($_SESSION['org_id'])
   <link rel="stylesheet" href="login.css" />
 </head>
 <body>
+  <?php
+// home.php (top of file)
+require_once __DIR__ . '/../bootstrap.php';            // ../ from home/ -> OPilot/bootstrap.php
+require_once __DIR__ . '/../partials/sidebar.php';     // ../partials/sidebar.php
+?>
   <div class="login-container">
     <div class="login-card">
       <?php if ($step === 1): ?>

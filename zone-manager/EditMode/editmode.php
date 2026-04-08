@@ -1,72 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OPilot – Edit Mode</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
-<link rel="stylesheet" href="../../assets/css/theme.css" />
+<link rel="stylesheet" href="../assets/css/theme.css" />
 </head>
-<body>
-<nav class="navbar">
-  <div class="navbar-logo">
-    <div class="logo-icon"></div>
-    <span class="logo-name">O<span>P</span>ilot</span>
-  </div>
-</nav>
 
-<div class="main">
-  <aside class="sidebar">
-    <div class="nav-section">
-      <div class="nav-upper">
-        <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/></svg></div>
-            <span class="nav-text">Homepage</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a href="#" class="nav-link" id="zones-toggle">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-            <span class="nav-text">Zones</span>
-          </a>
-          <div class="sub-nav expanded" id="zones-sub">
-            <div class="zone-item" id="rides1-zone">
-              <a href="#" class="sub-nav-link" id="r1-toggle">Rides 1</a>
-              <div class="zone-sub-nav expanded">
-                <a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
-                <a href="editmode.php" class="zone-sub-link active">Edit Mode</a>
-                <a href="../confignsettings/settings.php" class="zone-sub-link">Settings & Config</a>
-              </div>
-            </div>
-            <div class="zone-item" id="rides2-zone">
-              <a href="#" class="sub-nav-link" id="r2-toggle">Rides 2</a>
-              <div class="zone-sub-nav expanded">
-                <a href="#" class="zone-sub-link">Dashboard</a>
-                <a href="#" class="zone-sub-link">Edit Mode</a>
-                <a href="#" class="zone-sub-link">Settings & Config</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="nav-lower">
-        <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
-            <span class="nav-text">Account Settings</span>
-          </a>
-        </div>
-        <div class="nav-item">
-          <a href="#" class="nav-link">
-            <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-            <span class="nav-text">Changelog</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </aside>
+<body>
+<?php
+require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../partials/sidebar.php';
+?>
 
   <div class="content">
     <div class="page-header">
@@ -81,13 +29,23 @@
       <div class="canvas-col">
         <div class="edit-toolbar">
           <button class="tool-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Undo
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>Undo
           </button>
           <button class="tool-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>Redo
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10" />
+            </svg>Redo
           </button>
           <button class="tool-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>Save
           </button>
           <div class="toolbar-right">
             <span class="node-counter">RIDES ON CANVAS: <span id="slotCount">0</span></span>
@@ -117,21 +75,21 @@
               Return to Attraction Bar
             </div>
           </div>
-            <!-- Single centered handle will control both trays equally -->
-            <div class="middle-resize" id="middleTrayResize" title="Drag to resize">|||</div>
+          <!-- Single centered handle will control both trays equally -->
+          <div class="middle-resize" id="middleTrayResize" title="Drag to resize">|||</div>
 
-            <div class="tray-section resizable-vertical" id="attractionsTray">
-              <div class="tray-header">Attractions</div>
-              <div class="tray-scroll">
-                <!-- Attractions will be loaded dynamically from database -->
-              </div>
+          <div class="tray-section resizable-vertical" id="attractionsTray">
+            <div class="tray-header">Attractions</div>
+            <div class="tray-scroll">
+              <!-- Attractions will be loaded dynamically from database -->
             </div>
-            <div class="tray-section resizable-vertical" id="operatorsTray">
-              <div class="tray-header">Unassigned Operators</div>
-              <div class="tray-scroll">
-                <!-- Operators will be loaded dynamically from database -->
-              </div>
+          </div>
+          <div class="tray-section resizable-vertical" id="operatorsTray">
+            <div class="tray-header">Unassigned Operators</div>
+            <div class="tray-scroll">
+              <!-- Operators will be loaded dynamically from database -->
             </div>
+          </div>
         </div>
       </div><!-- /canvas-col -->
       <div class="props-panel resizable-horizontal" id="propsPanel">
@@ -142,9 +100,9 @@
             <span class="line"></span>
           </span>
         </div>
-              <div id="resizeTip" role="button" aria-label="Dismiss tip" style="position:absolute;top:48px;right:24px;z-index:10000;background:#fff;color:#1a8f7a;padding:8px 16px;border-radius:8px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-family:'Rajdhani',sans-serif;cursor:pointer;">
-                <b>Tip:</b> Drag the teal bars to resize panels!
-                    </div>
+        <div id="resizeTip" role="button" aria-label="Dismiss tip" style="position:absolute;top:48px;right:24px;z-index:10000;background:#fff;color:#1a8f7a;padding:8px 16px;border-radius:8px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.12);font-family:'Rajdhani',sans-serif;cursor:pointer;">
+          <b>Tip:</b> Drag the teal bars to resize panels!
+        </div>
         <div class="props-header">Properties</div>
         <div class="props-empty" id="propsEmpty">
           <div class="props-empty-msg">Select a ride on the canvas to view its positions.</div>
@@ -164,18 +122,14 @@
       </div>
     </div><!-- /edit-body -->
   </div><!-- /content -->
-</div><!-- /main -->
+  </div><!-- /main -->
 
 <script>
 // Sidebar toggles
-const zonesToggle = document.getElementById('zones-toggle');
-if (zonesToggle) {
-  zonesToggle.addEventListener('click', e => { 
-    e.preventDefault(); 
-    const zonesSub = document.getElementById('zones-sub');
-    if (zonesSub) zonesSub.classList.toggle('expanded'); 
-  });
-}
+document.getElementById('zones-toggle').addEventListener('click', e => { e.preventDefault(); document.getElementById('zones-sub').classList.toggle('expanded'); });
+['r1-toggle','r2-toggle'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); e.currentTarget.nextElementSibling.classList.toggle('expanded'); });
+});
 
 // Global data structures
 let rideSlots = [];
@@ -188,41 +142,31 @@ const ZONE_ID = 1; // Current zone (Rides 1)
 // Load data from database on page load
 async function loadZoneData() {
   try {
-    console.log('[EditMode] Loading zone data...');
     const response = await fetch(`api.php?action=getZoneData&zone_id=${ZONE_ID}`);
     const data = await response.json();
     
-    console.log('[EditMode] API Response:', data);
-    console.log('[EditMode] Response status:', response.status);
-    
-    if (!response.ok) {
-      console.error('[EditMode] HTTP Error:', response.status, response.statusText);
-      alert('Failed to load zone data - HTTP Error ' + response.status);
-      return;
-    }
+    console.log('API Response:', data);
     
     if (data.success) {
       allAttractions = data.attractions || [];
       
-      console.log('[EditMode] Loaded attractions:', allAttractions);
+      console.log('Loaded attractions:', allAttractions);
       
       // Show helpful message if no data
       if (allAttractions.length === 0 && data.message) {
-        console.log('[EditMode] Message:', data.message);
         alert(data.message);
       }
       
       // Separate placed and unplaced attractions
       rideSlots = allAttractions.filter(a => a.isPlaced);
       
-      console.log('[EditMode] Rides on canvas:', rideSlots.length);
+      console.log('Rides on canvas:', rideSlots.length);
       
       // Build available operators list (all operators)
       const operatorsResponse = await fetch(`api.php?action=getAvailableOperators&zone_id=${ZONE_ID}`);
       const operatorsData = await operatorsResponse.json();
       if (operatorsData.success) {
         availableOperators = operatorsData.operators || [];
-        console.log('[EditMode] Loaded operators:', availableOperators.length);
         renderOperatorsList();
       }
       
@@ -232,8 +176,8 @@ async function loadZoneData() {
       renderGrid();
       renderAttractionBar();
     } else {
-      console.error('[EditMode] API Error:', data.error);
-      alert('Failed to load zone data: ' + data.error);
+      console.error('Failed to load zone data:', data.error);
+      alert('Failed to load zone data. Please check database connection.');
     }
   } catch (error) {
     console.error('Error loading zone data:', error);
@@ -241,31 +185,31 @@ async function loadZoneData() {
   }
 }
 
-// Render the attraction bar at the bottom
-function renderAttractionBar() {
-  // Find the tray section that contains "Attractions" in its header
-  const sections = document.querySelectorAll('.tray-section');
-  let container = null;
-  
-  sections.forEach(section => {
-    const header = section.querySelector('.tray-header');
-    if (header && header.textContent.includes('Attractions')) {
-      container = section.querySelector('.tray-scroll');
-    }
-  });
-  
-  if (!container) {
-    console.error('Attraction bar container not found!');
-    return;
-  }
-  
-  console.log('Rendering attractions:', allAttractions.length, 'rides');
-  
-  container.innerHTML = allAttractions.map((attraction, index) => {
-    const isPlaced = rideSlots.some(slot => slot.id === attraction.id);
-    const placedClass = isPlaced ? 'placed' : '';
+    // Render the attraction bar at the bottom
+    function renderAttractionBar() {
+      // Find the tray section that contains "Attractions" in its header
+      const sections = document.querySelectorAll('.tray-section');
+      let container = null;
 
-    return `
+      sections.forEach(section => {
+        const header = section.querySelector('.tray-header');
+        if (header && header.textContent.includes('Attractions')) {
+          container = section.querySelector('.tray-scroll');
+        }
+      });
+
+      if (!container) {
+        console.error('Attraction bar container not found!');
+        return;
+      }
+
+      console.log('Rendering attractions:', allAttractions.length, 'rides');
+
+      container.innerHTML = allAttractions.map((attraction, index) => {
+        const isPlaced = rideSlots.some(slot => slot.id === attraction.id);
+        const placedClass = isPlaced ? 'placed' : '';
+
+        return `
       <div class="attr-thumb ${placedClass}" data-attraction-id="${attraction.id}">
         <div class="attr-thumb-label">${attraction.name}</div>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -273,65 +217,67 @@ function renderAttractionBar() {
         </svg>
       </div>
     `;
-  }).join('');
-  
-  console.log('Attraction bar rendered');
-  setupDragAndDrop();
-}
+      }).join('');
 
-  // Map vertical mouse wheel to horizontal scroll so trays move with mouse direction
-  document.querySelectorAll('.tray-scroll').forEach(el => {
-    el.addEventListener('wheel', function(e) {
-      if (this.scrollWidth > this.clientWidth) {
-        // invert mapping so scrolling follows mouse movement direction
-        this.scrollLeft -= e.deltaY;
-        e.preventDefault();
-      }
-    }, { passive: false });
-  });
-
-// Render operators list in sidebar
-function renderOperatorsList() {
-  // Find the tray section that contains "Operators" in its header
-  const sections = document.querySelectorAll('.tray-section');
-  let container = null;
-  
-  sections.forEach(section => {
-    const header = section.querySelector('.tray-header');
-    if (header && header.textContent.includes('Operators')) {
-      container = section.querySelector('.tray-scroll');
+      console.log('Attraction bar rendered');
+      setupDragAndDrop();
     }
-  });
-  
-  if (!container) {
-    console.error('Operators container not found!');
-    return;
-  }
-  
-  console.log('Rendering operators:', availableOperators.length);
-  
-  container.innerHTML = availableOperators.map(op => `
+
+    // Map vertical mouse wheel to horizontal scroll so trays move with mouse direction
+    document.querySelectorAll('.tray-scroll').forEach(el => {
+      el.addEventListener('wheel', function(e) {
+        if (this.scrollWidth > this.clientWidth) {
+          // invert mapping so scrolling follows mouse movement direction
+          this.scrollLeft -= e.deltaY;
+          e.preventDefault();
+        }
+      }, {
+        passive: false
+      });
+    });
+
+    // Render operators list in sidebar
+    function renderOperatorsList() {
+      // Find the tray section that contains "Operators" in its header
+      const sections = document.querySelectorAll('.tray-section');
+      let container = null;
+
+      sections.forEach(section => {
+        const header = section.querySelector('.tray-header');
+        if (header && header.textContent.includes('Operators')) {
+          container = section.querySelector('.tray-scroll');
+        }
+      });
+
+      if (!container) {
+        console.error('Operators container not found!');
+        return;
+      }
+
+      console.log('Rendering operators:', availableOperators.length);
+
+      container.innerHTML = availableOperators.map(op => `
     <div class="op-chip" data-operator-id="${op.id}">
       <div class="op-chip-name">${op.name}</div>
       <div class="op-chip-tier">${op.tier}</div>
     </div>
   `).join('');
-  
-  setupDragAndDrop();
-}
 
-// Render the template grid with numbering
-function renderGrid() {
-  const grid = document.getElementById('templateGrid');
-  grid.innerHTML = '';
-  
-  rideSlots.forEach((slot, index) => {
-    const box = document.createElement('div');
-    box.className = 'template-box';
-    box.dataset.slotId = slot.id;
-    box.setAttribute('draggable', 'true');
-    
-    box.innerHTML = `
+      setupDragAndDrop();
+    }
+
+    // Render the template grid with numbering
+    function renderGrid() {
+      const grid = document.getElementById('templateGrid');
+      grid.innerHTML = '';
+
+      rideSlots.forEach((slot, index) => {
+        const box = document.createElement('div');
+        box.className = 'template-box';
+        box.dataset.slotId = slot.id;
+        box.setAttribute('draggable', 'true');
+
+        box.innerHTML = `
       <div class="template-box-number">${index + 1}</div>
       <div class="template-box-header">
         <div class="template-box-ride">${slot.name}</div>
@@ -357,114 +303,114 @@ function renderGrid() {
         `).join('')}
       </div>
     `;
-    
-    grid.appendChild(box);
 
-    // Make filled operator chips draggable independently (without dragging the whole card)
-    box.querySelectorAll('.position-slot-operator.filled').forEach(opEl => {
-      opEl.setAttribute('draggable', 'true');
-      opEl.addEventListener('dragstart', (e) => {
-        e.stopPropagation(); // prevent the card's own dragstart from firing
-        dragType = 'operator';
-        dragSourceSlotId = opEl.closest('.position-slot').dataset.slotId;
-        dragSourcePosIdx = parseInt(opEl.closest('.position-slot').dataset.posIdx);
-        operatorDragMoved = false;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', opEl.dataset.operatorId);
-        opEl.style.opacity = '0.4';
+        grid.appendChild(box);
+
+        // Make filled operator chips draggable independently (without dragging the whole card)
+        box.querySelectorAll('.position-slot-operator.filled').forEach(opEl => {
+          opEl.setAttribute('draggable', 'true');
+          opEl.addEventListener('dragstart', (e) => {
+            e.stopPropagation(); // prevent the card's own dragstart from firing
+            dragType = 'operator';
+            dragSourceSlotId = opEl.closest('.position-slot').dataset.slotId;
+            dragSourcePosIdx = parseInt(opEl.closest('.position-slot').dataset.posIdx);
+            operatorDragMoved = false;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', opEl.dataset.operatorId);
+            opEl.style.opacity = '0.4';
+          });
+          opEl.addEventListener('dragend', () => {
+            opEl.style.opacity = '1';
+            dragSourceSlotId = null;
+            dragSourcePosIdx = null;
+            operatorDragMoved = false;
+            dragType = null;
+          });
+        });
+
+        // Click handler for selecting ride slot
+        box.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('template-box-number')) {
+            selectRideSlot(slot.id);
+          }
+        });
+
+        // Drag handler for removing ride from grid
+        box.addEventListener('dragstart', (e) => {
+          draggedElement = box;
+          dragType = 'rideslot';
+          draggedSlotId = slot.id;
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', slot.id);
+          box.style.opacity = '0.5';
+          document.getElementById('returnDropZone').classList.add('active');
+        });
+
+        box.addEventListener('dragend', (e) => {
+          box.style.opacity = '1';
+          draggedElement = null;
+          dragType = null;
+          draggedSlotId = null;
+          document.getElementById('returnDropZone').classList.remove('active');
+        });
+
+        // Reorder within grid by dragging one box onto another
+        box.addEventListener('dragover', (e) => {
+          if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'move';
+            box.classList.add('drag-over');
+          }
+        });
+
+        box.addEventListener('dragleave', () => {
+          if (dragType === 'rideslot') box.classList.remove('drag-over');
+        });
+
+        box.addEventListener('drop', (e) => {
+          if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
+            e.preventDefault();
+            e.stopPropagation();
+            box.classList.remove('drag-over');
+            const fromIdx = rideSlots.findIndex(s => s.id === draggedSlotId);
+            const toIdx = rideSlots.findIndex(s => s.id === slot.id);
+            if (fromIdx !== -1 && toIdx !== -1) {
+              [rideSlots[fromIdx], rideSlots[toIdx]] = [rideSlots[toIdx], rideSlots[fromIdx]];
+              const prevSelected = selectedSlot ? selectedSlot.id : null;
+              renderGrid();
+              if (prevSelected) selectRideSlot(prevSelected);
+              autoSaveLayout('Rotation order updated');
+            }
+          }
+        });
       });
-      opEl.addEventListener('dragend', () => {
-        opEl.style.opacity = '1';
-        dragSourceSlotId = null;
-        dragSourcePosIdx = null;
-        operatorDragMoved = false;
-        dragType = null;
-      });
-    });
 
-    // Click handler for selecting ride slot
-    box.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('template-box-number')) {
-        selectRideSlot(slot.id);
+      updateSlotCount();
+      setupDragAndDrop();
+    }
+
+    // Select a ride slot
+    function selectRideSlot(slotId) {
+      document.querySelectorAll('.template-box').forEach(b => b.classList.remove('selected'));
+      const box = document.querySelector(`[data-slot-id="${slotId}"]`);
+      if (box) box.classList.add('selected');
+
+      selectedSlot = rideSlots.find(s => s.id === slotId);
+      if (selectedSlot) {
+        document.getElementById('propsEmpty').style.display = 'none';
+        document.getElementById('propsBody').style.display = 'block';
+        document.getElementById('pRideName').value = selectedSlot.name;
+        renderPositionSlots();
       }
-    });
-    
-    // Drag handler for removing ride from grid
-    box.addEventListener('dragstart', (e) => {
-      draggedElement = box;
-      dragType = 'rideslot';
-      draggedSlotId = slot.id;
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', slot.id);
-      box.style.opacity = '0.5';
-      document.getElementById('returnDropZone').classList.add('active');
-    });
-    
-    box.addEventListener('dragend', (e) => {
-      box.style.opacity = '1';
-      draggedElement = null;
-      dragType = null;
-      draggedSlotId = null;
-      document.getElementById('returnDropZone').classList.remove('active');
-    });
+    }
 
-    // Reorder within grid by dragging one box onto another
-    box.addEventListener('dragover', (e) => {
-      if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = 'move';
-        box.classList.add('drag-over');
-      }
-    });
+    // Render position slots in properties panel (read-only view)
+    function renderPositionSlots() {
+      const container = document.getElementById('positionSlots');
+      if (!selectedSlot) return;
 
-    box.addEventListener('dragleave', () => {
-      if (dragType === 'rideslot') box.classList.remove('drag-over');
-    });
-
-    box.addEventListener('drop', (e) => {
-      if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
-        e.preventDefault();
-        e.stopPropagation();
-        box.classList.remove('drag-over');
-        const fromIdx = rideSlots.findIndex(s => s.id === draggedSlotId);
-        const toIdx   = rideSlots.findIndex(s => s.id === slot.id);
-        if (fromIdx !== -1 && toIdx !== -1) {
-          [rideSlots[fromIdx], rideSlots[toIdx]] = [rideSlots[toIdx], rideSlots[fromIdx]];
-          const prevSelected = selectedSlot ? selectedSlot.id : null;
-          renderGrid();
-          if (prevSelected) selectRideSlot(prevSelected);
-          autoSaveLayout('Rotation order updated');
-        }
-      }
-    });
-  });
-  
-  updateSlotCount();
-  setupDragAndDrop();
-}
-
-// Select a ride slot
-function selectRideSlot(slotId) {
-  document.querySelectorAll('.template-box').forEach(b => b.classList.remove('selected'));
-  const box = document.querySelector(`[data-slot-id="${slotId}"]`);
-  if (box) box.classList.add('selected');
-  
-  selectedSlot = rideSlots.find(s => s.id === slotId);
-  if (selectedSlot) {
-    document.getElementById('propsEmpty').style.display = 'none';
-    document.getElementById('propsBody').style.display = 'block';
-    document.getElementById('pRideName').value = selectedSlot.name;
-    renderPositionSlots();
-  }
-}
-
-// Render position slots in properties panel (read-only view)
-function renderPositionSlots() {
-  const container = document.getElementById('positionSlots');
-  if (!selectedSlot) return;
-  
-  container.innerHTML = selectedSlot.positions.map((pos, idx) => `
+      container.innerHTML = selectedSlot.positions.map((pos, idx) => `
     <div class="position-edit-row">
       <input type="text" class="prop-input" value="${pos.name}" disabled placeholder="Position Name" />
       <select class="prop-select" onchange="updatePositionOperator(${idx}, this.value)">
@@ -473,48 +419,48 @@ function renderPositionSlots() {
       </select>
     </div>
   `).join('');
-}
+    }
 
-// Update position operator
-function updatePositionOperator(idx, operatorId) {
-  if (!selectedSlot) return;
-  
-  // Find the operator details
-  const operator = availableOperators.find(op => op.id == operatorId);
-  
-  selectedSlot.positions[idx].operatorId = operatorId ? parseInt(operatorId) : null;
-  selectedSlot.positions[idx].operator = operator ? operator.name : '';
-  selectedSlot.positions[idx].operatorTier = operator ? operator.tier : '';
-  
-  renderGrid();
-  selectRideSlot(selectedSlot.id);
-  
-  // Auto-save to database
-  autoSaveLayout('Operator assignment updated');
-}
+    // Update position operator
+    function updatePositionOperator(idx, operatorId) {
+      if (!selectedSlot) return;
 
-// Auto-save with visual feedback
-let saveTimeout = null;
-async function autoSaveLayout(message = 'Saving...') {
-  console.log('[autoSaveLayout] Triggered with message:', message);
-  // Clear any pending save
-  if (saveTimeout) clearTimeout(saveTimeout);
-  
-  // Debounce: wait 500ms before saving
-  saveTimeout = setTimeout(async () => {
-    showSaveIndicator(message);
-    await saveLayoutToDb();
-  }, 500);
-}
+      // Find the operator details
+      const operator = availableOperators.find(op => op.id == operatorId);
 
-// Show save indicator
-function showSaveIndicator(message) {
-  const indicator = document.getElementById('saveIndicator');
-  if (!indicator) {
-    // Create indicator if it doesn't exist
-    const div = document.createElement('div');
-    div.id = 'saveIndicator';
-    div.style.cssText = `
+      selectedSlot.positions[idx].operatorId = operatorId ? parseInt(operatorId) : null;
+      selectedSlot.positions[idx].operator = operator ? operator.name : '';
+      selectedSlot.positions[idx].operatorTier = operator ? operator.tier : '';
+
+      renderGrid();
+      selectRideSlot(selectedSlot.id);
+
+      // Auto-save to database
+      autoSaveLayout('Operator assignment updated');
+    }
+
+    // Auto-save with visual feedback
+    let saveTimeout = null;
+    async function autoSaveLayout(message = 'Saving...') {
+      console.log('[autoSaveLayout] Triggered with message:', message);
+      // Clear any pending save
+      if (saveTimeout) clearTimeout(saveTimeout);
+
+      // Debounce: wait 500ms before saving
+      saveTimeout = setTimeout(async () => {
+        showSaveIndicator(message);
+        await saveLayoutToDb();
+      }, 500);
+    }
+
+    // Show save indicator
+    function showSaveIndicator(message) {
+      const indicator = document.getElementById('saveIndicator');
+      if (!indicator) {
+        // Create indicator if it doesn't exist
+        const div = document.createElement('div');
+        div.id = 'saveIndicator';
+        div.style.cssText = `
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -528,436 +474,447 @@ function showSaveIndicator(message) {
       z-index: 10000;
       transition: opacity 0.3s;
     `;
-    document.body.appendChild(div);
-  }
-  
-  const ind = document.getElementById('saveIndicator');
-  ind.textContent = message;
-  ind.style.opacity = '1';
-  
-  setTimeout(() => {
-    ind.style.opacity = '0';
-  }, 2000);
-}
-
-// Save layout to database
-async function saveLayoutToDb() {
-  try {
-    console.log('[saveLayoutToDb] Sending data to API:', { zone_id: ZONE_ID, attractions: rideSlots });
-    
-    const response = await fetch('api.php?action=saveLayout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        zone_id: ZONE_ID,
-        attractions: rideSlots
-      })
-    });
-    
-    const data = await response.json();
-    console.log('[saveLayoutToDb] API Response:', data);
-    
-    if (data.success) {
-      showSaveIndicator('✓ Saved successfully');
-    } else {
-      showSaveIndicator('✗ Save failed');
-      console.error('Failed to save layout:', data.error);
-    }
-  } catch (error) {
-    console.error('Error saving layout:', error);
-    showSaveIndicator('✗ Save error');
-  }
-}
-
-// Clear selection
-function clearSel() {
-  clearSelection();
-}
-
-function clearSelection() {
-  selectedSlot = null;
-  document.querySelectorAll('.template-box').forEach(b => b.classList.remove('selected'));
-  document.getElementById('propsEmpty').style.display = 'flex';
-  document.getElementById('propsBody').style.display = 'none';
-}
-
-// Update slot counter
-function updateSlotCount() {
-  document.getElementById('slotCount').textContent = rideSlots.length;
-}
-
-// Drag and Drop functionality
-let draggedElement = null;
-let dragType = null; // 'ride', 'operator', or 'rideslot'
-let draggedSlotId = null;
-let dragSourceSlotId = null;  // slot the operator was dragged FROM (canvas)
-let dragSourcePosIdx = null;
-let operatorDragMoved = false;
-
-function setupDragAndDrop() {
-  // Make attraction thumbnails draggable (only non-placed ones)
-  document.querySelectorAll('.attr-thumb:not(.placed)').forEach(thumb => {
-    thumb.setAttribute('draggable', 'true');
-    thumb.addEventListener('dragstart', (e) => {
-      draggedElement = thumb;
-      dragType = 'ride';
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('text/plain', thumb.dataset.attractionId);
-      thumb.style.opacity = '0.5';
-    });
-    thumb.addEventListener('dragend', (e) => {
-      thumb.style.opacity = '1';
-      draggedElement = null;
-      dragType = null;
-    });
-  });
-
-  // Make operator chips draggable
-  document.querySelectorAll('.op-chip').forEach(chip => {
-    chip.setAttribute('draggable', 'true');
-    chip.addEventListener('dragstart', (e) => {
-      draggedElement = chip;
-      dragType = 'operator';
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('text/plain', chip.dataset.operatorId);
-      chip.style.opacity = '0.5';
-    });
-    chip.addEventListener('dragend', (e) => {
-      chip.style.opacity = '1';
-      draggedElement = null;
-      dragType = null;
-    });
-  });
-
-  // Make the grid area droppable for new rides
-  const grid = document.getElementById('templateGrid');
-  grid.addEventListener('dragover', (e) => {
-    if (dragType === 'ride') {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy';
-    }
-  });
-  
-  grid.addEventListener('drop', (e) => {
-    if (dragType === 'ride') {
-      e.preventDefault();
-      const attractionId = e.dataTransfer.getData('text/plain');
-      
-      // Check if this ride already exists in the grid
-      const existingRide = rideSlots.find(s => s.id === attractionId);
-      if (existingRide) {
-        // Don't add duplicate
-        return;
+        document.body.appendChild(div);
       }
-      
-      // Find the attraction from allAttractions
-      const attraction = allAttractions.find(a => a.id === attractionId);
-      if (!attraction) return;
-      
-      // Add to rideSlots
-      rideSlots.push(attraction);
-      
-      // Update attraction bar to grey it out
-      renderAttractionBar();
-      renderGrid();
-      selectRideSlot(attraction.id);
-      
-      // Auto-save to database
-      autoSaveLayout('Ride added to canvas');
-    }
-  });
 
-  // Make position operator slots droppable
-  document.querySelectorAll('.position-slot-operator').forEach(opSlot => {
-    opSlot.addEventListener('dragover', (e) => {
-      if (dragType === 'operator') {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = 'copy';
-        opSlot.classList.add('drag-over');
-      }
-    });
-    opSlot.addEventListener('dragleave', (e) => {
-      opSlot.classList.remove('drag-over');
-    });
-    opSlot.addEventListener('drop', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      opSlot.classList.remove('drag-over');
-      if (dragType === 'operator') {
-        const operatorId = parseInt(e.dataTransfer.getData('text/plain'));
-        const posSlot = opSlot.closest('.position-slot');
-        const slotId = posSlot.dataset.slotId;
-        const posIdx = parseInt(posSlot.dataset.posIdx);
-        const slot = rideSlots.find(s => s.id === slotId);
-        if (slot && slot.positions[posIdx]) {
-          // Find operator by ID and update with full details
-          const operator = availableOperators.find(op => op.id == operatorId);
-          if (operator) {
-            slot.positions[posIdx].operatorId = operator.id;
-            slot.positions[posIdx].operator = operator.name;
-            slot.positions[posIdx].operatorTier = operator.tier;
-          }
-          // If dragged FROM another canvas slot, clear the source
-          if (dragSourceSlotId !== null) {
-            const srcSlot = rideSlots.find(s => s.id === dragSourceSlotId);
-            if (srcSlot && srcSlot.positions[dragSourcePosIdx] &&
-                !(dragSourceSlotId === slotId && dragSourcePosIdx === posIdx)) {
-              srcSlot.positions[dragSourcePosIdx].operatorId = null;
-              srcSlot.positions[dragSourcePosIdx].operator = '';
-              srcSlot.positions[dragSourcePosIdx].operatorTier = '';
-            }
-            operatorDragMoved = true;
-          }
-          renderGrid();
-          if (selectedSlot && selectedSlot.id === slotId) {
-            selectRideSlot(slotId);
-          }
-          
-          // Auto-save to database
-          autoSaveLayout('Operator assigned');
+      const ind = document.getElementById('saveIndicator');
+      ind.textContent = message;
+      ind.style.opacity = '1';
+
+      setTimeout(() => {
+        ind.style.opacity = '0';
+      }, 2000);
+    }
+
+    // Save layout to database
+    async function saveLayoutToDb() {
+      try {
+        console.log('[saveLayoutToDb] Sending data to API:', {
+          zone_id: ZONE_ID,
+          attractions: rideSlots
+        });
+
+        const response = await fetch('api.php?action=saveLayout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            zone_id: ZONE_ID,
+            attractions: rideSlots
+          })
+        });
+
+        const data = await response.json();
+        console.log('[saveLayoutToDb] API Response:', data);
+
+        if (data.success) {
+          showSaveIndicator('✓ Saved successfully');
+        } else {
+          showSaveIndicator('✗ Save failed');
+          console.error('Failed to save layout:', data.error);
         }
+      } catch (error) {
+        console.error('Error saving layout:', error);
+        showSaveIndicator('✗ Save error');
       }
-    });
-  });
-  
-  // Setup return drop zone
-  const returnZone = document.getElementById('returnDropZone');
-  returnZone.addEventListener('dragover', (e) => {
-    if (dragType === 'rideslot') {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      returnZone.classList.add('drag-over');
     }
-  });
-  
-  returnZone.addEventListener('dragleave', (e) => {
-    if (e.target === returnZone) {
-      returnZone.classList.remove('drag-over');
+
+    // Clear selection
+    function clearSel() {
+      clearSelection();
     }
-  });
-  
-  returnZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    returnZone.classList.remove('drag-over');
-    if (dragType === 'rideslot' && draggedSlotId) {
-      // Find the ride being removed
-      const removedSlot = rideSlots.find(s => s.id === draggedSlotId);
-      
-      // Remove from rideSlots
-      rideSlots = rideSlots.filter(s => s.id !== draggedSlotId);
-      
-      // Clear selection if it was selected
-      if (selectedSlot && selectedSlot.id === draggedSlotId) {
+
+    function clearSelection() {
+      selectedSlot = null;
+      document.querySelectorAll('.template-box').forEach(b => b.classList.remove('selected'));
+      document.getElementById('propsEmpty').style.display = 'flex';
+      document.getElementById('propsBody').style.display = 'none';
+    }
+
+    // Update slot counter
+    function updateSlotCount() {
+      document.getElementById('slotCount').textContent = rideSlots.length;
+    }
+
+    // Drag and Drop functionality
+    let draggedElement = null;
+    let dragType = null; // 'ride', 'operator', or 'rideslot'
+    let draggedSlotId = null;
+    let dragSourceSlotId = null; // slot the operator was dragged FROM (canvas)
+    let dragSourcePosIdx = null;
+    let operatorDragMoved = false;
+
+    function setupDragAndDrop() {
+      // Make attraction thumbnails draggable (only non-placed ones)
+      document.querySelectorAll('.attr-thumb:not(.placed)').forEach(thumb => {
+        thumb.setAttribute('draggable', 'true');
+        thumb.addEventListener('dragstart', (e) => {
+          draggedElement = thumb;
+          dragType = 'ride';
+          e.dataTransfer.effectAllowed = 'copy';
+          e.dataTransfer.setData('text/plain', thumb.dataset.attractionId);
+          thumb.style.opacity = '0.5';
+        });
+        thumb.addEventListener('dragend', (e) => {
+          thumb.style.opacity = '1';
+          draggedElement = null;
+          dragType = null;
+        });
+      });
+
+      // Make operator chips draggable
+      document.querySelectorAll('.op-chip').forEach(chip => {
+        chip.setAttribute('draggable', 'true');
+        chip.addEventListener('dragstart', (e) => {
+          draggedElement = chip;
+          dragType = 'operator';
+          e.dataTransfer.effectAllowed = 'copy';
+          e.dataTransfer.setData('text/plain', chip.dataset.operatorId);
+          chip.style.opacity = '0.5';
+        });
+        chip.addEventListener('dragend', (e) => {
+          chip.style.opacity = '1';
+          draggedElement = null;
+          dragType = null;
+        });
+      });
+
+      // Make the grid area droppable for new rides
+      const grid = document.getElementById('templateGrid');
+      grid.addEventListener('dragover', (e) => {
+        if (dragType === 'ride') {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+        }
+      });
+
+      grid.addEventListener('drop', (e) => {
+        if (dragType === 'ride') {
+          e.preventDefault();
+          const attractionId = e.dataTransfer.getData('text/plain');
+
+          // Check if this ride already exists in the grid
+          const existingRide = rideSlots.find(s => s.id === attractionId);
+          if (existingRide) {
+            // Don't add duplicate
+            return;
+          }
+
+          // Find the attraction from allAttractions
+          const attraction = allAttractions.find(a => a.id === attractionId);
+          if (!attraction) return;
+
+          // Add to rideSlots
+          rideSlots.push(attraction);
+
+          // Update attraction bar to grey it out
+          renderAttractionBar();
+          renderGrid();
+          selectRideSlot(attraction.id);
+
+          // Auto-save to database
+          autoSaveLayout('Ride added to canvas');
+        }
+      });
+
+      // Make position operator slots droppable
+      document.querySelectorAll('.position-slot-operator').forEach(opSlot => {
+        opSlot.addEventListener('dragover', (e) => {
+          if (dragType === 'operator') {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'copy';
+            opSlot.classList.add('drag-over');
+          }
+        });
+        opSlot.addEventListener('dragleave', (e) => {
+          opSlot.classList.remove('drag-over');
+        });
+        opSlot.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          opSlot.classList.remove('drag-over');
+          if (dragType === 'operator') {
+            const operatorId = parseInt(e.dataTransfer.getData('text/plain'));
+            const posSlot = opSlot.closest('.position-slot');
+            const slotId = posSlot.dataset.slotId;
+            const posIdx = parseInt(posSlot.dataset.posIdx);
+            const slot = rideSlots.find(s => s.id === slotId);
+            if (slot && slot.positions[posIdx]) {
+              // Find operator by ID and update with full details
+              const operator = availableOperators.find(op => op.id == operatorId);
+              if (operator) {
+                slot.positions[posIdx].operatorId = operator.id;
+                slot.positions[posIdx].operator = operator.name;
+                slot.positions[posIdx].operatorTier = operator.tier;
+              }
+              // If dragged FROM another canvas slot, clear the source
+              if (dragSourceSlotId !== null) {
+                const srcSlot = rideSlots.find(s => s.id === dragSourceSlotId);
+                if (srcSlot && srcSlot.positions[dragSourcePosIdx] &&
+                  !(dragSourceSlotId === slotId && dragSourcePosIdx === posIdx)) {
+                  srcSlot.positions[dragSourcePosIdx].operatorId = null;
+                  srcSlot.positions[dragSourcePosIdx].operator = '';
+                  srcSlot.positions[dragSourcePosIdx].operatorTier = '';
+                }
+                operatorDragMoved = true;
+              }
+              renderGrid();
+              if (selectedSlot && selectedSlot.id === slotId) {
+                selectRideSlot(slotId);
+              }
+
+              // Auto-save to database
+              autoSaveLayout('Operator assigned');
+            }
+          }
+        });
+      });
+
+      // Setup return drop zone
+      const returnZone = document.getElementById('returnDropZone');
+      returnZone.addEventListener('dragover', (e) => {
+        if (dragType === 'rideslot') {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          returnZone.classList.add('drag-over');
+        }
+      });
+
+      returnZone.addEventListener('dragleave', (e) => {
+        if (e.target === returnZone) {
+          returnZone.classList.remove('drag-over');
+        }
+      });
+
+      returnZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        returnZone.classList.remove('drag-over');
+        if (dragType === 'rideslot' && draggedSlotId) {
+          // Find the ride being removed
+          const removedSlot = rideSlots.find(s => s.id === draggedSlotId);
+
+          // Remove from rideSlots
+          rideSlots = rideSlots.filter(s => s.id !== draggedSlotId);
+
+          // Clear selection if it was selected
+          if (selectedSlot && selectedSlot.id === draggedSlotId) {
+            clearSelection();
+          }
+
+          // Update attraction bar to un-grey it
+          renderAttractionBar();
+          renderGrid();
+
+          // Auto-save to database
+          autoSaveLayout('Ride removed from canvas');
+        }
+      });
+    }
+
+    // Canvas click to deselect
+    document.getElementById('ci').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget || e.target.id === 'mainZone' || e.target.classList.contains('rot-zone-label') || e.target.id === 'templateGrid') {
         clearSelection();
       }
-      
-      // Update attraction bar to un-grey it
-      renderAttractionBar();
-      renderGrid();
-      
-      // Auto-save to database
-      autoSaveLayout('Ride removed from canvas');
+    });
+
+    // Initial render - load data from database
+    loadZoneData();
+
+    // ── Resizable Panels ──
+    // Horizontal resize for Properties panel
+    const propsPanel = document.getElementById('propsPanel');
+    const propsResize = document.getElementById('propsResize');
+    let isResizingProps = false;
+    let startXProps = 0;
+    let startWidthProps = 0;
+    propsResize.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isResizingProps = true;
+      startXProps = e.clientX;
+      startWidthProps = propsPanel.offsetWidth;
+      document.body.style.cursor = 'ew-resize';
+      // Prevent text selection while dragging
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (isResizingProps) {
+        // Invert delta so the panel resizes in the direction the mouse moves
+        // (handle is positioned on the left edge of the panel).
+        let newWidth = startWidthProps + (startXProps - e.clientX);
+        newWidth = Math.max(220, Math.min(600, newWidth));
+        propsPanel.style.width = newWidth + 'px';
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      if (isResizingProps) {
+        isResizingProps = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    });
+
+    // Vertical resize for bottom tray
+    const bottomTray = document.getElementById('bottomTray');
+    const bottomTrayResize = document.getElementById('bottomTrayResize');
+    let isResizingTray = false;
+    let startYTray = 0;
+    let startHeightTray = 0;
+    bottomTrayResize.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isResizingTray = true;
+      startYTray = e.clientY;
+      startHeightTray = bottomTray.offsetHeight;
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (isResizingTray) {
+        // Follow mouse: moving mouse down increases height, moving up decreases height
+        let newHeight = startHeightTray + (e.clientY - startYTray);
+        newHeight = Math.max(120, Math.min(window.innerHeight * 0.6, newHeight));
+        bottomTray.style.height = newHeight + 'px';
+        // update internal scroll areas to match
+        updateTrayScrollHeights(newHeight);
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      if (isResizingTray) {
+        isResizingTray = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    });
+
+    // Middle handle: supports vertical resize (drag up/down) OR horizontal scroll (drag left/right)
+    const attractionsTray = document.getElementById('attractionsTray');
+    const operatorsTray = document.getElementById('operatorsTray');
+    const middleResize = document.getElementById('middleTrayResize');
+    let middleMode = null; // 'resize' or 'scroll'
+    let startYMiddle = 0;
+    let startXMiddle = 0;
+    let startHeightMiddle = 0;
+    let startScrollLeft = 0;
+    middleResize.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      middleMode = null;
+      startYMiddle = e.clientY;
+      startXMiddle = e.clientX;
+      startHeightMiddle = document.getElementById('bottomTray').offsetHeight;
+      // take first tray's scrollLeft as baseline
+      const aScroll = attractionsTray.querySelector('.tray-scroll');
+      startScrollLeft = aScroll ? aScroll.scrollLeft : 0;
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'ns-resize';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      // if user hasn't chosen mode yet, detect based on movement direction
+      if (middleMode === null && (e.buttons & 1)) {
+        const dx = e.clientX - startXMiddle;
+        const dy = e.clientY - startYMiddle;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+          middleMode = Math.abs(dx) > Math.abs(dy) ? 'scroll' : 'resize';
+          // adjust cursor for scroll
+          if (middleMode === 'scroll') document.body.style.cursor = 'grab';
+        }
+      }
+
+      if (middleMode === 'resize' && (e.buttons & 1)) {
+        // vertical resize of bottom tray (affects both trays' heights)
+        let delta = e.clientY - startYMiddle;
+        let newHeight = startHeightMiddle + delta;
+        newHeight = Math.max(60, Math.min(window.innerHeight * 0.6, newHeight));
+        // apply to tray sections and bottom container
+        try {
+          document.getElementById('bottomTray').style.height = newHeight + 'px';
+        } catch (err) {}
+        if (attractionsTray) attractionsTray.style.height = newHeight + 'px';
+        if (operatorsTray) operatorsTray.style.height = newHeight + 'px';
+        updateTrayScrollHeights(newHeight);
+      }
+
+      if (middleMode === 'scroll' && (e.buttons & 1)) {
+        // horizontal scroll of both tray-scroll elements
+        const dx = e.clientX - startXMiddle;
+        const newScroll = startScrollLeft + dx; // drag right -> scroll right
+        const aScroll = attractionsTray.querySelector('.tray-scroll');
+        const oScroll = operatorsTray.querySelector('.tray-scroll');
+        if (aScroll) aScroll.scrollLeft = newScroll;
+        if (oScroll) oScroll.scrollLeft = newScroll;
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (middleMode !== null) {
+        middleMode = null;
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      }
+    });
+
+    // Keep the internal scroll areas sized to (tray height - header height)
+    function updateTrayScrollHeights(newHeight) {
+      try {
+        const bottom = document.getElementById('bottomTray');
+        const aHeader = attractionsTray.querySelector('.tray-header');
+        const oHeader = operatorsTray.querySelector('.tray-header');
+        const aScroll = attractionsTray.querySelector('.tray-scroll');
+        const oScroll = operatorsTray.querySelector('.tray-scroll');
+        const aHeaderH = aHeader ? aHeader.offsetHeight : 0;
+        const oHeaderH = oHeader ? oHeader.offsetHeight : 0;
+        const targetA = Math.max(20, newHeight - aHeaderH);
+        const targetO = Math.max(20, newHeight - oHeaderH);
+        if (aScroll) aScroll.style.height = targetA + 'px';
+        if (oScroll) oScroll.style.height = targetO + 'px';
+        if (bottom) bottom.style.height = newHeight + 'px';
+      } catch (e) {
+        /* ignore */ }
     }
-  });
-}
 
-// Canvas click to deselect
-document.getElementById('ci').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget || e.target.id === 'mainZone' || e.target.classList.contains('rot-zone-label') || e.target.id === 'templateGrid') {
-    clearSelection();
-  }
-});
-
-// Initial render - load data from database
-loadZoneData();
-
-// ── Resizable Panels ──
-// Horizontal resize for Properties panel
-const propsPanel = document.getElementById('propsPanel');
-const propsResize = document.getElementById('propsResize');
-let isResizingProps = false;
-let startXProps = 0;
-let startWidthProps = 0;
-propsResize.addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  isResizingProps = true;
-  startXProps = e.clientX;
-  startWidthProps = propsPanel.offsetWidth;
-  document.body.style.cursor = 'ew-resize';
-  // Prevent text selection while dragging
-  document.body.style.userSelect = 'none';
-});
-document.addEventListener('mousemove', function(e) {
-  if (isResizingProps) {
-    // Invert delta so the panel resizes in the direction the mouse moves
-    // (handle is positioned on the left edge of the panel).
-    let newWidth = startWidthProps + (startXProps - e.clientX);
-    newWidth = Math.max(220, Math.min(600, newWidth));
-    propsPanel.style.width = newWidth + 'px';
-  }
-});
-document.addEventListener('mouseup', function() {
-  if (isResizingProps) {
-    isResizingProps = false;
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  }
-});
-
-// Vertical resize for bottom tray
-const bottomTray = document.getElementById('bottomTray');
-const bottomTrayResize = document.getElementById('bottomTrayResize');
-let isResizingTray = false;
-let startYTray = 0;
-let startHeightTray = 0;
-bottomTrayResize.addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  isResizingTray = true;
-  startYTray = e.clientY;
-  startHeightTray = bottomTray.offsetHeight;
-  document.body.style.cursor = 'ns-resize';
-  document.body.style.userSelect = 'none';
-});
-document.addEventListener('mousemove', function(e) {
-  if (isResizingTray) {
-    // Follow mouse: moving mouse down increases height, moving up decreases height
-    let newHeight = startHeightTray + (e.clientY - startYTray);
-    newHeight = Math.max(120, Math.min(window.innerHeight * 0.6, newHeight));
-    bottomTray.style.height = newHeight + 'px';
-    // update internal scroll areas to match
-    updateTrayScrollHeights(newHeight);
-  }
-});
-document.addEventListener('mouseup', function() {
-  if (isResizingTray) {
-    isResizingTray = false;
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  }
-});
-
-// Middle handle: supports vertical resize (drag up/down) OR horizontal scroll (drag left/right)
-const attractionsTray = document.getElementById('attractionsTray');
-const operatorsTray = document.getElementById('operatorsTray');
-const middleResize = document.getElementById('middleTrayResize');
-let middleMode = null; // 'resize' or 'scroll'
-let startYMiddle = 0;
-let startXMiddle = 0;
-let startHeightMiddle = 0;
-let startScrollLeft = 0;
-middleResize.addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  middleMode = null;
-  startYMiddle = e.clientY;
-  startXMiddle = e.clientX;
-  startHeightMiddle = document.getElementById('bottomTray').offsetHeight;
-  // take first tray's scrollLeft as baseline
-  const aScroll = attractionsTray.querySelector('.tray-scroll');
-  startScrollLeft = aScroll ? aScroll.scrollLeft : 0;
-  document.body.style.userSelect = 'none';
-  document.body.style.cursor = 'ns-resize';
-});
-
-document.addEventListener('mousemove', function(e) {
-  // if user hasn't chosen mode yet, detect based on movement direction
-  if (middleMode === null && (e.buttons & 1)) {
-    const dx = e.clientX - startXMiddle;
-    const dy = e.clientY - startYMiddle;
-    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
-      middleMode = Math.abs(dx) > Math.abs(dy) ? 'scroll' : 'resize';
-      // adjust cursor for scroll
-      if (middleMode === 'scroll') document.body.style.cursor = 'grab';
+    function initTrayHeights() {
+      try {
+        const h = document.getElementById('bottomTray').offsetHeight;
+        updateTrayScrollHeights(h);
+      } catch (e) {}
     }
-  }
 
-  if (middleMode === 'resize' && (e.buttons & 1)) {
-    // vertical resize of bottom tray (affects both trays' heights)
-    let delta = e.clientY - startYMiddle;
-    let newHeight = startHeightMiddle + delta;
-    newHeight = Math.max(60, Math.min(window.innerHeight * 0.6, newHeight));
-    // apply to tray sections and bottom container
-    try { document.getElementById('bottomTray').style.height = newHeight + 'px'; } catch (err) {}
-    if (attractionsTray) attractionsTray.style.height = newHeight + 'px';
-    if (operatorsTray) operatorsTray.style.height = newHeight + 'px';
-    updateTrayScrollHeights(newHeight);
-  }
+    window.addEventListener('resize', initTrayHeights);
+    setTimeout(initTrayHeights, 40);
 
-  if (middleMode === 'scroll' && (e.buttons & 1)) {
-    // horizontal scroll of both tray-scroll elements
-    const dx = e.clientX - startXMiddle;
-    const newScroll = startScrollLeft + dx; // drag right -> scroll right
-    const aScroll = attractionsTray.querySelector('.tray-scroll');
-    const oScroll = operatorsTray.querySelector('.tray-scroll');
-    if (aScroll) aScroll.scrollLeft = newScroll;
-    if (oScroll) oScroll.scrollLeft = newScroll;
-  }
-});
+    // Tip: dismissible and auto-hide after 30s
+    const resizeTip = document.getElementById('resizeTip');
+    if (resizeTip) {
+      // Allow keyboard users to dismiss with Enter/Space
+      resizeTip.tabIndex = 0;
+      const hideTip = () => {
+        resizeTip.style.transition = 'opacity 0.18s';
+        resizeTip.style.opacity = '0';
+        setTimeout(() => {
+          try {
+            resizeTip.style.display = 'none';
+          } catch (e) {}
+        }, 200);
+      };
 
-document.addEventListener('mouseup', function() {
-  if (middleMode !== null) {
-    middleMode = null;
-    document.body.style.userSelect = '';
-    document.body.style.cursor = '';
-  }
-});
+      let tipTimeout = setTimeout(hideTip, 30000);
 
-// Keep the internal scroll areas sized to (tray height - header height)
-function updateTrayScrollHeights(newHeight) {
-  try {
-    const bottom = document.getElementById('bottomTray');
-    const aHeader = attractionsTray.querySelector('.tray-header');
-    const oHeader = operatorsTray.querySelector('.tray-header');
-    const aScroll = attractionsTray.querySelector('.tray-scroll');
-    const oScroll = operatorsTray.querySelector('.tray-scroll');
-    const aHeaderH = aHeader ? aHeader.offsetHeight : 0;
-    const oHeaderH = oHeader ? oHeader.offsetHeight : 0;
-    const targetA = Math.max(20, newHeight - aHeaderH);
-    const targetO = Math.max(20, newHeight - oHeaderH);
-    if (aScroll) aScroll.style.height = targetA + 'px';
-    if (oScroll) oScroll.style.height = targetO + 'px';
-    if (bottom) bottom.style.height = newHeight + 'px';
-  } catch (e) { /* ignore */ }
-}
+      resizeTip.addEventListener('click', () => {
+        clearTimeout(tipTimeout);
+        hideTip();
+      });
 
-function initTrayHeights() {
-  try {
-    const h = document.getElementById('bottomTray').offsetHeight;
-    updateTrayScrollHeights(h);
-  } catch (e) {}
-}
-
-window.addEventListener('resize', initTrayHeights);
-setTimeout(initTrayHeights, 40);
-
-// Tip: dismissible and auto-hide after 30s
-const resizeTip = document.getElementById('resizeTip');
-if (resizeTip) {
-  // Allow keyboard users to dismiss with Enter/Space
-  resizeTip.tabIndex = 0;
-  const hideTip = () => {
-    resizeTip.style.transition = 'opacity 0.18s';
-    resizeTip.style.opacity = '0';
-    setTimeout(() => { try { resizeTip.style.display = 'none'; } catch(e){} }, 200);
-  };
-
-  let tipTimeout = setTimeout(hideTip, 30000);
-
-  resizeTip.addEventListener('click', () => {
-    clearTimeout(tipTimeout);
-    hideTip();
-  });
-
-  resizeTip.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Enter' || ev.key === ' ') {
-      ev.preventDefault();
-      clearTimeout(tipTimeout);
-      hideTip();
+      resizeTip.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          clearTimeout(tipTimeout);
+          hideTip();
+        }
+      });
     }
-  });
-}
-</script>
+  </script>
 </body>
+
 </html>
