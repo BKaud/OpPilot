@@ -16,179 +16,6 @@ error_reporting(E_ALL);
 </head>
 
 <body>
-<<<<<<< HEAD
-<!-- NAVBAR -->
-<nav class="navbar">
-<div class="navbar-logo">
-<div class="logo-icon"></div>
-<span class="logo-name">O<span>P</span>ilot</span>
-</div>
-</nav>
-<div class="main">
-<!-- SIDEBAR -->
-<aside class="sidebar">
-<div class="nav-section">
-<div class="nav-upper">
-<!-- Homepage -->
-<div class="nav-item">
-<a href="../dashboard/dashboard.php" class="nav-link active" id="home-link">
-<div class="nav-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<path d="M3 12L12 3l9 9"/>
-<path d="M9 21V12h6v9"/>
-</svg>
-</div>
-<span class="nav-text">Homepage</span>
-</a>
-</div>
-<!-- Zones -->
-<div class="nav-item expandable" id="zones">
-<a href="#" class="nav-link expanded">
-<div class="nav-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-</div>
-<span class="nav-text">Zones</span>
-</a>
-<div class="sub-nav expanded" id="zones-sub">
-<div class="zone-item expandable" id="rides1-zone">
-<a href="#" class="sub-nav-link expandable">Rides 1 <span id="zoneLockIndicator-1" class="zone-lock-indicator" title="Zone lock" aria-hidden="true"></span></a>
-<div class="zone-sub-nav expanded" id="rides1-sub">
-<a href="../dashboard/dashboard.php" class="zone-sub-link">Dashboard</a>
-<a href="../EditMode/editmode.php" class="zone-sub-link">Edit Mode</a>
-<a href="settings.php" class="zone-sub-link active">Settings & Config</a>
-</div>
-</div>
-<div class="zone-item expandable" id="rides2-zone">
-<a href="#" class="sub-nav-link expandable">Rides 2</a>
-<div class="zone-sub-nav" id="rides2-sub">
-<a href="#" class="zone-sub-link">Dashboard</a>
-<a href="#" class="zone-sub-link">Edit Mode</a>
-<a href="#" class="zone-sub-link">Settings & Config</a>
-</div>
-</div>
-</div>
-</div>
-<!-- Management link placed under Zones -->
-<div class="nav-item">
-  <a href="../../management/management-dashboard/management-dashboard.php" class="nav-link">
-    <div class="nav-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h8V3H3v10z"/><path d="M14 21h7v-7h-7v7z"/><path d="M14 3v7H21"/></svg>
-    </div>
-    <span class="nav-text">Management</span>
-  </a>
-</div>
-</div>
-<div class="nav-lower">
-<div class="nav-item">
-<a href="#" class="nav-link">
-<div class="nav-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-</div>
-<span class="nav-text">Account Settings</span>
-</a>
-</div>
-<div class="nav-item">
-<a href="#" class="nav-link">
-<div class="nav-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-</div>
-<span class="nav-text">Changelog</span>
-</a>
-</div>
-</div>
-</div>
-</aside>
-<!-- CONTENT -->
-<div class="content">
-<div class="page-header">
-<h1>Zone Settings &amp; Configuration</h1>
-<div class="breadcrumb">Zones › Rides 1 › <span>Settings</span></div>
-</div>
-<div class="settings-body">
-<!-- ── LEFT PANEL: Zone + Attraction Selector ── -->
-<div class="panel">
-<div class="panel-title">Zone Settings &amp; Configuration</div>
-<div class="panel-scroll">
-<!-- Zone Configuration -->
-<div class="section-card">
-<div class="section-card-header">Zone Configuration</div>
-<div class="section-card-body form-col">
-<div class="input-group">
-<label>Zone Name</label>
-<input type="text" value="Rides 1" />
-</div>
-<div class="input-group">
-<label>Rotation Delay Time</label>
-<input type="number" value="15" min="1" />
-<span style="font-size:11px;color:#666">min</span>
-</div>
-<div class="input-group">
-<label>Max Operators</label>
-<input type="number" value="12" min="1" />
-</div>
-<div class="input-group">
-<label>Break Duration</label>
-<input type="number" value="15" min="5" />
-<span style="font-size:11px;color:#666">min</span>
-</div>
-<div class="toggle-wrap">
-<label class="toggle">
-<input type="checkbox" checked />
-<span class="toggle-slider"></span>
-</label>
-<span class="toggle-label">Enable Auto-Rotation</span>
-</div>
-<div class="toggle-wrap">
-<label class="toggle">
-<input type="checkbox" id="zoneLockDuringMaint" />
-<span class="toggle-slider"></span>
-</label>
-<span class="toggle-label">Lock Zone During Maintenance</span>
-</div>
-</div>
-</div>
-<!-- Attraction Edit Selector -->
-<div class="section-card">
-<div class="section-card-header">Attraction Edit Selector</div>
-<div class="section-card-body">
-<div class="field-label">Select Attraction to Configure</div>
-<div class="attraction-grid" id="attractionGrid">
-<!-- Attraction tiles loaded dynamically from DB -->
-<div class="attraction-thumb" data-id="add" onclick="addAttraction()">
-<div class="thumb-bg" style="background: linear-gradient(135deg, #b0b0b0, #a0a0a0);">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-</div>
-<div class="attraction-label">Add New</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- ── RIGHT PANEL: Attraction + Position Settings ── -->
-<div class="panel">
-<div class="panel-title">Attraction Settings &amp; Configuration</div>
-<div class="panel-scroll">
-<!-- Attraction Configuration -->
-<div class="section-card">
-<div class="section-card-header">Attraction Configuration</div>
-<div class="section-card-body">
-<div class="form-row" style="align-items:flex-start; gap:12px;">
-<div class="img-upload" title="Upload attraction image" onclick="document.getElementById('attractionImageInput').click()" style="cursor:pointer;overflow:hidden;position:relative;">
-<input type="file" id="attractionImageInput" accept="image/*" style="display:none;" onchange="previewAttractionImage(this)" />
-<img id="attractionImagePreview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:inherit;" />
-<svg id="attractionImagePlaceholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-</div>
-<div class="form-col" style="flex:1;">
-<div class="field-label">Attraction Name</div>
-<div style="display:flex;gap:6px;">
-<input type="text" id="attractionName" value="Tidal Twist 1" style="flex:1;" />
-<button class="btn btn-gray btn-sm">Edit Name</button>
-</div>
-                <div style="display:flex;gap:6px;margin-top:4px;">
-                <input type="text" id="attractionLink" placeholder="Link to other ride…" style="flex:1;" />
-                <button id="linkRideBtn" class="btn btn-gray btn-sm">Link Ride</button>
-=======
 <?php
 require_once __DIR__ . '/../../bootstrap.php';
 require_once __DIR__ . '/../../partials/sidebar.php';
@@ -262,7 +89,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                             </div>
                         </div>
                     </div>
->>>>>>> main
                 </div>
             </div>
             <!-- ── RIGHT PANEL: Attraction + Position Settings ── -->
@@ -353,19 +179,18 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                             </div>
                             <hr class="section-sep" />
                             <div class="field-label">Tier Groups</div>
-                            <div class="perm-dropdown custom-perm">
-                                <div class="perm-toggle">
-                                    <span class="perm-summary">Tier 1</span>
-                                    <button type="button" class="perm-arrow" aria-expanded="false">▾</button>
-                                </div>
-                                <div class="perm-menu" hidden>
-                                    <label><input type="checkbox" value="tier1" checked /> Tier 1</label>
-                                    <label><input type="checkbox" value="tier2" /> Tier 2</label>
-                                    <label><input type="checkbox" value="tier3" /> Tier 3</label>
-                                    <label><input type="checkbox" value="lead" /> Lead</label>
-                                    <label><input type="checkbox" value="supervisor" /> Supervisor</label>
-                                </div>
-                                <div style="font-size:12px;color:#666;margin-top:6px;">Click the arrow to open; hold Ctrl/Cmd to select multiple</div>
+                            <div class="perm-dropdown" style="position:relative;">
+                                <select id="permTierSelect" multiple style="width:100%;padding-right:34px;">
+                                    <option value="tier1" selected>Tier 1</option>
+                                    <option value="tier2">Tier 2</option>
+                                    <option value="tier3">Tier 3</option>
+                                    <option value="lead">Lead</option>
+                                    <option value="supervisor">Supervisor</option>
+                                </select>
+                                <button type="button" class="perm-arrow" title="Open tiers" aria-label="Open tiers" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                                <div style="font-size:12px;color:#666;margin-top:6px;">Click the arrow to open — hold Ctrl/Cmd to select multiple</div>
                             </div>
                             <hr class="section-sep" />
                             <div class="field-label">Main Position</div>
@@ -515,8 +340,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                         mainPosSelect.value = ride.ride_main_pos_id;
                     } catch (e) {}
                 }
-                // Restore permission tiers if provided
-                try { setSelectedPermTiers(ride.ride_perm_tiers || ride.perm_tiers || ride.ride_perm || []); } catch (e) {}
                 return data;
             })
             .catch(err => {
@@ -637,71 +460,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     // Permission tier toggle
     function togglePerm(el) {
         el.classList.toggle('active');
-    }
-
-    // --- Custom permission dropdown helpers ---
-    function initPermDropdown() {
-        const arrow = document.querySelector('.perm-arrow');
-        const menu = document.querySelector('.perm-menu');
-        if (!arrow || !menu) return;
-        arrow.addEventListener('click', (e) => {
-            const open = menu.hasAttribute('hidden') ? false : true;
-            if (open) {
-                menu.setAttribute('hidden', '');
-                arrow.setAttribute('aria-expanded', 'false');
-            } else {
-                menu.removeAttribute('hidden');
-                arrow.setAttribute('aria-expanded', 'true');
-            }
-            e.stopPropagation();
-        });
-        // update summary when checkboxes change
-        menu.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', updatePermSummary));
-        // close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!menu) return;
-            if (!menu.contains(e.target) && !document.querySelector('.perm-arrow').contains(e.target)) {
-                menu.setAttribute('hidden', '');
-                const a = document.querySelector('.perm-arrow'); if (a) a.setAttribute('aria-expanded', 'false');
-            }
-        });
-        updatePermSummary();
-    }
-
-    function updatePermSummary() {
-        const selected = getSelectedPermTiers();
-        const summary = document.querySelector('.perm-summary');
-        if (!summary) return;
-        if (selected.length === 0) summary.textContent = 'None';
-        else if (selected.length === 1) summary.textContent = selected[0].replace(/^tier/, 'Tier ');
-        else summary.textContent = selected.length + ' selected';
-    }
-
-    function getSelectedPermTiers() {
-        const menu = document.querySelector('.perm-menu');
-        if (!menu) return [];
-        const vals = [];
-        menu.querySelectorAll('input[type=checkbox]').forEach(cb => {
-            if (cb.checked) vals.push(cb.value);
-        });
-        return vals;
-    }
-
-    function setSelectedPermTiers(input) {
-        const menu = document.querySelector('.perm-menu');
-        if (!menu) return;
-        // normalize input to array of values
-        let arr = [];
-        if (!input) arr = ['tier1'];
-        else if (Array.isArray(input)) arr = input;
-        else if (typeof input === 'string') {
-            try { arr = JSON.parse(input); if (!Array.isArray(arr)) arr = input.split(/[,|;]/).map(s=>s.trim()); } catch(e){ arr = input.split(/[,|;]/).map(s=>s.trim()); }
-        }
-        // set checkboxes
-        menu.querySelectorAll('input[type=checkbox]').forEach(cb => {
-            cb.checked = arr.indexOf(cb.value) !== -1;
-        });
-        updatePermSummary();
     }
 
     // Attach a safe click handler that respects the maintenance lock
@@ -1028,6 +786,53 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             input.focus();
         });
     }
+    // Controlled Tier dropdown: only open when arrow clicked
+    (function() {
+        try {
+            const permWrap = document.querySelector('.perm-dropdown');
+            if (!permWrap) return;
+            const select = permWrap.querySelector('#permTierSelect');
+            const arrow = permWrap.querySelector('.perm-arrow');
+            if (!select || !arrow) return;
+
+            // Prevent the native dropdown from opening when clicking the main select area
+            select.addEventListener('mousedown', function(e) {
+                // Allow keyboard interactions (Tab/Arrow) — only block mouse open
+                e.preventDefault();
+            });
+
+            // When arrow clicked, toggle a temporary size to show options (works cross-browser)
+            arrow.addEventListener('click', function(e) {
+                e.preventDefault();
+                // If already open via arrow, close
+                if (select._openViaArrow) {
+                    select.size = select.__oldSize || 0;
+                    select._openViaArrow = false;
+                    select.focus();
+                    return;
+                }
+                select._openViaArrow = true;
+                select.__oldSize = select.size || 0;
+                // show a dropdown-like list (limit height)
+                select.size = Math.min(6, select.options.length || 4);
+                select.focus();
+
+                // close on blur or outside click
+                const close = function() {
+                    try { select.size = select.__oldSize || 0; } catch (e) {}
+                    select._openViaArrow = false;
+                    select.removeEventListener('blur', close);
+                    document.removeEventListener('click', outside);
+                };
+                const outside = function(ev) {
+                    if (!permWrap.contains(ev.target)) close();
+                };
+                select.addEventListener('blur', close);
+                setTimeout(() => document.addEventListener('click', outside), 0);
+            });
+        } catch (e) { console.warn('Perm dropdown init failed', e); }
+    })();
+
     // Save settings handler
     document.getElementById('saveSettingsBtn').addEventListener('click', function() {
         if (!currentRideId) {
@@ -1068,8 +873,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         formData.append('main_position', mainPosition);
         formData.append('required_certs', requiredCerts);
         formData.append('ride_link', rideLink);
-        // Include selected permission tiers
-        try { formData.append('perm_tiers', JSON.stringify(getSelectedPermTiers())); } catch (e) {}
         // Append image file if present so server can persist it
         try {
             const imgInput = document.getElementById('attractionImageInput');
@@ -1192,8 +995,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 } catch (e) {}
             }
             posCount = positions.length;
-            // Restore permission tiers from snapshot if available
-            try { setSelectedPermTiers(ride.ride_perm_tiers || ride.perm_tiers || ride.ride_perm || []); } catch (e) {}
             // Update tile label if present
             if (tile) {
                 const label = tile.querySelector('.attraction-label');
@@ -1528,42 +1329,15 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         appearance: menulist-button;
         cursor: pointer;
     }
-    /* Custom perm dropdown styles */
-    .custom-perm .perm-toggle {
-        display: flex;
+    /* Arrow button for controlled open */
+    .perm-dropdown .perm-arrow {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 8px 10px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background: #fff;
-        cursor: default;
-        user-select: none;
+        justify-content: center;
+        padding: 0;
+        line-height: 0;
     }
-
-    .custom-perm .perm-summary { color:#111; }
-
-    .custom-perm .perm-arrow {
-        background: transparent;
-        border: none;
-        font-size: 14px;
-        cursor: pointer;
-        padding: 0 6px;
-    }
-
-    .custom-perm .perm-menu {
-        margin-top:6px;
-        border: 1px solid #e6e6e6;
-        border-radius:6px;
-        padding:8px;
-        background:#fff;
-        box-shadow:0 6px 20px rgba(0,0,0,0.06);
-        display: flex;
-        flex-direction: column;
-        gap:6px;
-    }
-
-    .custom-perm .perm-menu label { font-size:13px; color:#111; }
+    .perm-dropdown .perm-arrow:focus { outline: 2px solid rgba(43,140,255,0.25); }
     </style>
 </body>
 
