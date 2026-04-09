@@ -338,7 +338,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                     <div class="section-card">
                         <div class="section-card-header">Position Settings</div>
                         <div class="section-card-body">
-                            <div class="field-label">Positions &amp; Permission Tiers</div>
+                            <div class="field-label">Positions &amp; Permission Groups</div>
                             <!-- Position rows loaded from DB -->
                             <div id="positionList">
                             </div>
@@ -348,17 +348,24 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                                 <button id="removePositionBtn" class="btn btn-danger btn-sm"
                                     onclick="removePosition()">– Remove</button>
                             </div>
-                            <div style="margin-top:12px;">
+                            <div id="deleteBtnContainer" style="margin-top:12px;">
                                 <button id="deleteBtn" class="btn btn-danger">Delete Attraction</button>
                             </div>
                             <hr class="section-sep" />
-                            <div class="field-label">Permission Tier</div>
-                            <div class="perm-row">
-                                <span class="perm-badge active" onclick="togglePerm(this)">Tier 1</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Tier 2</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Tier 3</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Lead</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Supervisor</span>
+                            <div class="field-label">Tier Groups</div>
+                            <div class="perm-dropdown custom-perm">
+                                <div class="perm-toggle">
+                                    <span class="perm-summary">Tier 1</span>
+                                    <button type="button" class="perm-arrow" aria-expanded="false">▾</button>
+                                </div>
+                                <div class="perm-menu" hidden>
+                                    <label><input type="checkbox" value="tier1" checked /> Tier 1</label>
+                                    <label><input type="checkbox" value="tier2" /> Tier 2</label>
+                                    <label><input type="checkbox" value="tier3" /> Tier 3</label>
+                                    <label><input type="checkbox" value="lead" /> Lead</label>
+                                    <label><input type="checkbox" value="supervisor" /> Supervisor</label>
+                                </div>
+                                <div style="font-size:12px;color:#666;margin-top:6px;">Click the arrow to open; hold Ctrl/Cmd to select multiple</div>
                             </div>
                             <hr class="section-sep" />
                             <div class="field-label">Main Position</div>
@@ -387,6 +394,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     function selectAttraction(el, name, rideId) {
         document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
         el.classList.add('selected');
+        // move delete button into the selected tile (or back to container if add tile)
+        try { moveDeleteButtonToTile(el); } catch (e) {}
         if (!rideId) return;
         currentRideId = rideId;
         return fetch('api.php?action=getAttractionData&ride_id=' + rideId)
@@ -506,6 +515,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                         mainPosSelect.value = ride.ride_main_pos_id;
                     } catch (e) {}
                 }
+                // Restore permission tiers if provided
+                try { setSelectedPermTiers(ride.ride_perm_tiers || ride.perm_tiers || ride.ride_perm || []); } catch (e) {}
                 return data;
             })
             .catch(err => {
@@ -628,6 +639,71 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         el.classList.toggle('active');
     }
 
+    // --- Custom permission dropdown helpers ---
+    function initPermDropdown() {
+        const arrow = document.querySelector('.perm-arrow');
+        const menu = document.querySelector('.perm-menu');
+        if (!arrow || !menu) return;
+        arrow.addEventListener('click', (e) => {
+            const open = menu.hasAttribute('hidden') ? false : true;
+            if (open) {
+                menu.setAttribute('hidden', '');
+                arrow.setAttribute('aria-expanded', 'false');
+            } else {
+                menu.removeAttribute('hidden');
+                arrow.setAttribute('aria-expanded', 'true');
+            }
+            e.stopPropagation();
+        });
+        // update summary when checkboxes change
+        menu.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', updatePermSummary));
+        // close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!menu) return;
+            if (!menu.contains(e.target) && !document.querySelector('.perm-arrow').contains(e.target)) {
+                menu.setAttribute('hidden', '');
+                const a = document.querySelector('.perm-arrow'); if (a) a.setAttribute('aria-expanded', 'false');
+            }
+        });
+        updatePermSummary();
+    }
+
+    function updatePermSummary() {
+        const selected = getSelectedPermTiers();
+        const summary = document.querySelector('.perm-summary');
+        if (!summary) return;
+        if (selected.length === 0) summary.textContent = 'None';
+        else if (selected.length === 1) summary.textContent = selected[0].replace(/^tier/, 'Tier ');
+        else summary.textContent = selected.length + ' selected';
+    }
+
+    function getSelectedPermTiers() {
+        const menu = document.querySelector('.perm-menu');
+        if (!menu) return [];
+        const vals = [];
+        menu.querySelectorAll('input[type=checkbox]').forEach(cb => {
+            if (cb.checked) vals.push(cb.value);
+        });
+        return vals;
+    }
+
+    function setSelectedPermTiers(input) {
+        const menu = document.querySelector('.perm-menu');
+        if (!menu) return;
+        // normalize input to array of values
+        let arr = [];
+        if (!input) arr = ['tier1'];
+        else if (Array.isArray(input)) arr = input;
+        else if (typeof input === 'string') {
+            try { arr = JSON.parse(input); if (!Array.isArray(arr)) arr = input.split(/[,|;]/).map(s=>s.trim()); } catch(e){ arr = input.split(/[,|;]/).map(s=>s.trim()); }
+        }
+        // set checkboxes
+        menu.querySelectorAll('input[type=checkbox]').forEach(cb => {
+            cb.checked = arr.indexOf(cb.value) !== -1;
+        });
+        updatePermSummary();
+    }
+
     // Attach a safe click handler that respects the maintenance lock
     function attachTileClick(tile) {
         tile.onclick = function(e) {
@@ -663,6 +739,25 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         }
     }
 
+    // Move the main delete button into the right-panel save bar for the selected tile (or back to container)
+    function moveDeleteButtonToTile(tile) {
+        const container = document.getElementById('deleteBtnContainer');
+        const btn = document.getElementById('deleteBtn');
+        if (!btn || !container) return;
+        // If tile is provided and is not the Add tile, place the button into the right panel save bar
+        if (tile && tile.getAttribute && tile.getAttribute('data-id') !== 'add') {
+            const saveBar = document.querySelector('.panel:nth-of-type(2) .save-bar') || document.querySelector('.save-bar');
+            if (saveBar) {
+                btn.classList.add('savebar-delete-btn');
+                try { saveBar.insertBefore(btn, saveBar.firstChild); } catch (e) { container.appendChild(btn); }
+                return;
+            }
+        }
+        // move back to fallback container
+        btn.classList.remove('savebar-delete-btn');
+        container.appendChild(btn);
+    }
+
     // Apply lock state across tiles (called on toggle change and after load/save)
     function updateMaintenanceLocking() {
         const lock = document.getElementById('zoneLockDuringMaint') && document.getElementById('zoneLockDuringMaint')
@@ -681,6 +776,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         } else {
             setRightPanelEditable(true);
         }
+        // ensure delete button sits in the selected tile (or fallback)
+        try { moveDeleteButtonToTile(selected); } catch (e) {}
     }
     // ── Load attraction grid from DB on page load ──
     function loadAttractions(zoneId = 1) {
@@ -971,6 +1068,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         formData.append('main_position', mainPosition);
         formData.append('required_certs', requiredCerts);
         formData.append('ride_link', rideLink);
+        // Include selected permission tiers
+        try { formData.append('perm_tiers', JSON.stringify(getSelectedPermTiers())); } catch (e) {}
         // Append image file if present so server can persist it
         try {
             const imgInput = document.getElementById('attractionImageInput');
@@ -1093,6 +1192,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 } catch (e) {}
             }
             posCount = positions.length;
+            // Restore permission tiers from snapshot if available
+            try { setSelectedPermTiers(ride.ride_perm_tiers || ride.perm_tiers || ride.ride_perm || []); } catch (e) {}
             // Update tile label if present
             if (tile) {
                 const label = tile.querySelector('.attraction-label');
@@ -1263,9 +1364,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                         showToast('Failed to delete: ' + (data.error || 'Unknown error'), 'error');
                         return;
                     }
-                    // Remove tile from grid if present
+                    // Remove tile from grid if present. Move delete button back to container first
                     const sel = document.querySelector('.attraction-thumb.selected');
                     const tile = sel || document.querySelector('[data-id="ride' + currentRideId + '"]');
+                    try { moveDeleteButtonToTile(null); } catch (e) {}
                     if (tile) tile.remove();
                     // Clear right panel and trackers
                     currentRideId = null;
@@ -1403,6 +1505,65 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     textarea {
         color: #000;
     }
+    /* Style delete button when placed in the save bar */
+    .save-bar .savebar-delete-btn {
+        margin-right: auto;
+        background: linear-gradient(90deg, #ff6b6b, #d64545);
+        color: #fff;
+    }
+    /* Permission dropdown styling */
+    .perm-dropdown select {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+        color: #000;
+        background: #fff;
+    }
+    /* Prefer closed dropdown appearance for multi-select where supported */
+    .perm-dropdown select {
+        height: auto;
+        max-height: 240px;
+        -webkit-appearance: menulist-button;
+        appearance: menulist-button;
+        cursor: pointer;
+    }
+    /* Custom perm dropdown styles */
+    .custom-perm .perm-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        cursor: default;
+        user-select: none;
+    }
+
+    .custom-perm .perm-summary { color:#111; }
+
+    .custom-perm .perm-arrow {
+        background: transparent;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 0 6px;
+    }
+
+    .custom-perm .perm-menu {
+        margin-top:6px;
+        border: 1px solid #e6e6e6;
+        border-radius:6px;
+        padding:8px;
+        background:#fff;
+        box-shadow:0 6px 20px rgba(0,0,0,0.06);
+        display: flex;
+        flex-direction: column;
+        gap:6px;
+    }
+
+    .custom-perm .perm-menu label { font-size:13px; color:#111; }
     </style>
 </body>
 
