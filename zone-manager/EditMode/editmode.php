@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OPilot – Edit Mode</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
     <link rel="stylesheet" href="../../assets/css/theme.css" />
 </head>
 
@@ -63,8 +63,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
           </div>
         </div>
         <!-- BOTTOM TRAY -->
-        <div class="bottom-tray resizable-vertical" id="bottomTray">
-          <div class="resize-handle-vertical" id="bottomTrayResize" title="Drag to resize">|||</div>
+        <div class="bottom-tray" id="bottomTray">
+          <div class="resize-handle-vertical" id="bottomTrayResize" title="Drag to resize"></div>
           <!-- Return Drop Zone -->
           <div class="return-drop-zone" id="returnDropZone">
             <div class="return-drop-zone-content">
@@ -75,16 +75,15 @@ require_once __DIR__ . '/../../partials/sidebar.php';
               Return to Attraction Bar
             </div>
           </div>
-          <!-- Single centered handle will control both trays equally -->
-          <div class="middle-resize" id="middleTrayResize" title="Drag to resize">|||</div>
+          <!-- Middle handle controls both trays -->
 
-          <div class="tray-section resizable-vertical" id="attractionsTray">
+          <div class="tray-section" id="attractionsTray">
             <div class="tray-header">Attractions</div>
             <div class="tray-scroll">
               <!-- Attractions will be loaded dynamically from database -->
             </div>
           </div>
-          <div class="tray-section resizable-vertical" id="operatorsTray">
+          <div class="tray-section" id="operatorsTray">
             <div class="tray-header">Unassigned Operators</div>
             <div class="tray-scroll">
               <!-- Operators will be loaded dynamically from database -->
@@ -181,7 +180,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
     // Render the attraction bar at the bottom
     function renderAttractionBar() {
-      // Find the tray section that contains "Attractions" in its header
       const sections = document.querySelectorAll('.tray-section');
       let container = null;
 
@@ -217,11 +215,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       setupDragAndDrop();
     }
 
-    // Map vertical mouse wheel to horizontal scroll so trays move with mouse direction
+    // Map vertical mouse wheel to horizontal scroll
     document.querySelectorAll('.tray-scroll').forEach(el => {
       el.addEventListener('wheel', function(e) {
         if (this.scrollWidth > this.clientWidth) {
-          // invert mapping so scrolling follows mouse movement direction
           this.scrollLeft -= e.deltaY;
           e.preventDefault();
         }
@@ -232,7 +229,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
     // Render operators list in sidebar
     function renderOperatorsList() {
-      // Find the tray section that contains "Operators" in its header
       const sections = document.querySelectorAll('.tray-section');
       let container = null;
 
@@ -300,11 +296,11 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
         grid.appendChild(box);
 
-        // Make filled operator chips draggable independently (without dragging the whole card)
+        // Make filled operator chips draggable independently
         box.querySelectorAll('.position-slot-operator.filled').forEach(opEl => {
           opEl.setAttribute('draggable', 'true');
           opEl.addEventListener('dragstart', (e) => {
-            e.stopPropagation(); // prevent the card's own dragstart from firing
+            e.stopPropagation();
             dragType = 'operator';
             dragSourceSlotId = opEl.closest('.position-slot').dataset.slotId;
             dragSourcePosIdx = parseInt(opEl.closest('.position-slot').dataset.posIdx);
@@ -348,7 +344,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
           document.getElementById('returnDropZone').classList.remove('active');
         });
 
-        // Reorder within grid by dragging one box onto another
+        // Reorder within grid
         box.addEventListener('dragover', (e) => {
           if (dragType === 'rideslot' && draggedSlotId !== slot.id) {
             e.preventDefault();
@@ -399,7 +395,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       }
     }
 
-    // Render position slots in properties panel (read-only view)
+    // Render position slots in properties panel
     function renderPositionSlots() {
       const container = document.getElementById('positionSlots');
       if (!selectedSlot) return;
@@ -419,7 +415,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     function updatePositionOperator(idx, operatorId) {
       if (!selectedSlot) return;
 
-      // Find the operator details
       const operator = availableOperators.find(op => op.id == operatorId);
 
       selectedSlot.positions[idx].operatorId = operatorId ? parseInt(operatorId) : null;
@@ -429,7 +424,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       renderGrid();
       selectRideSlot(selectedSlot.id);
 
-      // Auto-save to database
       autoSaveLayout('Operator assignment updated');
     }
 
@@ -437,10 +431,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     let saveTimeout = null;
     async function autoSaveLayout(message = 'Saving...') {
       console.log('[autoSaveLayout] Triggered with message:', message);
-      // Clear any pending save
       if (saveTimeout) clearTimeout(saveTimeout);
 
-      // Debounce: wait 500ms before saving
       saveTimeout = setTimeout(async () => {
         showSaveIndicator(message);
         await saveLayoutToDb();
@@ -451,7 +443,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     function showSaveIndicator(message) {
       const indicator = document.getElementById('saveIndicator');
       if (!indicator) {
-        // Create indicator if it doesn't exist
         const div = document.createElement('div');
         div.id = 'saveIndicator';
         div.style.cssText = `
@@ -514,7 +505,6 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       }
     }
 
-    // Clear selection
     function clearSel() {
       clearSelection();
     }
@@ -526,21 +516,20 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       document.getElementById('propsBody').style.display = 'none';
     }
 
-    // Update slot counter
     function updateSlotCount() {
       document.getElementById('slotCount').textContent = rideSlots.length;
     }
 
-    // Drag and Drop functionality
+    // Drag and Drop
     let draggedElement = null;
-    let dragType = null; // 'ride', 'operator', or 'rideslot'
+    let dragType = null;
     let draggedSlotId = null;
-    let dragSourceSlotId = null; // slot the operator was dragged FROM (canvas)
+    let dragSourceSlotId = null;
     let dragSourcePosIdx = null;
     let operatorDragMoved = false;
 
     function setupDragAndDrop() {
-      // Make attraction thumbnails draggable (only non-placed ones)
+      // Make attraction thumbnails draggable (non-placed only)
       document.querySelectorAll('.attr-thumb:not(.placed)').forEach(thumb => {
         thumb.setAttribute('draggable', 'true');
         thumb.addEventListener('dragstart', (e) => {
@@ -574,7 +563,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         });
       });
 
-      // Make the grid area droppable for new rides
+      // Grid drop zone for new rides
       const grid = document.getElementById('templateGrid');
       grid.addEventListener('dragover', (e) => {
         if (dragType === 'ride') {
@@ -588,31 +577,23 @@ require_once __DIR__ . '/../../partials/sidebar.php';
           e.preventDefault();
           const attractionId = e.dataTransfer.getData('text/plain');
 
-          // Check if this ride already exists in the grid
           const existingRide = rideSlots.find(s => s.id === attractionId);
-          if (existingRide) {
-            // Don't add duplicate
-            return;
-          }
+          if (existingRide) return;
 
-          // Find the attraction from allAttractions
           const attraction = allAttractions.find(a => a.id === attractionId);
           if (!attraction) return;
 
-          // Add to rideSlots
           rideSlots.push(attraction);
 
-          // Update attraction bar to grey it out
           renderAttractionBar();
           renderGrid();
           selectRideSlot(attraction.id);
 
-          // Auto-save to database
           autoSaveLayout('Ride added to canvas');
         }
       });
 
-      // Make position operator slots droppable
+      // Position operator slots droppable
       document.querySelectorAll('.position-slot-operator').forEach(opSlot => {
         opSlot.addEventListener('dragover', (e) => {
           if (dragType === 'operator') {
@@ -636,14 +617,12 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             const posIdx = parseInt(posSlot.dataset.posIdx);
             const slot = rideSlots.find(s => s.id === slotId);
             if (slot && slot.positions[posIdx]) {
-              // Find operator by ID and update with full details
               const operator = availableOperators.find(op => op.id == operatorId);
               if (operator) {
                 slot.positions[posIdx].operatorId = operator.id;
                 slot.positions[posIdx].operator = operator.name;
                 slot.positions[posIdx].operatorTier = operator.tier;
               }
-              // If dragged FROM another canvas slot, clear the source
               if (dragSourceSlotId !== null) {
                 const srcSlot = rideSlots.find(s => s.id === dragSourceSlotId);
                 if (srcSlot && srcSlot.positions[dragSourcePosIdx] &&
@@ -659,14 +638,13 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 selectRideSlot(slotId);
               }
 
-              // Auto-save to database
               autoSaveLayout('Operator assigned');
             }
           }
         });
       });
 
-      // Setup return drop zone
+      // Return drop zone
       const returnZone = document.getElementById('returnDropZone');
       returnZone.addEventListener('dragover', (e) => {
         if (dragType === 'rideslot') {
@@ -686,22 +664,15 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         e.preventDefault();
         returnZone.classList.remove('drag-over');
         if (dragType === 'rideslot' && draggedSlotId) {
-          // Find the ride being removed
-          const removedSlot = rideSlots.find(s => s.id === draggedSlotId);
-
-          // Remove from rideSlots
           rideSlots = rideSlots.filter(s => s.id !== draggedSlotId);
 
-          // Clear selection if it was selected
           if (selectedSlot && selectedSlot.id === draggedSlotId) {
             clearSelection();
           }
 
-          // Update attraction bar to un-grey it
           renderAttractionBar();
           renderGrid();
 
-          // Auto-save to database
           autoSaveLayout('Ride removed from canvas');
         }
       });
@@ -714,10 +685,11 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       }
     });
 
-    // Initial render - load data from database
+    // Initial render
     loadZoneData();
 
     // ── Resizable Panels ──
+
     // Horizontal resize for Properties panel
     const propsPanel = document.getElementById('propsPanel');
     const propsResize = document.getElementById('propsResize');
@@ -730,13 +702,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       startXProps = e.clientX;
       startWidthProps = propsPanel.offsetWidth;
       document.body.style.cursor = 'ew-resize';
-      // Prevent text selection while dragging
       document.body.style.userSelect = 'none';
     });
     document.addEventListener('mousemove', function(e) {
       if (isResizingProps) {
-        // Invert delta so the panel resizes in the direction the mouse moves
-        // (handle is positioned on the left edge of the panel).
         let newWidth = startWidthProps + (startXProps - e.clientX);
         newWidth = Math.max(220, Math.min(600, newWidth));
         propsPanel.style.width = newWidth + 'px';
@@ -766,12 +735,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     });
     document.addEventListener('mousemove', function(e) {
       if (isResizingTray) {
-        // Follow mouse: moving mouse down increases height, moving up decreases height
-        let newHeight = startHeightTray + (e.clientY - startYTray);
-        newHeight = Math.max(120, Math.min(window.innerHeight * 0.6, newHeight));
+        // Dragging up (negative delta) increases tray height
+        let newHeight = startHeightTray - (e.clientY - startYTray);
+        newHeight = Math.max(60, Math.min(window.innerHeight * 0.6, newHeight));
         bottomTray.style.height = newHeight + 'px';
-        // update internal scroll areas to match
-        updateTrayScrollHeights(newHeight);
       }
     });
     document.addEventListener('mouseup', function() {
@@ -782,22 +749,22 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       }
     });
 
-    // Middle handle: supports vertical resize (drag up/down) OR horizontal scroll (drag left/right)
+    // Middle handle: vertical resize OR horizontal scroll
     const attractionsTray = document.getElementById('attractionsTray');
     const operatorsTray = document.getElementById('operatorsTray');
     const middleResize = document.getElementById('middleTrayResize');
-    let middleMode = null; // 'resize' or 'scroll'
+    let middleMode = null;
     let startYMiddle = 0;
     let startXMiddle = 0;
     let startHeightMiddle = 0;
     let startScrollLeft = 0;
+
     middleResize.addEventListener('mousedown', function(e) {
       e.preventDefault();
       middleMode = null;
       startYMiddle = e.clientY;
       startXMiddle = e.clientX;
-      startHeightMiddle = document.getElementById('bottomTray').offsetHeight;
-      // take first tray's scrollLeft as baseline
+      startHeightMiddle = bottomTray.offsetHeight;
       const aScroll = attractionsTray.querySelector('.tray-scroll');
       startScrollLeft = aScroll ? aScroll.scrollLeft : 0;
       document.body.style.userSelect = 'none';
@@ -805,35 +772,25 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     });
 
     document.addEventListener('mousemove', function(e) {
-      // if user hasn't chosen mode yet, detect based on movement direction
       if (middleMode === null && (e.buttons & 1)) {
         const dx = e.clientX - startXMiddle;
         const dy = e.clientY - startYMiddle;
         if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
           middleMode = Math.abs(dx) > Math.abs(dy) ? 'scroll' : 'resize';
-          // adjust cursor for scroll
           if (middleMode === 'scroll') document.body.style.cursor = 'grab';
         }
       }
 
       if (middleMode === 'resize' && (e.buttons & 1)) {
-        // vertical resize of bottom tray (affects both trays' heights)
-        let delta = e.clientY - startYMiddle;
-        let newHeight = startHeightMiddle + delta;
+        // Dragging up (negative delta) increases tray height
+        let newHeight = startHeightMiddle - (e.clientY - startYMiddle);
         newHeight = Math.max(60, Math.min(window.innerHeight * 0.6, newHeight));
-        // apply to tray sections and bottom container
-        try {
-          document.getElementById('bottomTray').style.height = newHeight + 'px';
-        } catch (err) {}
-        if (attractionsTray) attractionsTray.style.height = newHeight + 'px';
-        if (operatorsTray) operatorsTray.style.height = newHeight + 'px';
-        updateTrayScrollHeights(newHeight);
+        bottomTray.style.height = newHeight + 'px';
       }
 
       if (middleMode === 'scroll' && (e.buttons & 1)) {
-        // horizontal scroll of both tray-scroll elements
         const dx = e.clientX - startXMiddle;
-        const newScroll = startScrollLeft + dx; // drag right -> scroll right
+        const newScroll = startScrollLeft - dx;
         const aScroll = attractionsTray.querySelector('.tray-scroll');
         const oScroll = operatorsTray.querySelector('.tray-scroll');
         if (aScroll) aScroll.scrollLeft = newScroll;
@@ -849,47 +806,15 @@ require_once __DIR__ . '/../../partials/sidebar.php';
       }
     });
 
-    // Keep the internal scroll areas sized to (tray height - header height)
-    function updateTrayScrollHeights(newHeight) {
-      try {
-        const bottom = document.getElementById('bottomTray');
-        const aHeader = attractionsTray.querySelector('.tray-header');
-        const oHeader = operatorsTray.querySelector('.tray-header');
-        const aScroll = attractionsTray.querySelector('.tray-scroll');
-        const oScroll = operatorsTray.querySelector('.tray-scroll');
-        const aHeaderH = aHeader ? aHeader.offsetHeight : 0;
-        const oHeaderH = oHeader ? oHeader.offsetHeight : 0;
-        const targetA = Math.max(20, newHeight - aHeaderH);
-        const targetO = Math.max(20, newHeight - oHeaderH);
-        if (aScroll) aScroll.style.height = targetA + 'px';
-        if (oScroll) oScroll.style.height = targetO + 'px';
-        if (bottom) bottom.style.height = newHeight + 'px';
-      } catch (e) {
-        /* ignore */ }
-    }
-
-    function initTrayHeights() {
-      try {
-        const h = document.getElementById('bottomTray').offsetHeight;
-        updateTrayScrollHeights(h);
-      } catch (e) {}
-    }
-
-    window.addEventListener('resize', initTrayHeights);
-    setTimeout(initTrayHeights, 40);
-
     // Tip: dismissible and auto-hide after 30s
     const resizeTip = document.getElementById('resizeTip');
     if (resizeTip) {
-      // Allow keyboard users to dismiss with Enter/Space
       resizeTip.tabIndex = 0;
       const hideTip = () => {
         resizeTip.style.transition = 'opacity 0.18s';
         resizeTip.style.opacity = '0';
         setTimeout(() => {
-          try {
-            resizeTip.style.display = 'none';
-          } catch (e) {}
+          try { resizeTip.style.display = 'none'; } catch (e) {}
         }, 200);
       };
 
