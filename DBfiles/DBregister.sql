@@ -26,6 +26,7 @@ DELIMITER ;
 CALL _add_col('account', 'username', 'varchar(100) DEFAULT NULL');
 CALL _add_col('account', 'password', 'varchar(255) DEFAULT NULL');
 CALL _add_col('account', 'email',    'varchar(255) DEFAULT NULL');
+CALL _add_col('account', 'acc_primary_color', "varchar(7) DEFAULT '#1a8f7a'");
 
 -- organization: description, color scheme, pfp
 CALL _add_col('organization', 'org_description', 'varchar(500) DEFAULT NULL');

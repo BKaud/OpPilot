@@ -7,6 +7,7 @@
  * GET  ?action=load              → JSON profile object
  * POST ?action=save_name  body:JSON {acc_name}   → {ok:true}
  * POST ?action=save_pic   multipart file "pic"   → {ok:true, url:"…"}
+ * POST ?action=save_color body:JSON {acc_primary_color} → {ok:true, acc_primary_color:"#RRGGBB"}
  */
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -36,6 +37,7 @@ if ($action === 'load') {
     // and we gracefully fall back to session-only data.
     $stmt = $mysqli->prepare(
         'SELECT a.acc_name, a.acc_tier, a.acc_job_title, a.acc_profile_pic,
+            COALESCE(a.acc_primary_color, "#1a8f7a") AS acc_primary_color,
                 ap.accperms_createdel_acc,  ap.accperms_createdel_zone,
                 ap.accperms_createdel_ride, ap.accperms_createdel_event,
                 ap.accperms_call_downtime_gen
@@ -51,6 +53,7 @@ if ($action === 'load') {
             'acc_tier'        => null,
             'acc_job_title'   => null,
             'acc_profile_pic' => null,
+            'acc_primary_color' => '#1a8f7a',
             'perms'           => [],
         ]);
         exit;
@@ -68,6 +71,7 @@ if ($action === 'load') {
             'acc_tier'        => null,
             'acc_job_title'   => null,
             'acc_profile_pic' => null,
+            'acc_primary_color' => '#1a8f7a',
             'perms'           => [],
         ]);
         exit;
@@ -96,6 +100,7 @@ if ($action === 'load') {
         'acc_tier'        => $row['acc_tier'],
         'acc_job_title'   => $row['acc_job_title'],
         'acc_profile_pic' => $pic_url,
+        'acc_primary_color' => $row['acc_primary_color'] ?? '#1a8f7a',
         'perms'           => $perms,
     ]);
     exit;
@@ -123,6 +128,36 @@ if ($action === 'save_name' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     echo json_encode(['ok' => $ok]);
+    exit;
+}
+
+// ── SAVE PRIMARY COLOR ───────────────────────────────────────────────────────
+if ($action === 'save_color' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $body = json_decode(file_get_contents('php://input'), true);
+    $color = isset($body['acc_primary_color']) ? strtoupper(trim((string)$body['acc_primary_color'])) : '';
+
+    if (!preg_match('/^#[0-9A-F]{6}$/', $color)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Color must be a valid hex value like #1A8F7A']);
+        exit;
+    }
+
+    $stmt = $mysqli->prepare('UPDATE account SET acc_primary_color = ? WHERE username = ?');
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'DB error – migration may be needed']);
+        exit;
+    }
+
+    $stmt->bind_param('ss', $color, $username);
+    $ok = $stmt->execute();
+    $stmt->close();
+
+    if ($ok) {
+        $_SESSION['acc_primary_color'] = $color;
+    }
+
+    echo json_encode(['ok' => $ok, 'acc_primary_color' => $color]);
     exit;
 }
 

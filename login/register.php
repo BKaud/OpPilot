@@ -52,10 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
                 $pw_hash  = password_hash($owner_password, PASSWORD_DEFAULT);
 
                 $st = $conn->prepare(
-                    'INSERT INTO account (account_id,acc_name,username,password,email,acc_create_date,acc_is_active,acc_tier)
-                     VALUES (?,?,?,?,?,?,1,"Owner")'
+                  'INSERT INTO account (account_id,acc_name,username,password,email,acc_create_date,acc_is_active,acc_tier,acc_primary_color)
+                   VALUES (?,?,?,?,?,?,1,"Owner",?)'
                 );
-                $st->bind_param('isssss', $owner_id, $owner_name, $owner_username, $pw_hash, $owner_email, $now);
+                 $owner_primary_color = '#1a8f7a';
+                 $st->bind_param('issssss', $owner_id, $owner_name, $owner_username, $pw_hash, $owner_email, $now, $owner_primary_color);
                 $st->execute(); $st->close();
 
                 // --- Organization ---
@@ -89,10 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
                     $wh   = password_hash($wp, PASSWORD_DEFAULT);
 
                     $st = $conn->prepare(
-                        'INSERT INTO account (account_id,acc_name,username,password,email,acc_create_date,acc_is_active,acc_tier)
-                         VALUES (?,?,?,?,?,?,1,"Tier 1")'
+                        'INSERT INTO account (account_id,acc_name,username,password,email,acc_create_date,acc_is_active,acc_tier,acc_primary_color)
+                      VALUES (?,?,?,?,?,?,1,"Tier 1",?)'
                     );
-                    $st->bind_param('isssss', $wid, $wn, $wu, $wh, $we, $now);
+                    $worker_primary_color = '#1a8f7a';
+                    $st->bind_param('issssss', $wid, $wn, $wu, $wh, $we, $now, $worker_primary_color);
                     $st->execute(); $st->close();
 
                     $res = $conn->query('SELECT COALESCE(MAX(org_acc_id),0) AS m FROM org_acc');
@@ -107,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
                 $_SESSION['user']       = $owner_username;
                 $_SESSION['account_id'] = $owner_id;
                 $_SESSION['org_id']     = $org_id;
+                $_SESSION['acc_primary_color'] = '#1a8f7a';
                 header('Location: ../zone-manager/dashboard/dashboard.php');
                 exit();
 
