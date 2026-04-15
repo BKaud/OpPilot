@@ -188,13 +188,26 @@ function saveLayout() {
         // Update placed rides and operator assignments
         foreach ($data['attractions'] as $attraction) {
             $rideId = intval(str_replace('ride', '', $attraction['id']));
+            $rideName = trim($attraction['name'] ?? '');
             
-            // Mark ride as placed
-            $sql = "UPDATE ride SET ride_is_placed_on_canvas = 1 WHERE ride_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $rideId);
-            $stmt->execute();
-            $stmt->close();
+            // Mark ride as placed and update the name if provided
+            if ($rideName !== '') {
+                $sql = "UPDATE ride SET ride_name = ?, ride_is_placed_on_canvas = 1 WHERE ride_id = ?";
+                $stmt = $conn->prepare($sql);
+                if ($stmt) {
+                    $stmt->bind_param('si', $rideName, $rideId);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            } else {
+                $sql = "UPDATE ride SET ride_is_placed_on_canvas = 1 WHERE ride_id = ?";
+                $stmt = $conn->prepare($sql);
+                if ($stmt) {
+                    $stmt->bind_param('i', $rideId);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
             
             // Update operator assignments
             foreach ($attraction['positions'] as $position) {

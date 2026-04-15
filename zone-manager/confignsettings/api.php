@@ -322,6 +322,7 @@ function saveAttractionSettings() {
         return;
     }
 
+    $imageUrlToReturn = '';
     try {
         $conn->begin_transaction();
 
