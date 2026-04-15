@@ -61,11 +61,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 6px;
   flex-shrink: 0;
   z-index: 100;
 }
 .navbar-logo { display: flex; align-items: center; gap: 8px; }
+.navbar-logo svg { color: var(--teal); transition: color 0.3s; }
 .logo-icon {
   width: 30px; height: 30px;
   border: 2px solid var(--teal);

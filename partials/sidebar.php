@@ -23,10 +23,29 @@ if (!function_exists('nav_active')) {
   function nav_active($relativePath)
   {
     global $currentPath;
-    $target = rtrim(parse_url(url_path($relativePath), PHP_URL_PATH), '/');
-    $cur = rtrim($currentPath ?? '/', '/');
-    if ($cur === '') $cur = '/';
-    return ($cur === $target || strpos($cur, $target . '/') === 0) ? 'active' : '';
+
+		$normalize = function ($path) {
+			$p = parse_url((string)$path, PHP_URL_PATH) ?? '';
+			$p = trim($p);
+
+			$base = rtrim((string)BASE_PATH, '/');
+			if ($base !== '' && strpos($p, $base . '/') === 0) {
+				$p = substr($p, strlen($base));
+			} elseif ($base !== '' && $p === $base) {
+				$p = '/';
+			}
+
+			$p = '/' . ltrim($p, '/');
+			$p = preg_replace('#/(?:index|home)\.php$#i', '', $p);
+			$p = rtrim($p, '/');
+
+			return $p === '' ? '/' : $p;
+		};
+
+		$target = $normalize(url_path($relativePath));
+		$cur = $normalize($currentPath ?? '/');
+
+		return ($cur === $target || strpos($cur, $target . '/') === 0) ? 'active' : '';
   }
 }
 
@@ -98,8 +117,8 @@ if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['acc_primary_colo
 <nav class="navbar">
   <div class="navbar-logo">
     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-      width="10%" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none" d="
+      width="9%" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
+      <path fill="currentColor" opacity="1.000000" stroke="none" d="
 M87.999893,592.074951 
 	C87.333199,584.278076 86.440628,576.954712 86.054222,569.604675 
 	C85.507072,559.197021 84.684387,548.741272 85.141060,538.357178 
@@ -213,7 +232,7 @@ M844.967224,798.553284
 	C805.939087,837.679565 819.898376,824.815491 833.643311,811.728699 
 	C837.642456,807.921021 840.863098,803.295715 844.967224,798.553284 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M545.955444,452.003510 
 	C555.981018,446.315674 565.611267,440.633057 575.281006,435.018341 
@@ -268,7 +287,7 @@ M571.000000,540.962524
 	C550.922424,573.902893 558.363342,569.412842 563.803101,563.225525 
 	C568.833130,557.504211 571.468018,549.924744 571.000000,540.962524 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M211.751984,633.391846 
 	C204.814194,609.698975 201.834000,585.773804 200.118713,561.321167 
@@ -285,7 +304,7 @@ M211.751984,633.391846
 	C236.344528,699.643677 226.059265,677.114624 217.413895,653.733948 
 	C215.029343,647.285156 213.751511,640.427124 211.751984,633.391846 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M673.316040,288.737518 
 	C638.270020,269.412323 600.833496,259.797089 561.500000,256.976471 
@@ -300,7 +319,7 @@ M673.316040,288.737518
 	C717.600037,317.255737 699.912415,304.048248 680.997314,292.538239 
 	C678.675171,291.125244 676.089294,290.145782 673.316040,288.737518 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M402.728027,291.716736 
 	C384.620850,302.425690 368.276428,314.770111 352.778961,328.497681 
@@ -314,7 +333,7 @@ M402.728027,291.716736
 	C520.173584,218.802780 520.173584,237.537415 520.173584,257.050262 
 	C478.574432,260.073120 439.302917,270.808868 402.728027,291.716736 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M773.295898,791.206116 
 	C755.627380,808.457397 736.210449,822.791992 715.350647,835.281982 
@@ -389,18 +408,18 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link active">Dashboard</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link">Edit Mode</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link">Settings & Config</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/dashboard/dashboard.php'); ?>">Dashboard</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/EditMode/editmode.php'); ?>">Edit Mode</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/confignsettings/settings.php'); ?>">Settings & Config</a>
               </div>
             </div>
 
             <div class="zone-item expandable" id="rides2-zone">
               <a href="#" class="sub-nav-link expandable">Rides 2</a>
               <div class="zone-sub-nav" id="rides2-sub">
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link active">Dashboard</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link">Edit Mode</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link">Settings & Config</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/dashboard/dashboard.php'); ?>">Dashboard</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/EditMode/editmode.php'); ?>">Edit Mode</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/confignsettings/settings.php'); ?>">Settings & Config</a>
               </div>
             </div>
           </div>

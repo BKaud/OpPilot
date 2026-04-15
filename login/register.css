@@ -99,7 +99,20 @@
   align-items: center;
   gap: 0;
 }
-.prog-step { display: flex; align-items: center; }
+.prog-step { display: flex; align-items: flex-start; }
+.prog-dot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.prog-label {
+  font-size: 0.68rem;
+  color: #555;
+  margin-top: 0.22rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
 .prog-dot {
   width: 28px; height: 28px;
   border-radius: 50%;
@@ -119,6 +132,7 @@
 .prog-line {
   width: 28px; height: 2px;
   background: #333;
+  margin-top: 13px;
   transition: background 0.25s;
 }
 .prog-line.done { background: var(--teal); }
@@ -180,7 +194,7 @@
 }
 
 /* ── Org avatar preview ── */
-.org-avatar-wrap { text-align: center; margin-bottom: 1.4rem; }
+.org-avatar-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.4rem; }
 .org-avatar {
   width: 76px; height: 76px;
   border-radius: 50%;
