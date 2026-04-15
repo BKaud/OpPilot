@@ -23,7 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
       $error = 'Database unavailable. Please try again.';
     } else {
       $stmt = $conn->prepare(
-        'SELECT a.account_id, a.username, a.password, a.acc_name, a.acc_permissions, COALESCE(a.acc_is_active, 1) AS acc_is_active
+        'SELECT a.account_id, a.username, a.password, a.acc_name, a.acc_permissions,
+          COALESCE(a.acc_is_active, 1) AS acc_is_active,
+          COALESCE(a.acc_primary_color, "#1a8f7a") AS acc_primary_color
          FROM account a
          INNER JOIN org_acc oa ON oa.org_acc_acc_id = a.account_id
          WHERE oa.org_acc_org_id = ? AND a.username = ?
@@ -63,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
           $_SESSION['user'] = (string)$row['username'];
           $_SESSION['org_id'] = $orgId;
           $_SESSION['perm_group'] = $row['acc_permissions'] ?? '—';
+          $_SESSION['acc_primary_color'] = (string)($row['acc_primary_color'] ?? '#1a8f7a');
           header('Location: ../zone-manager/dashboard/dashboard.php');
           $conn->close();
           exit();
