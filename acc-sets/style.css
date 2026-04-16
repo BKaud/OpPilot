@@ -234,6 +234,41 @@
     width: 100%;
 }
 
+.prof-logout-form {
+    width: 100%;
+    margin-top: 14px;
+}
+
+.prof-logout-btn {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    background: #b93838;
+    color: #fff;
+    border: 1px solid #9f2d2d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(185, 56, 56, 0.18);
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.prof-logout-btn:hover {
+    background: #c43f3f;
+    border-color: #aa3131;
+    box-shadow: 0 10px 22px rgba(185, 56, 56, 0.24);
+    transform: translateY(-1px);
+}
+
+.prof-logout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(185, 56, 56, 0.2);
+}
+
 .prof-color-input {
     width: 38px;
     height: 32px;

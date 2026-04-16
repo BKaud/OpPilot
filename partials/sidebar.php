@@ -387,8 +387,16 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
           </a>
         </div>
 
-        <div class="nav-item expandable" id="zones">
-          <a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="nav-link" id="zones-toggle">
+				<div class="nav-item expandable" id="zones">
+					<a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="zones-home-btn <?php echo nav_active('zones-dash/zone-dash.php'); ?>" title="Zones Dashboard" aria-label="Zones Dashboard">
+						<svg class="filter-999" style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+						</svg>
+					</a>
+		  <a href="#" class="nav-link zones-toggle-link" id="zones-toggle">
             <div class="nav-icon">
               <!-- zones icon -->
               <svg class="filter-999" style="width:22px; height:22px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -398,13 +406,9 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
               </svg>
             </div>
             <span class="nav-text">Zones</span>
-          </a>
+					</a>
 
           <div class="sub-nav expanded" id="zones-sub">
-            <div class="zone-item" id="rides1-zone">
-              <a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="sub-nav-link">Zones Dashboard</a>
-            </div>
-
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">

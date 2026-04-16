@@ -116,10 +116,13 @@ if (isset($mysqli) && $mysqli) {
                             <button class="prof-save-btn" id="profColorSaveBtn" type="button">Save</button>
                         </div>
                     </div>
+
+                    <form class="prof-logout-form" method="post" action="<?php echo htmlspecialchars(url_path('login/logout.php')); ?>">
+                        <button class="prof-logout-btn" type="submit">Log Out</button>
+                    </form>
                 </div>
             </div>
 
-            <div class="prof-status-msg" id="profStatusMsg"></div>
         </section>
 
         <!-- ── Navbar Widget Configuration ──────────────────── -->
