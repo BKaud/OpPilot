@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Set Up OPilot</title>
+  <title>Set Up OpPilot</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/theme.css" />
   <link rel="stylesheet" href="register.css" />
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
 
     <!-- ── Header ── -->
     <div class="wizard-header">
-      <div class="wizard-logo">O<span>Pilot</span></div>
+      <div class="wizard-logo">Op<span>Pilot</span></div>
       <div class="wizard-progress" id="wizard-progress"><!-- built by JS --></div>
     </div>
 
@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
             <path d="M16 10 L19 7 L22 10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h2 class="step-title">Welcome to OPilot</h2>
+        <h2 class="step-title">Welcome to OpPilot</h2>
         <p class="step-sub">Let's get your organization set up in just a few steps.</p>
         <ul class="welcome-checklist">
           <li>
