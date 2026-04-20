@@ -164,7 +164,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                     <div class="section-card">
                         <div class="section-card-header">Position Settings</div>
                         <div class="section-card-body">
-                            <div class="field-label">Positions &amp; Permission Tiers</div>
+                            <div class="field-label">Positions &amp; Permission Groups</div>
                             <!-- Position rows loaded from DB -->
                             <div id="positionList">
                             </div>
@@ -174,17 +174,23 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                                 <button id="removePositionBtn" class="btn btn-danger btn-sm"
                                     onclick="removePosition()">– Remove</button>
                             </div>
-                            <div style="margin-top:12px;">
+                            <div id="deleteBtnContainer" style="margin-top:12px;">
                                 <button id="deleteBtn" class="btn btn-danger">Delete Attraction</button>
                             </div>
                             <hr class="section-sep" />
-                            <div class="field-label">Permission Tier</div>
-                            <div class="perm-row">
-                                <span class="perm-badge active" onclick="togglePerm(this)">Tier 1</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Tier 2</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Tier 3</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Lead</span>
-                                <span class="perm-badge" onclick="togglePerm(this)">Supervisor</span>
+                            <div class="field-label">Tier Groups</div>
+                            <div class="perm-dropdown" style="position:relative;">
+                                <select id="permTierSelect" multiple style="width:100%;padding-right:34px;">
+                                    <option value="tier1" selected>Tier 1</option>
+                                    <option value="tier2">Tier 2</option>
+                                    <option value="tier3">Tier 3</option>
+                                    <option value="lead">Lead</option>
+                                    <option value="supervisor">Supervisor</option>
+                                </select>
+                                <button type="button" class="perm-arrow" title="Open tiers" aria-label="Open tiers" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                                <div style="font-size:12px;color:#666;margin-top:6px;">Click the arrow to open — hold Ctrl/Cmd to select multiple</div>
                             </div>
                             <hr class="section-sep" />
                             <div class="field-label">Main Position</div>
@@ -205,15 +211,16 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             </div>
         </div>
     </div>
-    </div>
     <script>
     // Attraction selector — fetch ride data from DB and populate right panel
     let currentRideId = null;
     let savedSnapshot = null; // stores last-loaded ride data for discard
     function selectAttraction(el, name, rideId) {
+        if (!rideId) return;
         document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
         el.classList.add('selected');
-        if (!rideId) return;
+        // move delete button into the selected tile (or back to container if add tile)
+        try { moveDeleteButtonToTile(el); } catch (e) {}
         currentRideId = rideId;
         return fetch('api.php?action=getAttractionData&ride_id=' + rideId)
             .then(res => res.json())
@@ -463,6 +470,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             }
             const id = tile.getAttribute('data-id');
             const rideId = id && id.startsWith('ride') ? id.replace('ride', '') : null;
+            if (!rideId) {
+                addAttraction();
+                return;
+            }
             selectAttraction(tile, tile.querySelector('.attraction-label') ? tile.querySelector('.attraction-label')
                 .textContent : '', rideId);
         };
@@ -489,6 +500,25 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         }
     }
 
+    // Move the main delete button into the right-panel save bar for the selected tile (or back to container)
+    function moveDeleteButtonToTile(tile) {
+        const container = document.getElementById('deleteBtnContainer');
+        const btn = document.getElementById('deleteBtn');
+        if (!btn || !container) return;
+        // If tile is provided and is not the Add tile, place the button into the right panel save bar
+        if (tile && tile.getAttribute && tile.getAttribute('data-id') !== 'add') {
+            const saveBar = document.querySelector('.panel:nth-of-type(2) .save-bar') || document.querySelector('.save-bar');
+            if (saveBar) {
+                btn.classList.add('savebar-delete-btn');
+                try { saveBar.insertBefore(btn, saveBar.firstChild); } catch (e) { container.appendChild(btn); }
+                return;
+            }
+        }
+        // move back to fallback container
+        btn.classList.remove('savebar-delete-btn');
+        container.appendChild(btn);
+    }
+
     // Apply lock state across tiles (called on toggle change and after load/save)
     function updateMaintenanceLocking() {
         const lock = document.getElementById('zoneLockDuringMaint') && document.getElementById('zoneLockDuringMaint')
@@ -507,6 +537,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         } else {
             setRightPanelEditable(true);
         }
+        // ensure delete button sits in the selected tile (or fallback)
+        try { moveDeleteButtonToTile(selected); } catch (e) {}
     }
     // ── Load attraction grid from DB on page load ──
     function loadAttractions(zoneId = 1) {
@@ -757,6 +789,53 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             input.focus();
         });
     }
+    // Controlled Tier dropdown: only open when arrow clicked
+    (function() {
+        try {
+            const permWrap = document.querySelector('.perm-dropdown');
+            if (!permWrap) return;
+            const select = permWrap.querySelector('#permTierSelect');
+            const arrow = permWrap.querySelector('.perm-arrow');
+            if (!select || !arrow) return;
+
+            // Prevent the native dropdown from opening when clicking the main select area
+            select.addEventListener('mousedown', function(e) {
+                // Allow keyboard interactions (Tab/Arrow) — only block mouse open
+                e.preventDefault();
+            });
+
+            // When arrow clicked, toggle a temporary size to show options (works cross-browser)
+            arrow.addEventListener('click', function(e) {
+                e.preventDefault();
+                // If already open via arrow, close
+                if (select._openViaArrow) {
+                    select.size = select.__oldSize || 0;
+                    select._openViaArrow = false;
+                    select.focus();
+                    return;
+                }
+                select._openViaArrow = true;
+                select.__oldSize = select.size || 0;
+                // show a dropdown-like list (limit height)
+                select.size = Math.min(6, select.options.length || 4);
+                select.focus();
+
+                // close on blur or outside click
+                const close = function() {
+                    try { select.size = select.__oldSize || 0; } catch (e) {}
+                    select._openViaArrow = false;
+                    select.removeEventListener('blur', close);
+                    document.removeEventListener('click', outside);
+                };
+                const outside = function(ev) {
+                    if (!permWrap.contains(ev.target)) close();
+                };
+                select.addEventListener('blur', close);
+                setTimeout(() => document.addEventListener('click', outside), 0);
+            });
+        } catch (e) { console.warn('Perm dropdown init failed', e); }
+    })();
+
     // Save settings handler
     document.getElementById('saveSettingsBtn').addEventListener('click', function() {
         if (!currentRideId) {
@@ -810,8 +889,18 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
+            .then(async res => {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (err) {
+                    console.error('Invalid JSON response from saveAttractionSettings:', text, err);
+                    showToast('Server error saving settings', 'error');
+                    return null;
+                }
+            })
             .then(data => {
+                if (!data) return;
                 if (!data.success) {
                     showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
                     return;
@@ -1089,9 +1178,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                         showToast('Failed to delete: ' + (data.error || 'Unknown error'), 'error');
                         return;
                     }
-                    // Remove tile from grid if present
+                    // Remove tile from grid if present. Move delete button back to container first
                     const sel = document.querySelector('.attraction-thumb.selected');
                     const tile = sel || document.querySelector('[data-id="ride' + currentRideId + '"]');
+                    try { moveDeleteButtonToTile(null); } catch (e) {}
                     if (tile) tile.remove();
                     // Clear right panel and trackers
                     currentRideId = null;
@@ -1229,6 +1319,38 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     textarea {
         color: #000;
     }
+    /* Style delete button when placed in the save bar */
+    .save-bar .savebar-delete-btn {
+        margin-right: auto;
+        background: linear-gradient(90deg, #ff6b6b, #d64545);
+        color: #fff;
+    }
+    /* Permission dropdown styling */
+    .perm-dropdown select {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+        color: #000;
+        background: #fff;
+    }
+    /* Prefer closed dropdown appearance for multi-select where supported */
+    .perm-dropdown select {
+        height: auto;
+        max-height: 240px;
+        -webkit-appearance: menulist-button;
+        appearance: menulist-button;
+        cursor: pointer;
+    }
+    /* Arrow button for controlled open */
+    .perm-dropdown .perm-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        line-height: 0;
+    }
+    .perm-dropdown .perm-arrow:focus { outline: 2px solid rgba(43,140,255,0.25); }
     </style>
 </body>
 

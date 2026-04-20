@@ -32,7 +32,7 @@ jobs:
               git clone --branch main "$REPO_URL" "$DEPLOY_DIR"
             fi
 
-            # Generate app_config.php with production credentials
+            # Generate app_config.php (loaded by DBfiles/db_config.php)
             echo "Writing production app_config.php..."
             mkdir -p "$DEPLOY_DIR/DBfiles"
             cat > "$DEPLOY_DIR/DBfiles/app_config.php" << 'PHPEOF'
@@ -45,9 +45,8 @@ jobs:
             define('DB_NAME', 'DB_NAME_PLACEHOLDER');
             PHPEOF
 
-            # Now substitute the placeholders with real secrets
+            # Substitute placeholders with GitHub Secrets for production.
             sed -i "s|DB_HOST_PLACEHOLDER|${{ secrets.SERVER_HOST }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
-            sed -i "s|DB_PORT_PLACEHOLDER|3306|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_USER_PLACEHOLDER|${{ secrets.SERVER_USER }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_PASS_PLACEHOLDER|${{ secrets.SERVER_PASS }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
             sed -i "s|DB_NAME_PLACEHOLDER|${{ secrets.SERVER_DB_NAME }}|g" "$DEPLOY_DIR/DBfiles/app_config.php"
