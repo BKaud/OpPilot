@@ -12,9 +12,9 @@
   
   <div class="login-container">
     <div class="login-card">
-      <h2>Enter Organization ID</h2>
+      <h2>Enter Organization Code</h2>
       <form method="post" action="login.php">
-        <input type="text" name="org_id" placeholder="Organization ID" required autofocus />
+        <input type="text" name="org_id" placeholder="e.g. EVERPK" required autofocus />
         <button type="submit">Next</button>
       </form>
     </div>

@@ -2,10 +2,37 @@
 session_start();
 require_once __DIR__ . '/../DBfiles/db_config.php';
 
-// Step 1: Handle Org ID submission
+// Step 1: Handle Org Code submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['org_id'])) {
-    $_SESSION['org_id'] = trim($_POST['org_id']);
-    header('Location: login.php?step=2');
+    $input = trim($_POST['org_id']);
+    $conn  = getDbConnection(false);
+    $orgRow = null;
+    if ($conn) {
+        // Try by custom org_code first
+        $st = $conn->prepare('SELECT org_id, org_code FROM organization WHERE org_code = ? LIMIT 1');
+        $st->bind_param('s', $input);
+        $st->execute();
+        $orgRow = $st->get_result()->fetch_assoc();
+        $st->close();
+
+        // Fall back to numeric org_id for backwards compatibility
+        if (!$orgRow && ctype_digit($input)) {
+            $numId = (int)$input;
+            $st = $conn->prepare('SELECT org_id, org_code FROM organization WHERE org_id = ? LIMIT 1');
+            $st->bind_param('i', $numId);
+            $st->execute();
+            $orgRow = $st->get_result()->fetch_assoc();
+            $st->close();
+        }
+        $conn->close();
+    }
+    if ($orgRow) {
+        $_SESSION['org_id']   = (int)$orgRow['org_id'];
+        $_SESSION['org_code'] = $orgRow['org_code'] ?? ('#' . $orgRow['org_id']);
+        header('Location: login.php?step=2');
+    } else {
+        header('Location: login.php?org_error=1');
+    }
     exit();
 }
 
@@ -84,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
 }
 
 $step = isset($_GET['step']) && $_GET['step'] == 2 && isset($_SESSION['org_id']) ? 2 : 1;
+$org_error = isset($_GET['org_error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,12 +153,18 @@ $step = isset($_GET['step']) && $_GET['step'] == 2 && isset($_SESSION['org_id'])
           </svg>
         </div>
         <h2 class="login-title">Welcome Back</h2>
-        <p class="login-sub">Enter your Organization ID to continue.</p>
+        <p class="login-sub">Enter your Organization Code to continue.</p>
+
+        <?php if ($org_error): ?>
+        <div class="login-error">
+          Organization not found. Please check your code and try again.
+        </div>
+        <?php endif; ?>
 
         <form method="post" action="login.php">
           <div class="login-field">
-            <label for="org_id">Organization ID</label>
-            <input type="text" id="org_id" name="org_id" placeholder="e.g. 1001" required autofocus />
+            <label for="org_id">Organization Code</label>
+            <input type="text" id="org_id" name="org_id" placeholder="e.g. EVERPK" required autofocus />
           </div>
           <button type="submit" class="btn-login">Continue &rarr;</button>
         </form>
@@ -148,7 +182,7 @@ $step = isset($_GET['step']) && $_GET['step'] == 2 && isset($_SESSION['org_id'])
           </svg>
         </div>
         <h2 class="login-title">Sign In</h2>
-        <p class="login-sub">Organization <strong>#<?php echo htmlspecialchars((string)$_SESSION['org_id']); ?></strong></p>
+        <p class="login-sub">Organization <strong><?php echo htmlspecialchars((string)($_SESSION['org_code'] ?? ('#' . $_SESSION['org_id']))); ?></strong></p>
 
         <?php if (!empty($error)): ?>
         <div class="login-error">
