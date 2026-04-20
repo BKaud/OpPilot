@@ -106,10 +106,23 @@ if (isset($mysqli) && $mysqli) {
 
                     <!-- Permission groups -->
                     <div class="prof-perms" id="profPerms"></div>
+
+                    <!-- Theme color -->
+                    <div class="prof-theme" id="profTheme">
+                        <label class="prof-theme-label" for="profColorInput">Primary Color</label>
+                        <div class="prof-theme-controls">
+                            <input type="color" id="profColorInput" class="prof-color-input" value="#1a8f7a" aria-label="Primary color" />
+                            <input type="text" id="profColorHex" class="prof-color-hex" value="#1A8F7A" maxlength="7" aria-label="Primary color hex" />
+                            <button class="prof-save-btn" id="profColorSaveBtn" type="button">Save</button>
+                        </div>
+                    </div>
+
+                    <form class="prof-logout-form" method="post" action="<?php echo htmlspecialchars(url_path('login/logout.php')); ?>">
+                        <button class="prof-logout-btn" type="submit">Log Out</button>
+                    </form>
                 </div>
             </div>
 
-            <div class="prof-status-msg" id="profStatusMsg"></div>
         </section>
 
         <!-- ── Navbar Widget Configuration ──────────────────── -->
@@ -320,6 +333,41 @@ if (isset($mysqli) && $mysqli) {
     var profNameEdit    = document.getElementById('profNameEdit');
     var profNameInput   = document.getElementById('profNameInput');
     var profPicInput    = document.getElementById('profPicInput');
+    var profColorInput  = document.getElementById('profColorInput');
+    var profColorHex    = document.getElementById('profColorHex');
+    var profColorSaveBtn= document.getElementById('profColorSaveBtn');
+
+    function normalizeHexColor(hex, fallback) {
+        var value = (hex || '').trim().toUpperCase();
+        return /^#[0-9A-F]{6}$/.test(value) ? value : fallback;
+    }
+
+    function mixHex(hex, mix, ratio) {
+        var c = hex.replace('#', '');
+        var r = parseInt(c.slice(0, 2), 16);
+        var g = parseInt(c.slice(2, 4), 16);
+        var b = parseInt(c.slice(4, 6), 16);
+        var rr = Math.round(r * (1 - ratio) + mix[0] * ratio);
+        var gg = Math.round(g * (1 - ratio) + mix[1] * ratio);
+        var bb = Math.round(b * (1 - ratio) + mix[2] * ratio);
+        return '#' + [rr, gg, bb].map(function(n){ return n.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    function hexToRgba(hex, alpha) {
+        var c = hex.replace('#', '');
+        var r = parseInt(c.slice(0, 2), 16);
+        var g = parseInt(c.slice(2, 4), 16);
+        var b = parseInt(c.slice(4, 6), 16);
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+    }
+
+    function applyThemeColor(hex) {
+        var root = document.documentElement;
+        root.style.setProperty('--teal', hex);
+        root.style.setProperty('--teal-light', mixHex(hex, [255, 255, 255], 0.18));
+        root.style.setProperty('--teal-glow', hexToRgba(hex, 0.18));
+        root.style.setProperty('--teal-dim', hexToRgba(hex, 0.08));
+    }
 
     function getInitials(name) {
         if (!name) return '?';
@@ -355,6 +403,11 @@ if (isset($mysqli) && $mysqli) {
             profNameInput.value  = name;
             profInitials.textContent = getInitials(name);
             setProfilePic(data.acc_profile_pic || null);
+
+            var startColor = normalizeHexColor(data.acc_primary_color, '#1A8F7A');
+            profColorHex.value = startColor;
+            profColorInput.value = startColor;
+            applyThemeColor(startColor);
 
             var roleText = [];
             if (data.acc_job_title) roleText.push(data.acc_job_title);
@@ -429,6 +482,51 @@ if (isset($mysqli) && $mysqli) {
             })
             .catch(function() { showProfMsg('Upload failed.', true); });
         this.value = '';
+    });
+
+    // Color picker + hex input sync
+    profColorInput.addEventListener('input', function() {
+        profColorHex.value = normalizeHexColor(profColorInput.value, '#1A8F7A');
+        applyThemeColor(profColorHex.value);
+    });
+
+    profColorHex.addEventListener('input', function() {
+        var cleaned = ('#' + profColorHex.value.replace(/[^0-9a-fA-F]/g, '').replace(/^#/, '').slice(0, 6)).toUpperCase();
+        if (cleaned.length <= 7) profColorHex.value = cleaned;
+        var normalized = normalizeHexColor(cleaned, '');
+        if (normalized) {
+            profColorInput.value = normalized;
+            applyThemeColor(normalized);
+        }
+    });
+
+    profColorSaveBtn.addEventListener('click', function() {
+        var color = normalizeHexColor(profColorHex.value, '');
+        if (!color) {
+            showProfMsg('Please enter a valid hex color like #1A8F7A.', true);
+            return;
+        }
+
+        profColorSaveBtn.disabled = true;
+        fetch(PROFILE_API + '?action=save_color', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ acc_primary_color: color })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                var saved = normalizeHexColor(data.acc_primary_color, color);
+                profColorHex.value = saved;
+                profColorInput.value = saved;
+                applyThemeColor(saved);
+                showProfMsg('Primary color updated.', false);
+            } else {
+                showProfMsg('Error: ' + (data.error || 'Unknown'), true);
+            }
+        })
+        .catch(function() { showProfMsg('Network error.', true); })
+        .finally(function() { profColorSaveBtn.disabled = false; });
     });
 })();
 </script>

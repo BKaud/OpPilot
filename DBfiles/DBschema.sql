@@ -30,6 +30,7 @@ CREATE TABLE `account` (
   `acc_tier` varchar(50) DEFAULT 'Tier 1',
   `acc_is_active` tinyint(1) DEFAULT '1',
   `acc_create_date` datetime DEFAULT NULL,
+  `acc_primary_color` varchar(7) DEFAULT '#1a8f7a',
   `acc_permissions` int DEFAULT NULL,
   `acc_trained_rides` int DEFAULT NULL,
   PRIMARY KEY (`account_id`),

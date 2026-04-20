@@ -109,7 +109,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         <div class="props-body" id="propsBody" style="display:none;">
           <div class="prop-group">
             <div class="prop-group-title">Ride Info</div>
-            <div class="prop-row"><span class="prop-label">Ride Name</span><input class="prop-input" id="pRideName" type="text" disabled /></div>
+            <div class="prop-row"><span class="prop-label">Ride Name</span><input class="prop-input" id="pRideName" type="text" placeholder="Ride name" /></div>
           </div>
           <div class="prop-group">
             <div class="prop-group-title">Position Slots</div>
@@ -687,6 +687,19 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
     // Initial render
     loadZoneData();
+
+    const rideNameInput = document.getElementById('pRideName');
+    if (rideNameInput) {
+      rideNameInput.addEventListener('input', function() {
+        if (!selectedSlot) return;
+        selectedSlot.name = this.value;
+        const original = allAttractions.find(a => a.id === selectedSlot.id);
+        if (original) original.name = this.value;
+        renderAttractionBar();
+        selectRideSlot(selectedSlot.id);
+        autoSaveLayout('Ride name updated');
+      });
+    }
 
     // ── Resizable Panels ──
 

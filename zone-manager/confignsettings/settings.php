@@ -211,17 +211,16 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             </div>
         </div>
     </div>
-    </div>
     <script>
     // Attraction selector — fetch ride data from DB and populate right panel
     let currentRideId = null;
     let savedSnapshot = null; // stores last-loaded ride data for discard
     function selectAttraction(el, name, rideId) {
+        if (!rideId) return;
         document.querySelectorAll('.attraction-thumb').forEach(t => t.classList.remove('selected'));
         el.classList.add('selected');
         // move delete button into the selected tile (or back to container if add tile)
         try { moveDeleteButtonToTile(el); } catch (e) {}
-        if (!rideId) return;
         currentRideId = rideId;
         return fetch('api.php?action=getAttractionData&ride_id=' + rideId)
             .then(res => res.json())
@@ -471,6 +470,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             }
             const id = tile.getAttribute('data-id');
             const rideId = id && id.startsWith('ride') ? id.replace('ride', '') : null;
+            if (!rideId) {
+                addAttraction();
+                return;
+            }
             selectAttraction(tile, tile.querySelector('.attraction-label') ? tile.querySelector('.attraction-label')
                 .textContent : '', rideId);
         };
@@ -886,8 +889,18 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
+            .then(async res => {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (err) {
+                    console.error('Invalid JSON response from saveAttractionSettings:', text, err);
+                    showToast('Server error saving settings', 'error');
+                    return null;
+                }
+            })
             .then(data => {
+                if (!data) return;
                 if (!data.success) {
                     showToast('Failed to save: ' + (data.error || 'Unknown error'), 'error');
                     return;
