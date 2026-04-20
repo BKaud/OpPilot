@@ -170,7 +170,7 @@ if (isset($mysqli) && $mysqli) {
                         <label class="wc-label">Label</label>
                         <input type="text" class="wc-link-label" placeholder="My Page" aria-label="Link label" />
                         <label class="wc-label" style="margin-top:4px;">URL</label>
-                        <input type="text" class="wc-link-url" placeholder="/OPilot/page.php" aria-label="Link URL" />
+                        <input type="text" class="wc-link-url" placeholder="/OpPilot/page.php" aria-label="Link URL" />
                     </div>
                 </div>
                 <?php endfor; ?>

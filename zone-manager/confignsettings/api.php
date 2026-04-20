@@ -99,7 +99,7 @@ function addAttraction() {
             $destPath = $uploadDir . '/' . $filename;
             if (move_uploaded_file($tmp, $destPath)) {
                 // Web-accessible URL (adjust if site root differs)
-                $webUrl = '/OPilot/assets/images/attractions/' . $filename;
+                $webUrl = '/OpPilot/assets/images/attractions/' . $filename;
                 $stmt = $conn->prepare("UPDATE ride SET ride_image_url = ? WHERE ride_id = ?");
                 if ($stmt) {
                     $stmt->bind_param('si', $webUrl, $nextRideId);
@@ -445,7 +445,7 @@ function saveAttractionSettings() {
                 $destPath = $uploadDir . '/' . $filename;
                 if (move_uploaded_file($tmp, $destPath)) {
                     // Create web-accessible URL (adjust if your site root differs)
-                    $webUrl = '/OPilot/assets/images/attractions/' . $filename;
+                    $webUrl = '/OpPilot/assets/images/attractions/' . $filename;
                     $stmt = $conn->prepare("UPDATE ride SET ride_image_url = ? WHERE ride_id = ?");
                     if ($stmt) {
                         $stmt->bind_param('si', $webUrl, $rideId);
