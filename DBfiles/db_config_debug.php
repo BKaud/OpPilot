@@ -20,10 +20,13 @@ require_once __DIR__ . '/db_config.php';
 
 $response = [
     'success' => true,
+    'environment' => defined('DB_CONFIG_SOURCE') ? DB_CONFIG_SOURCE : 'unknown',
     'config_source' => defined('DB_CONFIG_SOURCE') ? DB_CONFIG_SOURCE : 'unknown',
     'db_host' => defined('DB_HOST') ? DB_HOST : null,
     'db_port' => defined('DB_PORT') ? (int)DB_PORT : null,
     'db_name' => defined('DB_NAME') ? DB_NAME : null,
+    'server_addr' => $_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? 'unknown',
+    'http_host' => $_SERVER['HTTP_HOST'] ?? 'unknown',
     'timestamp' => date('c')
 ];
 
