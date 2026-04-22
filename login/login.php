@@ -10,19 +10,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['org_id'])) {
     if ($conn) {
         // Try by custom org_code first
         $st = $conn->prepare('SELECT org_id, org_code FROM organization WHERE org_code = ? LIMIT 1');
-        $st->bind_param('s', $input);
-        $st->execute();
-        $orgRow = $st->get_result()->fetch_assoc();
-        $st->close();
+        if ($st) {
+            $st->bind_param('s', $input);
+            $st->execute();
+            $orgRow = $st->get_result()->fetch_assoc();
+            $st->close();
+        }
 
         // Fall back to numeric org_id for backwards compatibility
         if (!$orgRow && ctype_digit($input)) {
             $numId = (int)$input;
             $st = $conn->prepare('SELECT org_id, org_code FROM organization WHERE org_id = ? LIMIT 1');
-            $st->bind_param('i', $numId);
-            $st->execute();
-            $orgRow = $st->get_result()->fetch_assoc();
-            $st->close();
+            if ($st) {
+                $st->bind_param('i', $numId);
+                $st->execute();
+                $orgRow = $st->get_result()->fetch_assoc();
+                $st->close();
+            }
         }
         $conn->close();
     }
