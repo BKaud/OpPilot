@@ -9,8 +9,8 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Auth guard: any page that includes sidebar.php requires a valid session.
 // Login/register pages do not include sidebar.php, so they are unaffected.
-if (empty($_SESSION['account_id'])) {
-    $loginUrl = '/OpPilot/login/register.php';
+if (empty($_SESSION['user'])) {
+    $loginUrl = '/OpPilot/login/login.php';
     header('Location: ' . $loginUrl);
     exit();
 }

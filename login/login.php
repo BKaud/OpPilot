@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
 
         if ($row && $valid && (int)$row['acc_is_active'] === 1) {
           $_SESSION['user'] = (string)$row['username'];
+          $_SESSION['account_id'] = (int)$row['account_id'];
           $_SESSION['org_id'] = $orgId;
           $_SESSION['perm_group'] = $row['acc_permissions'] ?? '—';
           $_SESSION['acc_primary_color'] = (string)($row['acc_primary_color'] ?? '#1a8f7a');
