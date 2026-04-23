@@ -130,9 +130,9 @@
   border: 1.5px solid #bbb;
   border-radius: 5px;
   width: 190px; min-width: 160px;
-  overflow: hidden;
   transition: border-color 0.15s, box-shadow 0.15s;
   flex-shrink: 0;
+  position: relative;
 }
 .attraction-card:hover { border-color: var(--teal); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
@@ -156,7 +156,16 @@
 .card-status-dot.warn { background: var(--accent-yellow); }
 .card-status-dot.off  { background: #888; }
 
-.card-body { padding: 7px 9px 8px; }
+.card-menu-btn {
+  z-index: 1002 !important;
+  pointer-events: auto !important;
+}
+
+.card-body { 
+  padding: 7px 9px 8px;
+  position: relative;
+  overflow: visible;
+}
 .card-name {
   font-family: 'Rajdhani', sans-serif;
   font-size: 13px; font-weight: 700;
@@ -196,6 +205,57 @@
 .card-operator {
   font-size: 10px; color: var(--text-muted);
   margin-top: 4px; font-style: italic;
+}
+
+/* Positions menu */
+.positions-menu-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.positions-menu-header {
+  pointer-events: auto;
+}
+
+.positions-menu-backdrop {
+  position: absolute;
+  top: 126px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(100, 100, 100, 0.9);
+  z-index: 999;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.positions-menu {
+  position: absolute;
+  top: 126px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 8px;
+  pointer-events: auto;
+}
+
+.positions-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.positions-menu::-webkit-scrollbar-thumb {
+  background: var(--teal);
+  border-radius: 2px;
 }
 
 /* Grouped attraction (multi-position visual) */

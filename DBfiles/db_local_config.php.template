@@ -1,0 +1,16 @@
+<?php
+// DBfiles/db_local_config.php.template
+// INSTRUCTIONS: Copy this file to db_local_config.php and fill in your actual passwords
+// The file db_local_config.php is gitignored and will NOT be tracked by Git
+
+// To use this:
+// 1. Copy this file: cp db_local_config.php.template db_local_config.php
+// 2. Edit db_local_config.php with your real passwords
+// 3. Your passwords stay on your machine only!
+
+define('BASE_PATH', '/OpPilot');  // Set to '' if serving from root, or '/OpPilot' if in subdirectory
+define('DB_HOST', 'your-db-host-here');     // e.g., 'localhost' or '192.168.1.100'
+define('DB_PORT', 3306);
+define('DB_USER', 'your-username-here');     // e.g., 'root' or 'oppilot_user'
+define('DB_PASS', 'your-password-here');     // Put your actual password here
+define('DB_NAME', 'your-database-name');     // e.g., 'oppilot'

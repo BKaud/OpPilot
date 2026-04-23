@@ -55,6 +55,8 @@ function getZoneData() {
         SELECT 
             r.ride_id,
             r.ride_name,
+            r.ride_image_url,
+            r.ride_main_pos_id,
             COALESCE(r.ride_is_placed_on_canvas, 0) as is_placed_on_canvas,
             COALESCE(r.ride_canvas_order, 0) as canvas_order,
             p.pos_id,
@@ -92,6 +94,8 @@ function getZoneData() {
             $attractions[$rideId] = [
                 'id' => 'ride' . $rideId,
                 'name' => $row['ride_name'],
+                'imageUrl' => $row['ride_image_url'] ?? '',
+                'mainPosId' => $row['ride_main_pos_id'],
                 'isPlaced' => (bool)$row['is_placed_on_canvas'],
                 'positions' => []
             ];
@@ -128,12 +132,23 @@ function getZoneData() {
         });
     }
     
+    // Get all available positions from database
+    $allPositionsResult = $conn->query("SELECT pos_id, pos_name FROM position ORDER BY pos_name");
+    $allPositions = [];
+    while ($posRow = $allPositionsResult->fetch_assoc()) {
+        $allPositions[] = [
+            'id' => $posRow['pos_id'],
+            'name' => $posRow['pos_name']
+        ];
+    }
+    
     $stmt->close();
     $conn->close();
     
     echo json_encode([
         'success' => true,
-        'attractions' => array_values($attractions)
+        'attractions' => array_values($attractions),
+        'allPositions' => $allPositions
     ]);
 }
 

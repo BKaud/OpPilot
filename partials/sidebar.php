@@ -1,20 +1,26 @@
 <?php
 // partials/sidebar.php
-// Expects bootstrap.php to have been included earlier so BASE_PATH, APP_ROOT and $currentPath are available.
+// Expects bootstrap.php to have been included earlier so APP_ROOT and $currentPath are available.
 
 // Defensive defaults
-if (!defined('BASE_PATH')) define('BASE_PATH', '');
 if (!defined('APP_ROOT')) define('APP_ROOT', __DIR__ . '/..');
 if (!isset($currentPath)) $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Auth guard: any page that includes sidebar.php requires a valid session.
+// Login/register pages do not include sidebar.php, so they are unaffected.
+if (empty($_SESSION['account_id'])) {
+    $loginUrl = '/OpPilot/login/register.php';
+    header('Location: ' . $loginUrl);
+    exit();
+}
 
 // Only define url_path() if it doesn't exist already
 if (!function_exists('url_path')) {
   function url_path($path)
   {
-    $base = rtrim(BASE_PATH, '/');
-    $p = ltrim($path, '/');
-    return ($base === '' ? '' : $base) . '/' . $p;
+    $p = '/' . ltrim($path, '/');
+    return '/OpPilot' . $p;
   }
 }
 
@@ -23,10 +29,28 @@ if (!function_exists('nav_active')) {
   function nav_active($relativePath)
   {
     global $currentPath;
-    $target = rtrim(parse_url(url_path($relativePath), PHP_URL_PATH), '/');
-    $cur = rtrim($currentPath ?? '/', '/');
-    if ($cur === '') $cur = '/';
-    return ($cur === $target || strpos($cur, $target . '/') === 0) ? 'active' : '';
+
+		$normalize = function ($path) {
+			$p = parse_url((string)$path, PHP_URL_PATH) ?? '';
+			$p = trim($p);
+
+			if (strpos($p, '/OpPilot/') === 0) {
+				$p = substr($p, strlen('/OpPilot'));
+			} elseif ($p === '/OpPilot') {
+				$p = '/';
+			}
+
+			$p = '/' . ltrim($p, '/');
+			$p = preg_replace('#/(?:index|home)\.php$#i', '', $p);
+			$p = rtrim($p, '/');
+
+			return $p === '' ? '/' : $p;
+		};
+
+		$target = $normalize(url_path($relativePath));
+		$cur = $normalize($currentPath ?? '/');
+
+		return ($cur === $target || strpos($cur, $target . '/') === 0) ? 'active' : '';
   }
 }
 
@@ -98,8 +122,8 @@ if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['acc_primary_colo
 <nav class="navbar">
   <div class="navbar-logo">
     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-      width="10%" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none" d="
+      width="9%" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
+      <path fill="currentColor" opacity="1.000000" stroke="none" d="
 M87.999893,592.074951 
 	C87.333199,584.278076 86.440628,576.954712 86.054222,569.604675 
 	C85.507072,559.197021 84.684387,548.741272 85.141060,538.357178 
@@ -213,7 +237,7 @@ M844.967224,798.553284
 	C805.939087,837.679565 819.898376,824.815491 833.643311,811.728699 
 	C837.642456,807.921021 840.863098,803.295715 844.967224,798.553284 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M545.955444,452.003510 
 	C555.981018,446.315674 565.611267,440.633057 575.281006,435.018341 
@@ -268,7 +292,7 @@ M571.000000,540.962524
 	C550.922424,573.902893 558.363342,569.412842 563.803101,563.225525 
 	C568.833130,557.504211 571.468018,549.924744 571.000000,540.962524 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M211.751984,633.391846 
 	C204.814194,609.698975 201.834000,585.773804 200.118713,561.321167 
@@ -285,7 +309,7 @@ M211.751984,633.391846
 	C236.344528,699.643677 226.059265,677.114624 217.413895,653.733948 
 	C215.029343,647.285156 213.751511,640.427124 211.751984,633.391846 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M673.316040,288.737518 
 	C638.270020,269.412323 600.833496,259.797089 561.500000,256.976471 
@@ -300,7 +324,7 @@ M673.316040,288.737518
 	C717.600037,317.255737 699.912415,304.048248 680.997314,292.538239 
 	C678.675171,291.125244 676.089294,290.145782 673.316040,288.737518 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M402.728027,291.716736 
 	C384.620850,302.425690 368.276428,314.770111 352.778961,328.497681 
@@ -314,7 +338,7 @@ M402.728027,291.716736
 	C520.173584,218.802780 520.173584,237.537415 520.173584,257.050262 
 	C478.574432,260.073120 439.302917,270.808868 402.728027,291.716736 
 z" />
-      <path fill="#FFFFFF" opacity="1.000000" stroke="none"
+      <path fill="currentColor" opacity="1.000000" stroke="none"
         d="
 M773.295898,791.206116 
 	C755.627380,808.457397 736.210449,822.791992 715.350647,835.281982 
@@ -357,7 +381,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
     <div class="nav-section">
       <div class="nav-upper">
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('home/home.php')); ?>" class="nav-link <?php echo nav_active('home/home.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('home/home.php')); ?>" class="nav-link <?php echo nav_active('home/home.php'); ?>">
             <div class="nav-icon">
               <!-- home.svg inline -->
               <svg class="filter-999" style="width:22px; height:22px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -368,8 +392,16 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
           </a>
         </div>
 
-        <div class="nav-item expandable" id="zones">
-          <a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="nav-link" id="zones-toggle">
+				<div class="nav-item expandable" id="zones">
+					<a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="zones-home-btn <?php echo nav_active('zones-dash/zone-dash.php'); ?>" title="Zones Dashboard" aria-label="Zones Dashboard">
+						<svg class="filter-999" style="width:16px; height:16px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+							<rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#1C274C" stroke-width="1.5"/>
+						</svg>
+					</a>
+		  <a href="#" class="nav-link zones-toggle-link" id="zones-toggle">
             <div class="nav-icon">
               <!-- zones icon -->
               <svg class="filter-999" style="width:22px; height:22px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -379,35 +411,31 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
               </svg>
             </div>
             <span class="nav-text">Zones</span>
-          </a>
+					</a>
 
           <div class="sub-nav expanded" id="zones-sub">
-            <div class="zone-item" id="rides1-zone">
-              <a href="<?php echo htmlspecialchars(url_path('zones-dash/zone-dash.php')); ?>" class="sub-nav-link">Zones Dashboard</a>
-            </div>
-
             <div class="zone-item expandable" id="rides1-zone">
               <a href="#" class="sub-nav-link expandable">Rides 1</a>
               <div class="zone-sub-nav expanded" id="rides1-sub">
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link active">Dashboard</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link">Edit Mode</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link">Settings & Config</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/dashboard/dashboard.php'); ?>">Dashboard</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/EditMode/editmode.php'); ?>">Edit Mode</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/confignsettings/settings.php'); ?>">Settings & Config</a>
               </div>
             </div>
 
             <div class="zone-item expandable" id="rides2-zone">
               <a href="#" class="sub-nav-link expandable">Rides 2</a>
               <div class="zone-sub-nav" id="rides2-sub">
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link active">Dashboard</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link">Edit Mode</a>
-                <a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link">Settings & Config</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/dashboard/dashboard.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/dashboard/dashboard.php'); ?>">Dashboard</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/EditMode/editmode.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/EditMode/editmode.php'); ?>">Edit Mode</a>
+				<a href="<?php echo htmlspecialchars(url_path('zone-manager/confignsettings/settings.php')); ?>" class="zone-sub-link <?php echo nav_active('zone-manager/confignsettings/settings.php'); ?>">Settings & Config</a>
               </div>
             </div>
           </div>
         </div>
 
         <div class="nav-item" id="management">
-          <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="nav-link <?php echo nav_active('management/management-dashboard/management-dashboard.php'); ?>" id="management-toggle">
+		  <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="nav-link <?php echo nav_active('management/management-dashboard/management-dashboard.php'); ?>" id="management-toggle">
             <div class="nav-icon">
               <!-- manage.svg -->
               <svg class="filter-999" style="width:22px; height:22px;" fill="#000000" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -428,7 +456,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
 
       <div class="nav-lower">
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('acc-sets/account-settings.php')); ?>" class="nav-link <?php echo nav_active('acc-sets/account-settings.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('acc-sets/account-settings.php')); ?>" class="nav-link <?php echo nav_active('acc-sets/account-settings.php'); ?>">
             <div class="nav-icon">
               <!-- acc.svg -->
               <svg class="filter-999" style="width:20px; height:20px;" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -440,7 +468,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
         </div>
 
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('changelog/changelog.php')); ?>" class="nav-link <?php echo nav_active('changelog/changelog.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('changelog/changelog.php')); ?>" class="nav-link <?php echo nav_active('changelog/changelog.php'); ?>">
             <div class="nav-icon">
               <!-- changelog.svg -->
               <svg class="filter-999" style="width:25px; height:25px;" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" fill="none">

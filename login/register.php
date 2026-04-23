@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
     $org_name        = trim($_POST['org_name']        ?? '');
     $org_description = trim($_POST['org_description'] ?? '');
     $org_color       = trim($_POST['org_color']       ?? '#1a8f7a');
+    $org_code        = strtoupper(trim($_POST['org_code'] ?? ''));
     $owner_name      = trim($_POST['owner_name']      ?? '');
     $owner_email     = trim($_POST['owner_email']     ?? '');
     $owner_username  = trim($_POST['owner_username']  ?? '');
@@ -25,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
 
     // Validate
     if (empty($org_name))    $errors[] = 'Organization name is required.';
+    if (empty($org_code) || !preg_match('/^[A-Z0-9_-]{3,30}$/', $org_code))
+                              $errors[] = 'Organization code must be 3–30 characters (letters, numbers, - _).';
     if (empty($owner_name))  $errors[] = 'Owner full name is required.';
     if (empty($owner_email) || !filter_var($owner_email, FILTER_VALIDATE_EMAIL))
                               $errors[] = 'A valid owner email is required.';
@@ -39,6 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
         $st->execute();
         $st->store_result();
         if ($st->num_rows > 0) $errors[] = 'That username is already taken.';
+        $st->close();
+
+        $st = $conn->prepare('SELECT org_id FROM organization WHERE org_code = ?');
+        $st->bind_param('s', $org_code);
+        $st->execute();
+        $st->store_result();
+        if ($st->num_rows > 0) $errors[] = 'That organization code is already in use.';
         $st->close();
 
         if (empty($errors)) {
@@ -64,10 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
                 $org_id = (int)$res->fetch_assoc()['m'] + 1;
 
                 $st = $conn->prepare(
-                    'INSERT INTO organization (org_id,org_name,org_description,org_color,org_owner)
-                     VALUES (?,?,?,?,?)'
+                    'INSERT INTO organization (org_id,org_name,org_description,org_color,org_owner,org_code)
+                     VALUES (?,?,?,?,?,?)'
                 );
-                $st->bind_param('isssi', $org_id, $org_name, $org_description, $org_color, $owner_id);
+                $st->bind_param('isssis', $org_id, $org_name, $org_description, $org_color, $owner_id, $org_code);
                 $st->execute(); $st->close();
 
                 // --- Link owner to org ---
@@ -126,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
         'org_name'        => $org_name,
         'org_description' => $org_description,
         'org_color'       => $org_color,
+        'org_code'        => $org_code,
         'owner_name'      => $owner_name,
         'owner_email'     => $owner_email,
         'owner_username'  => $owner_username,
@@ -138,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Set Up OPilot</title>
+  <title>Set Up OpPilot</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/theme.css" />
   <link rel="stylesheet" href="register.css" />
@@ -154,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
 
     <!-- ── Header ── -->
     <div class="wizard-header">
-      <div class="wizard-logo">O<span>Pilot</span></div>
+      <div class="wizard-logo">Op<span>Pilot</span></div>
       <div class="wizard-progress" id="wizard-progress"><!-- built by JS --></div>
     </div>
 
@@ -183,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
             <path d="M16 10 L19 7 L22 10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h2 class="step-title">Welcome to OPilot</h2>
+        <h2 class="step-title">Welcome to OpPilot</h2>
         <p class="step-sub">Let's get your organization set up in just a few steps.</p>
         <ul class="welcome-checklist">
           <li>
@@ -209,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
           </li>
         </ul>
         <div class="wizard-nav">
-          <div></div>
+          <a class="btn-next" href="index.php" style="text-decoration:none;">← Log In</a>
           <button class="btn-next" onclick="goTo(2)">Get Started →</button>
         </div>
       </div>
@@ -228,6 +239,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
           <label for="inp-org-name">Organization Name <span style="color:var(--accent-red)">*</span></label>
           <input type="text" id="inp-org-name" placeholder="e.g. Everest Theme Park" maxlength="200" oninput="updateAvatar()" />
           <div class="field-err">Organization name is required.</div>
+        </div>
+
+        <div class="wizard-field" id="field-org-code">
+          <label for="inp-org-code">Organization Code <span style="color:var(--accent-red)">*</span></label>
+          <input type="text" id="inp-org-code" placeholder="e.g. EVERPK" maxlength="30"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')" />
+          <div style="font-size:0.78rem;color:#888;margin-top:0.3rem;">3–30 characters: letters, numbers, hyphens, underscores. Members use this code to log in.</div>
+          <div class="field-err">A unique code of 3–30 characters (letters, numbers, - _) is required.</div>
         </div>
 
         <div class="wizard-field">
@@ -315,6 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
   <input type="hidden" name="org_name"        id="hf-org-name">
   <input type="hidden" name="org_description" id="hf-org-desc">
   <input type="hidden" name="org_color"       id="hf-org-color">
+  <input type="hidden" name="org_code"        id="hf-org-code">
   <input type="hidden" name="owner_name"      id="hf-owner-name">
   <input type="hidden" name="owner_email"     id="hf-owner-email">
   <input type="hidden" name="owner_username"  id="hf-owner-username">
@@ -349,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Re-hydrate after a PHP validation error
   const s = <?php echo json_encode($php_state); ?>;
   document.getElementById('inp-org-name').value      = s.org_name        || '';
+  document.getElementById('inp-org-code').value      = s.org_code        || '';
   document.getElementById('inp-org-desc').value      = s.org_description || '';
   document.getElementById('inp-owner-name').value    = s.owner_name      || '';
   document.getElementById('inp-owner-email').value   = s.owner_email     || '';
@@ -470,9 +491,14 @@ function setFieldError(id, hasError) {
 
 function validateStep(step) {
   if (step === 2) {
-    const ok = document.getElementById('inp-org-name').value.trim() !== '';
-    setFieldError('field-org-name', !ok);
-    if (ok) goTo(3);
+    const nameOk = document.getElementById('inp-org-name').value.trim() !== '';
+    setFieldError('field-org-name', !nameOk);
+
+    const code   = document.getElementById('inp-org-code').value.trim();
+    const codeOk = /^[A-Z0-9_-]{3,30}$/.test(code);
+    setFieldError('field-org-code', !codeOk);
+
+    if (nameOk && codeOk) goTo(3);
     return;
   }
 
@@ -546,6 +572,7 @@ function submitWizard() {
   document.getElementById('hf-org-name').value     = document.getElementById('inp-org-name').value.trim();
   document.getElementById('hf-org-desc').value     = document.getElementById('inp-org-desc').value.trim();
   document.getElementById('hf-org-color').value    = selectedColor;
+  document.getElementById('hf-org-code').value     = document.getElementById('inp-org-code').value.trim();
   document.getElementById('hf-owner-name').value   = document.getElementById('inp-owner-name').value.trim();
   document.getElementById('hf-owner-email').value  = document.getElementById('inp-owner-email').value.trim();
   document.getElementById('hf-owner-username').value = document.getElementById('inp-owner-username').value.trim();
