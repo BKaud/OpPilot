@@ -343,6 +343,10 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                         positions: positions
                     };
                 }
+                // Restore permission tiers for this ride (if present)
+                try {
+                    restorePermTiersForRide(ride);
+                } catch (e) {}
                 // Restore main position selection if provided
                 if (ride.ride_main_pos_id) {
                     try {
@@ -661,6 +665,8 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     }
     // Load on page ready
     loadAttractions(1);
+    // Load permission tiers for dropdown
+    loadPermTiers();
     // Hook the zone maintenance lock checkbox so changes apply immediately and persist
     try {
         const lockCheckbox = document.getElementById('zoneLockDuringMaint');
@@ -904,6 +910,50 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
         } catch (e) { console.warn('Custom perm dropdown init failed', e); }
     })();
+
+    // Fetch permission tiers from server and populate hidden select
+    function loadPermTiers() {
+        fetch('api.php?action=getPermTiers')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.success) return;
+                const sel = document.getElementById('permTierSelect');
+                if (!sel) return;
+                sel.innerHTML = '';
+                (data.permtiers || []).forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = String(t.permtier_id);
+                    opt.textContent = t.permtier_name;
+                    sel.appendChild(opt);
+                });
+                if (sel.rebuildPermMenu) sel.rebuildPermMenu();
+            })
+            .catch(err => console.warn('Failed to load perm tiers', err));
+    }
+
+    // Restore perm tier selection for a given ride object (ride.ride_permtier_ids expected as JSON or CSV)
+    function restorePermTiersForRide(ride) {
+        const sel = document.getElementById('permTierSelect');
+        if (!sel || !ride) return;
+        // clear
+        Array.from(sel.options).forEach(o => o.selected = false);
+        let ids = [];
+        if (ride.ride_permtier_ids) {
+            try {
+                const parsed = JSON.parse(ride.ride_permtier_ids);
+                if (Array.isArray(parsed)) ids = parsed.map(String);
+            } catch (e) {
+                // fallback to comma-separated
+                ids = String(ride.ride_permtier_ids).split(',').map(s => s.trim()).filter(Boolean);
+            }
+        }
+        if (ids.length > 0) {
+            Array.from(sel.options).forEach(o => {
+                if (ids.includes(String(o.value)) || ids.includes(String(Number(o.value)))) o.selected = true;
+            });
+        }
+        if (sel.rebuildPermMenu) sel.rebuildPermMenu();
+    }
 
     // Save settings handler
     document.getElementById('saveSettingsBtn').addEventListener('click', function() {

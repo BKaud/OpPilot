@@ -170,7 +170,27 @@ require_once APP_ROOT . '/partials/sidebar.php';
       row.querySelectorAll('input,select').forEach(el => {
         el.addEventListener('change', () => row.classList.add('dirty'));
         el.addEventListener('input', () => row.classList.add('dirty'));
+        // Auto-save when the user clicks away (blur) from a changed field
+        el.addEventListener('blur', () => {
+          if (!row.classList.contains('dirty')) return;
+          // Small timeout to allow focus to move to clickable controls without races
+          setTimeout(() => {
+            // Only call save if still dirty
+            if (row.classList.contains('dirty')) saveZone(row);
+          }, 150);
+        });
       });
+
+      // When pressing Enter in the name input, blur to trigger the autosave flow
+      const nameInput = row.querySelector('.zone-name');
+      if (nameInput) {
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            nameInput.blur();
+          }
+        });
+      }
 
       saveBtn.addEventListener('click', () => saveZone(row));
     });

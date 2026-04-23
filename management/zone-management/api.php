@@ -46,6 +46,9 @@ function getZoneManagementData() {
 function saveZone() {
     $conn = getDbConnection();
 
+    // Debug log path (file will be created in this folder)
+    $logPath = __DIR__ . '/zone-save-debug.log';
+
     $zoneId = intval($_POST['zone_id'] ?? 0);
     $zoneName = trim($_POST['zone_name'] ?? '');
     $zoneLeadRaw = trim($_POST['zone_lead_account_id'] ?? '');
@@ -72,18 +75,42 @@ function saveZone() {
     $zonePerm = ($zonePermRaw === '') ? null : intval($zonePermRaw);
 
     try {
+        // Log incoming POST for debugging
+        @file_put_contents($logPath, "[" . date('c') . "] RECEIVED: " . json_encode($_POST, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
         ensureSchema($conn);
 
-        $stmt = $conn->prepare('UPDATE zone SET zone_name = ?, zone_lead_account_id = ?, zone_permtier_id = ?, zone_icon = ? WHERE zone_id = ?');
+        // Use NULLIF on the incoming raw values so empty strings are stored as SQL NULL
+        // Bind the raw string inputs for nullable integers to avoid bind_param null/typing issues
+        $stmt = $conn->prepare('UPDATE zone SET zone_name = ?, zone_lead_account_id = NULLIF(?, \'\'), zone_permtier_id = NULLIF(?, \'\'), zone_icon = ? WHERE zone_id = ?');
         if (!$stmt) {
             throw new Exception('Unable to prepare zone update');
         }
 
-        $stmt->bind_param('siisi', $zoneName, $zoneLead, $zonePerm, $zoneIcon, $zoneId);
+        $stmt->bind_param('ssssi', $zoneName, $zoneLeadRaw, $zonePermRaw, $zoneIcon, $zoneId);
         if (!$stmt->execute()) {
-            throw new Exception('Failed to save zone: ' . $stmt->error);
+            $err = $stmt->error;
+            @file_put_contents($logPath, "[" . date('c') . "] EXECUTE ERROR: " . $err . PHP_EOL, FILE_APPEND);
+            throw new Exception('Failed to save zone: ' . $err);
         }
+        $updateAffected = $stmt->affected_rows;
+        @file_put_contents($logPath, "[" . date('c') . "] UPDATE AFFECTED: " . $updateAffected . PHP_EOL, FILE_APPEND);
         $stmt->close();
+
+        // Fetch saved zone_name for verification
+        $savedName = null;
+        try {
+            $s2 = $conn->prepare('SELECT zone_name FROM zone WHERE zone_id = ?');
+            if ($s2) {
+                $s2->bind_param('i', $zoneId);
+                $s2->execute();
+                $r = $s2->get_result()->fetch_assoc();
+                $savedName = $r['zone_name'] ?? null;
+                $s2->close();
+            }
+        } catch (Exception $e) { /* ignore */ }
+
+        // Log DB-verified values
+        @file_put_contents($logPath, "[" . date('c') . "] DB_ZONE_NAME: " . json_encode($savedName, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
 
         echo json_encode([
             'success' => true,
@@ -91,9 +118,15 @@ function saveZone() {
             'zone_name' => $zoneName,
             'zone_lead_account_id' => $zoneLead,
             'zone_permtier_id' => $zonePerm,
-            'zone_icon' => $zoneIcon
+            'zone_icon' => $zoneIcon,
+            'update_affected' => $updateAffected,
+            'db_zone_name' => $savedName,
+            'received' => $_POST
         ]);
+        return;
     } catch (Throwable $e) {
+        // Log exception
+        @file_put_contents($logPath, "[" . date('c') . "] EXCEPTION: " . $e->getMessage() . " - POST: " . json_encode($_POST, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     } finally {
         $conn->close();

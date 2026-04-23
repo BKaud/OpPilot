@@ -22,6 +22,9 @@ switch ($action) {
     case 'getZoneSettings':
         getZoneSettings();
         break;
+    case 'getPermTiers':
+        getPermTiers();
+        break;
     case 'saveAttractionSettings':
         saveAttractionSettings();
         break;
@@ -174,8 +177,8 @@ function getAttractionData() {
 
 // saveAttractionSettings moved below to keep function definitions top-level
 
-    // Get ride info (include required certs and main position)
-    $stmt = $conn->prepare("SELECT ride_id, ride_name, ride_status, ride_is_placed_on_canvas, ride_canvas_order, ride_required_certs, ride_main_pos_id, ride_image_url, ride_link_url FROM ride WHERE ride_id = ?");
+    // Get ride info (select * so optional columns like permtier ids are returned if present)
+    $stmt = $conn->prepare("SELECT * FROM ride WHERE ride_id = ?");
     $stmt->bind_param("i", $rideId);
     $stmt->execute();
     $ride = $stmt->get_result()->fetch_assoc();
@@ -326,7 +329,7 @@ function saveAttractionSettings() {
     try {
         $conn->begin_transaction();
 
-        // Ensure ride has columns for required certs, main position and link
+        // Ensure ride has columns for required certs, main position, link and perm tier ids
         $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_required_certs'");
         if ($res && $res->num_rows == 0) {
             $conn->query("ALTER TABLE ride ADD COLUMN ride_required_certs TEXT NULL");
@@ -335,22 +338,39 @@ function saveAttractionSettings() {
         if ($res && $res->num_rows == 0) {
             $conn->query("ALTER TABLE ride ADD COLUMN ride_main_pos_id INT NULL");
         }
-            // Ensure ride has column to store image URL
-            $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_image_url'");
-            if ($res && $res->num_rows == 0) {
-                $conn->query("ALTER TABLE ride ADD COLUMN ride_image_url VARCHAR(255) NULL");
-            }
-            // Ensure ride has column to store link URL
-            $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_link_url'");
-            if ($res && $res->num_rows == 0) {
-                $conn->query("ALTER TABLE ride ADD COLUMN ride_link_url VARCHAR(255) NULL");
-            }
+        // Ensure ride has column to store image URL
+        $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_image_url'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE ride ADD COLUMN ride_image_url VARCHAR(255) NULL");
+        }
+        // Ensure ride has column to store link URL
+        $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_link_url'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE ride ADD COLUMN ride_link_url VARCHAR(255) NULL");
+        }
+        // Ensure ride has column to store associated perm tier ids (JSON)
+        $res = $conn->query("SHOW COLUMNS FROM ride LIKE 'ride_permtier_ids'");
+        if ($res && $res->num_rows == 0) {
+            $conn->query("ALTER TABLE ride ADD COLUMN ride_permtier_ids TEXT NULL");
+        }
 
         // Update ride row (including newly ensured columns)
-        $stmt = $conn->prepare("UPDATE ride SET ride_name = ?, ride_status = ?, ride_is_placed_on_canvas = ?, ride_required_certs = ?, ride_main_pos_id = ?, ride_link_url = ? WHERE ride_id = ?");
+        $stmt = $conn->prepare("UPDATE ride SET ride_name = ?, ride_status = ?, ride_is_placed_on_canvas = ?, ride_required_certs = ?, ride_main_pos_id = ?, ride_link_url = ?, ride_permtier_ids = ? WHERE ride_id = ?");
         if (!$stmt) throw new Exception('DB prepare failed for ride update');
-        $stmt->bind_param("ssisisi", $name, $status, $isPlaced, $requiredCerts, $mainPosition, $rideLink, $rideId);
+        // ride_permtier_ids will be stored as JSON text
+        $permJson = '';
+        if (isset($_POST['perm_tiers'])) {
+            $raw = $_POST['perm_tiers'];
+            if (is_array($raw)) $permJson = json_encode($raw);
+            else {
+                $dec = json_decode($raw, true);
+                $permJson = ($dec === null) ? trim($raw) : json_encode($dec);
+            }
+        }
+        $stmt->bind_param("ssisissi", $name, $status, $isPlaced, $requiredCerts, $mainPosition, $rideLink, $permJson, $rideId);
         if (!$stmt->execute()) throw new Exception('Failed to update ride: ' . $stmt->error);
+        // capture affected rows for debugging
+        $updateAffected = $stmt->affected_rows;
         $stmt->close();
 
         // Handle deleted positions: unlink and remove
@@ -458,7 +478,20 @@ function saveAttractionSettings() {
         }
 
         $conn->commit();
-        $response = ['success' => true, 'ride_id' => $rideId, 'ride_name' => $name];
+        // Fetch actual saved ride name for verification
+        $savedName = null;
+        try {
+            $s2 = $conn->prepare("SELECT ride_name FROM ride WHERE ride_id = ?");
+            if ($s2) {
+                $s2->bind_param('i', $rideId);
+                $s2->execute();
+                $row = $s2->get_result()->fetch_assoc();
+                $savedName = $row['ride_name'] ?? null;
+                $s2->close();
+            }
+        } catch (Exception $e) { /* ignore */ }
+
+        $response = ['success' => true, 'ride_id' => $rideId, 'ride_name' => $name, 'update_affected' => $updateAffected, 'db_ride_name' => $savedName];
         if (!empty($imageUrlToReturn)) $response['ride_image_url'] = $imageUrlToReturn;
         echo json_encode($response);
         return;
@@ -537,6 +570,26 @@ function saveZoneLock() {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         $conn->close();
         return;
+    }
+}
+
+/**
+ * Return list of permission tiers
+ * Expects GET: (none)
+ */
+function getPermTiers() {
+    $conn = getDbConnection();
+    try {
+        $result = $conn->query("SELECT permtier_id, COALESCE(permtier_name, CONCAT('Tier ', permtier_id)) AS permtier_name FROM permtier ORDER BY permtier_id");
+        $tiers = [];
+        while ($row = $result->fetch_assoc()) {
+            $tiers[] = $row;
+        }
+        echo json_encode(['success' => true, 'permtiers' => $tiers]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    } finally {
+        $conn->close();
     }
 }
 ?>
