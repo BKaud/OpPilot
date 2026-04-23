@@ -8,6 +8,14 @@ if (!defined('APP_ROOT')) define('APP_ROOT', __DIR__ . '/..');
 if (!isset($currentPath)) $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+// Auth guard: any page that includes sidebar.php requires a valid session.
+// Login/register pages do not include sidebar.php, so they are unaffected.
+if (empty($_SESSION['account_id'])) {
+    $loginUrl = rtrim(BASE_PATH, '/') . '/login/register.php';
+    header('Location: ' . $loginUrl);
+    exit();
+}
+
 // Only define url_path() if it doesn't exist already
 if (!function_exists('url_path')) {
   function url_path($path)

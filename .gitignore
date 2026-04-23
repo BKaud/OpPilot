@@ -2,6 +2,7 @@
 DBfiles/app_config.php
 DBfiles/db_local_config.php
 DBfiles/ssh_tunnel.bat
+DBfiles/sshtunnel.bat
 DBfiles/ssh_tunnel.ps1
 # If you ever want to ignore the tracked canonical file (not recommended):
 #DBfiles/db_config.php

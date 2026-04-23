@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['final_submit'])) {
           </li>
         </ul>
         <div class="wizard-nav">
-          <div></div>
+          <a class="btn-next" href="index.php" style="text-decoration:none;">← Log In</a>
           <button class="btn-next" onclick="goTo(2)">Get Started →</button>
         </div>
       </div>
