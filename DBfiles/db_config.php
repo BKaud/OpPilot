@@ -29,7 +29,6 @@ if (file_exists($appConfig)) {
     // === DEVELOPMENT DEFAULTS ===
     // Default development config (safe for repo)
     define('DB_CONFIG_SOURCE', 'development');
-    define('BASE_PATH', '');
     define('DB_HOST', '3.142.11.187');
     define('DB_PORT', 3306);
     define('DB_USER', 'root');

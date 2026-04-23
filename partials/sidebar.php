@@ -1,9 +1,8 @@
 <?php
 // partials/sidebar.php
-// Expects bootstrap.php to have been included earlier so BASE_PATH, APP_ROOT and $currentPath are available.
+// Expects bootstrap.php to have been included earlier so APP_ROOT and $currentPath are available.
 
 // Defensive defaults
-if (!defined('BASE_PATH')) define('BASE_PATH', '');
 if (!defined('APP_ROOT')) define('APP_ROOT', __DIR__ . '/..');
 if (!isset($currentPath)) $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 if (session_status() === PHP_SESSION_NONE) session_start();
@@ -11,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 // Auth guard: any page that includes sidebar.php requires a valid session.
 // Login/register pages do not include sidebar.php, so they are unaffected.
 if (empty($_SESSION['account_id'])) {
-    $loginUrl = rtrim(BASE_PATH, '/') . '/login/register.php';
+    $loginUrl = '/OpPilot/login/register.php';
     header('Location: ' . $loginUrl);
     exit();
 }
@@ -20,9 +19,8 @@ if (empty($_SESSION['account_id'])) {
 if (!function_exists('url_path')) {
   function url_path($path)
   {
-    $base = rtrim(BASE_PATH, '/');
-    $p = ltrim($path, '/');
-    return ($base === '' ? '' : $base) . '/' . $p;
+    $p = '/' . ltrim($path, '/');
+    return '/OpPilot' . $p;
   }
 }
 
@@ -36,10 +34,9 @@ if (!function_exists('nav_active')) {
 			$p = parse_url((string)$path, PHP_URL_PATH) ?? '';
 			$p = trim($p);
 
-			$base = rtrim((string)BASE_PATH, '/');
-			if ($base !== '' && strpos($p, $base . '/') === 0) {
-				$p = substr($p, strlen($base));
-			} elseif ($base !== '' && $p === $base) {
+			if (strpos($p, '/OpPilot/') === 0) {
+				$p = substr($p, strlen('/OpPilot'));
+			} elseif ($p === '/OpPilot') {
 				$p = '/';
 			}
 

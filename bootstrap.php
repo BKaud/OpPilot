@@ -2,7 +2,7 @@
 // bootstrap.php - application bootstrap (project root)
 //
 // Loads DB configuration through DBfiles/db_config.php and creates $mysqli.
-// Defines APP_ROOT, BASE_PATH, and $currentPath.
+// Defines APP_ROOT and $currentPath.
 
 // Filesystem project root
 define('APP_ROOT', __DIR__);
@@ -14,10 +14,6 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 require_once APP_ROOT . '/DBfiles/db_config.php';
 
 // Fallback defaults (safe for local dev)
-if (!defined('BASE_PATH')) {
-    // If your local dev serves at http://localhost/OpPilot set '/OpPilot', or '' if root.
-    define('BASE_PATH', '/OpPilot');
-}
 if (!defined('DB_HOST')) define('DB_HOST', '127.0.0.1');
 if (!defined('DB_PORT')) define('DB_PORT', 3306);
 if (!defined('DB_USER')) define('DB_USER', 'root');
@@ -31,9 +27,8 @@ if (!$mysqli) {
     error_log('DB connect failed in bootstrap');
 }
 
-// Helper: build URLs with BASE_PATH
+// Helper: build absolute URLs rooted at /OpPilot
 function url_path($path) {
-    $base = rtrim(BASE_PATH, '/');
     $p = '/' . ltrim($path, '/');
-    return $base . $p;
+    return '/OpPilot' . $p;
 }
