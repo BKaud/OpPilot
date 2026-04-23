@@ -259,7 +259,7 @@ z" />
     </svg>
             <span class="lp-logo-text">Op<span>Pilot</span></span>
         </a>
-        <a class="lp-login-btn" href="/OpPilot/login/login.php">Log In</a>
+        <a class="lp-login-btn" href="login/login.php">Log In</a>
     </div>
 </nav>
 
@@ -279,7 +279,7 @@ z" />
             so your staff always knows where to be and what's running.
         </p>
         <div class="lp-hero-cta">
-            <a class="lp-btn-primary" href="/OpPilot/login/login.php">Get Started</a>
+            <a class="lp-btn-primary" href="login/login.php">Get Started</a>
             <a class="lp-btn-ghost" href="#demo">See it in action ↓</a>
         </div>
         <div class="lp-stats-row">
@@ -528,7 +528,7 @@ z" />
     <div class="lp-cta-inner">
         <h2 class="lp-cta-title">Ready to take control of your park?</h2>
         <p class="lp-cta-sub">Log in to your organisation's OpPilot dashboard and see the difference a purpose-built ops platform makes.</p>
-        <a class="lp-btn-primary lp-btn-primary--lg" href="/OpPilot/login/login.php">Open Dashboard</a>
+        <a class="lp-btn-primary lp-btn-primary--lg" href="login/login.php">Open Dashboard</a>
     </div>
 </section>
 

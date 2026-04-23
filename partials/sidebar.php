@@ -376,7 +376,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
     <div class="nav-section">
       <div class="nav-upper">
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('home/home.php')); ?>" class="nav-link <?php echo nav_active('home/home.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('home/home.php')); ?>" class="nav-link <?php echo nav_active('home/home.php'); ?>">
             <div class="nav-icon">
               <!-- home.svg inline -->
               <svg class="filter-999" style="width:22px; height:22px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -430,7 +430,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
         </div>
 
         <div class="nav-item" id="management">
-          <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="nav-link <?php echo nav_active('management/management-dashboard/management-dashboard.php'); ?>" id="management-toggle">
+		  <a href="<?php echo htmlspecialchars(url_path('management/management-dashboard/management-dashboard.php')); ?>" class="nav-link <?php echo nav_active('management/management-dashboard/management-dashboard.php'); ?>" id="management-toggle">
             <div class="nav-icon">
               <!-- manage.svg -->
               <svg class="filter-999" style="width:22px; height:22px;" fill="#000000" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -451,7 +451,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
 
       <div class="nav-lower">
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('acc-sets/account-settings.php')); ?>" class="nav-link <?php echo nav_active('acc-sets/account-settings.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('acc-sets/account-settings.php')); ?>" class="nav-link <?php echo nav_active('acc-sets/account-settings.php'); ?>">
             <div class="nav-icon">
               <!-- acc.svg -->
               <svg class="filter-999" style="width:20px; height:20px;" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -463,7 +463,7 @@ if (file_exists(APP_ROOT . '/partials/navbar-widgets.php')) {
         </div>
 
         <div class="nav-item">
-          <a href="<?php echo htmlspecialchars(url_path('changelog/changelog.php')); ?>" class="nav-link <?php echo nav_active('changelog/changelog.php'); ?>">
+		  <a href="<?php echo htmlspecialchars(url_path('changelog/changelog.php')); ?>" class="nav-link <?php echo nav_active('changelog/changelog.php'); ?>">
             <div class="nav-icon">
               <!-- changelog.svg -->
               <svg class="filter-999" style="width:25px; height:25px;" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" fill="none">

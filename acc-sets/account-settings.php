@@ -117,9 +117,20 @@ if (isset($mysqli) && $mysqli) {
                         </div>
                     </div>
 
-                    <form class="prof-logout-form" method="post" action="<?php echo htmlspecialchars(url_path('login/logout.php')); ?>">
-                        <button class="prof-logout-btn" type="submit">Log Out</button>
+                    <form class="prof-logout-form" id="logoutForm" method="post" action="<?php echo htmlspecialchars(url_path('login/logout.php')); ?>">
+                        <button class="prof-logout-btn" type="button" id="logoutBtn">Log Out</button>
                     </form>
+
+                    <!-- Logout confirmation modal -->
+                    <div id="logoutModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;">
+                        <div style="background:var(--card-bg,#1e1e2e);border:1px solid var(--border,#333);border-radius:12px;padding:2rem 2.5rem;min-width:300px;max-width:90vw;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+                            <p style="margin:0 0 1.5rem;font-size:1rem;color:var(--text,#eee);">Are you sure you want to log out?</p>
+                            <div style="display:flex;gap:.75rem;justify-content:center;">
+                                <button id="logoutConfirmBtn" style="padding:.5rem 1.4rem;border-radius:8px;border:none;background:var(--accent,#1a8f7a);color:#fff;font-size:.9rem;cursor:pointer;">Log Out</button>
+                                <button id="logoutCancelBtn" style="padding:.5rem 1.4rem;border-radius:8px;border:1px solid var(--border,#333);background:transparent;color:var(--text,#eee);font-size:.9rem;cursor:pointer;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -188,6 +199,27 @@ if (isset($mysqli) && $mysqli) {
 </div><!-- /.main -->
 
 <script>
+// ── Logout confirmation ───────────────────────────────────────
+(function () {
+    var modal      = document.getElementById('logoutModal');
+    var logoutBtn  = document.getElementById('logoutBtn');
+    var confirmBtn = document.getElementById('logoutConfirmBtn');
+    var cancelBtn  = document.getElementById('logoutCancelBtn');
+
+    logoutBtn.addEventListener('click', function () {
+        modal.style.display = 'flex';
+    });
+    cancelBtn.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+    confirmBtn.addEventListener('click', function () {
+        document.getElementById('logoutForm').submit();
+    });
+})();
+
 (function () {
     var WIDGET_API  = '<?php echo htmlspecialchars(url_path("acc-sets/navbar-api.php")); ?>';
     var PROFILE_API = '<?php echo htmlspecialchars(url_path("acc-sets/profile-api.php")); ?>';
