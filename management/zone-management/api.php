@@ -199,40 +199,28 @@ function fetchZones(mysqli $conn, $orgId) {
 }
 
 function fetchOperators(mysqli $conn, $orgId) {
-    $useOrgFilter = false;
-    if ($orgId !== null) {
-        $stmt = $conn->prepare('SELECT COUNT(*) AS c FROM org_acc WHERE org_acc_org_id = ?');
-        $stmt->bind_param('i', $orgId);
-        $stmt->execute();
-        $count = intval(($stmt->get_result()->fetch_assoc()['c'] ?? 0));
-        $stmt->close();
-        $useOrgFilter = ($count > 0);
+    if ($orgId === null) {
+        return [];
     }
 
-    if ($useOrgFilter) {
-        $sql = "
-            SELECT DISTINCT a.account_id, a.acc_name
-            FROM org_acc oa
-            JOIN account a ON a.account_id = oa.org_acc_acc_id
-            WHERE oa.org_acc_org_id = ? AND COALESCE(a.acc_is_active, 1) = 1
-            ORDER BY a.acc_name
-        ";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $orgId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    } else {
-        $result = $conn->query("SELECT account_id, acc_name FROM account WHERE COALESCE(acc_is_active, 1) = 1 ORDER BY acc_name");
-    }
+    $sql = "
+        SELECT DISTINCT a.account_id, a.acc_name
+        FROM org_acc oa
+        JOIN account a ON a.account_id = oa.org_acc_acc_id
+        WHERE oa.org_acc_org_id = ? AND COALESCE(a.acc_is_active, 1) = 1
+        ORDER BY a.acc_name
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $orgId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $operators = [];
     while ($row = $result->fetch_assoc()) {
         $operators[] = $row;
     }
 
-    if ($useOrgFilter) {
-        $stmt->close();
-    }
+    $stmt->close();
 
     return $operators;
 }

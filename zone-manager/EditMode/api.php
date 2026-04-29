@@ -262,41 +262,58 @@ function saveLayout() {
 }
 
 /**
- * Get all operators (account table records)
- * 
- * Returns: List of active accounts that can be assigned as operators
+ * Get operators belonging to the current user's organisation.
+ *
+ * Returns: List of active accounts linked to the session org via org_acc.
  */
 function getAvailableOperators() {
     $conn = getDbConnection();
-    $zoneId = $_GET['zone_id'] ?? 1;
-    
-    // Get all active accounts that could be operators
-    // Note: You may want to filter this based on org_acc or specific criteria
+
+    $orgId = isset($_SESSION['org_id']) ? intval($_SESSION['org_id']) : 0;
+
+    if ($orgId <= 0) {
+        $conn->close();
+        echo json_encode(['success' => false, 'error' => 'Organization not set in session']);
+        return;
+    }
+
     $sql = "
         SELECT DISTINCT
             a.account_id,
             a.acc_name,
-            COALESCE(a.acc_tier, 'Tier 1') as acc_tier
-        FROM account a
-        WHERE COALESCE(a.acc_is_active, 1) = 1
+            COALESCE(a.acc_tier, 'Tier 1') AS acc_tier
+        FROM org_acc oa
+        INNER JOIN account a ON a.account_id = oa.org_acc_acc_id
+        WHERE oa.org_acc_org_id = ?
+          AND COALESCE(a.acc_is_active, 1) = 1
         ORDER BY a.acc_name
     ";
-    
-    $result = $conn->query($sql);
-    
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        $conn->close();
+        echo json_encode(['success' => false, 'error' => 'Query preparation failed']);
+        return;
+    }
+
+    $stmt->bind_param('i', $orgId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     $operators = [];
     while ($row = $result->fetch_assoc()) {
         $operators[] = [
-            'id' => $row['account_id'],
+            'id'   => $row['account_id'],
             'name' => $row['acc_name'],
             'tier' => $row['acc_tier']
         ];
     }
-    
+
+    $stmt->close();
     $conn->close();
-    
+
     echo json_encode([
-        'success' => true,
+        'success'   => true,
         'operators' => $operators
     ]);
 }
