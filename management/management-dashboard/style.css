@@ -215,6 +215,113 @@ select.mgmt-input { cursor: pointer; }
 .tag-label { font-weight: 700; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.4px; }
 .tag-value { color: var(--text-dark); font-weight: 500; }
 
+/* ══════════════════════════════════════════════════════════
+   ACCOUNT MANAGEMENT PANEL
+══════════════════════════════════════════════════════════ */
+
+/* Panel inner override — allows inner scroll */
+.acct-panel-inner {
+    overflow: hidden;
+    padding-bottom: 16px;
+}
+
+/* ── Job Positions section ── */
+.acct-pos-section {
+    background: #d8d8d8; border: 1px solid var(--border-panel); border-radius: 8px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; flex-shrink: 0;
+}
+.acct-pos-section-hdr {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.acct-pos-section-title {
+    font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark);
+}
+.acct-pos-section-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Create row */
+.acct-pos-create-row {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.acct-pos-create-row .mgmt-input { flex: 1; min-width: 120px; }
+.acct-pos-perm-select { flex: 1.4; min-width: 160px; }
+
+/* Position chips list */
+.acct-pos-list {
+    display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto;
+}
+.acct-pos-chip {
+    display: grid; grid-template-columns: 1.4fr 1.4fr auto; gap: 8px; align-items: center;
+    background: #ececec; border: 1px solid var(--border-panel); border-radius: 6px; padding: 8px 10px;
+}
+.acct-pos-chip-input { padding: 6px 8px; font-size: 13px; }
+.acct-pos-chip-select { padding: 6px 8px; font-size: 13px; }
+.acct-pos-chip-actions { display: flex; gap: 6px; }
+.acct-pos-chip-actions .btn-mgmt { padding: 6px 12px; font-size: 11px; }
+.acct-pos-empty { color: var(--text-muted); font-size: 13px; padding: 6px 2px; }
+
+/* ── Account users list ── */
+.acct-users-shell {
+    border: 1px solid var(--border-panel); border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column; flex: 1; min-height: 0;
+}
+.acct-users-head {
+    display: grid; grid-template-columns: 70px 1.2fr 1.4fr 1.4fr 1.8fr; gap: 0; align-items: center;
+    padding: 0; background: #ccc; border-bottom: 1px solid #bdbdbd;
+    color: var(--text-label); font: 700 12px/1 'Rajdhani', sans-serif;
+    letter-spacing: 0.6px; text-transform: uppercase; flex-shrink: 0;
+}
+.acct-users-body {
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: #d8d8d8;
+}
+
+/* ── Single account row ── */
+.acct-row {
+    display: grid; grid-template-columns: 70px 1.2fr 1.4fr 1.4fr 1.8fr; gap: 0; align-items: center;
+    padding: 0; border-bottom: 1px solid #d0d0d0; background: #ececec;
+    transition: background 0.12s;
+}
+.acct-row:last-child { border-bottom: 0; }
+.acct-row.dirty { box-shadow: inset 4px 0 0 var(--teal); background: #e9f2ef; }
+.acct-row > *, .acct-users-head > * {
+    padding: 10px 12px;
+    border-right: 1px solid rgba(0,0,0,0.08);
+}
+.acct-row > *:last-child, .acct-users-head > *:last-child { border-right: 0; }
+
+/* User cells */
+.acct-col-avatar { display: flex; align-items: center; justify-content: center; }
+.acct-avatar { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; overflow: hidden; }
+.acct-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.acct-avatar-initials {
+    width: 100%; height: 100%; background: var(--teal); color: #fff;
+    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    letter-spacing: 0.5px;
+}
+.acct-col-username, .acct-col-displayname { display: flex; align-items: center; min-width: 0; }
+.acct-username { font-size: 12px; font-weight: 600; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acct-displayname { font-size: 12px; color: var(--text-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Position cell */
+.acct-col-position { display: flex; align-items: center; }
+.acct-col-position .zone-input { width: 100%; }
+
+/* Perm group cell */
+.acct-col-permgroup { display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.acct-perm-effective { font-size: 11px; color: var(--text-label); }
+.acct-perm-hint { font-style: italic; color: #888; }
+
+/* Loading / empty states */
+.acct-loading, .acct-empty { padding: 16px; color: #666; font-size: 13px; }
+
+/* Global message bar */
+.acct-msg {
+    display: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; flex-shrink: 0;
+}
+.acct-msg.success { background: rgba(26,143,122,0.15); border: 1px solid rgba(26,143,122,0.4); color: #0f5f52; }
+.acct-msg.error   { background: rgba(192,57,43,0.13); border: 1px solid rgba(192,57,43,0.4); color: #7f261c; }
+.acct-msg.info    { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.12); color: #353535; }
+
 /* ── Responsive ── */
 @media (max-width: 860px) {
     .mgmt-body { flex-direction: column-reverse; }
@@ -226,4 +333,9 @@ select.mgmt-input { cursor: pointer; }
     .zone-list-head, .zone-row { grid-template-columns: 1fr; gap: 8px; }
     .zone-list-head { display: none; }
     .zone-col-actions { justify-content: flex-start; }
+    .acct-users-head { display: none; }
+    .acct-row { grid-template-columns: 70px 1fr 1fr; gap: 8px; }
+    .acct-col-avatar { grid-row: 1 / 3; }
+    .acct-col-position, .acct-col-permgroup { grid-column: 1 / -1; }
+    .acct-pos-chip { grid-template-columns: 1fr; }
 }

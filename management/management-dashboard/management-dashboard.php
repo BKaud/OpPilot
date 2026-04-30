@@ -9,7 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="../../assets/css/theme.css" />
-    <link rel="stylesheet" href="style.css?v=3" />
+    <link rel="stylesheet" href="style.css?v5" />
 </head>
 <body>
 <?php
@@ -34,7 +34,7 @@ require_once __DIR__ . '/../../partials/sidebar.php';
                 <div class="breadcrumb">Admin › <span id="breadcrumbSection">Management</span></div>
             </div>
             <div class="header-controls">
-                <span class="mode-badge">Live</span>
+                <button id="headerSaveBtn" class="btn-mgmt" type="button" style="display:none">Save Changes</button>
             </div>
         </div>
 
@@ -163,14 +163,52 @@ require_once __DIR__ . '/../../partials/sidebar.php';
 
                 <!-- ══ ACCOUNT MANAGEMENT PANEL ══ -->
                 <div class="mgmt-panel" id="panel-accounts" style="display:none">
-                    <div class="panel-inner">
-                        <div class="placeholder-panel">
-                            <div class="placeholder-icon" style="background:linear-gradient(135deg,#a3cbe6,#3aa0d6)">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" width="40" height="40"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <div class="panel-inner acct-panel-inner">
+
+                        <!-- ── Job Positions manager ── -->
+                        <div class="acct-pos-section">
+                            <div class="acct-pos-section-hdr">
+                                <div>
+                                    <div class="acct-pos-section-title">Job Positions</div>
+                                    <div class="acct-pos-section-sub">Define positions for your org. Each position can default to a permission group.</div>
+                                </div>
+                                <button id="btnTogglePositions" class="btn-mgmt" type="button" style="align-self:flex-start">Manage Positions</button>
                             </div>
-                            <div class="placeholder-title">Account Management</div>
-                            <div class="placeholder-sub">Manage user accounts, invite new users, disable accounts, and assign roles. Coming soon.</div>
+
+                            <div id="positionsArea" style="display:none">
+                                <!-- Create form -->
+                                <div class="acct-pos-create-row">
+                                    <input id="newPosName" class="mgmt-input" type="text" placeholder="Position name…" maxlength="100" />
+                                    <select id="newPosPermtier" class="mgmt-input acct-pos-perm-select">
+                                        <option value="">Default permission group (optional)</option>
+                                    </select>
+                                    <button id="btnCreatePos" class="btn-mgmt" type="button">Add</button>
+                                </div>
+                                <div id="posCreateMsg" class="field-msg"></div>
+
+                                <!-- Position list -->
+                                <div id="positionList" class="acct-pos-list">
+                                    <div class="acct-pos-empty">No positions yet.</div>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- ── Account list ── -->
+                        <div class="acct-users-shell">
+                            <div class="acct-users-head">
+                                <div class="acct-col-avatar"></div>
+                                <div class="acct-col-username">Username</div>
+                                <div class="acct-col-displayname">Display Name</div>
+                                <div class="acct-col-position">Job Position</div>
+                                <div class="acct-col-permgroup">Permission Group</div>
+                            </div>
+                            <div id="accountRows" class="acct-users-body">
+                                <div class="acct-loading">Loading accounts…</div>
+                            </div>
+                        </div>
+
+                        <div id="acctMsg" class="acct-msg" aria-live="polite"></div>
+
                     </div>
                 </div>
 
@@ -288,8 +326,9 @@ require_once __DIR__ . '/../../partials/sidebar.php';
     'use strict';
 
     // API paths relative to this page
-    const ORG_API  = '../org-manangement/api.php';
-    const ZONE_API = '../zone-management/api.php';
+    const ORG_API   = '../org-manangement/api.php';
+    const ZONE_API  = '../zone-management/api.php';
+    const ACCT_API  = '../account-management/api.php';
 
     const sectionLabels = {
         'org':         'Organization Management',
@@ -316,10 +355,18 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         const label = sectionLabels[name] || 'Management';
         document.getElementById('breadcrumbSection').textContent = label;
 
+        // Persist selection so reloading returns to the same section
+        history.replaceState(null, '', '#' + name);
+
+        // Show save button only for accounts section
+        var hSaveBtn = document.getElementById('headerSaveBtn');
+        if (hSaveBtn) hSaveBtn.style.display = (name === 'accounts') ? '' : 'none';
+
         if (!inited[name]) {
             inited[name] = true;
-            if (name === 'org')   initOrg();
-            if (name === 'zones') initZones();
+            if (name === 'org')      initOrg();
+            if (name === 'zones')    initZones();
+            if (name === 'accounts') initAccounts();
         }
     }
 
@@ -329,6 +376,14 @@ require_once __DIR__ . '/../../partials/sidebar.php';
             if (section) switchSection(section);
         });
     });
+
+    // Restore section from URL hash on page load
+    (function () {
+        var hash = location.hash.replace('#', '');
+        if (hash && sectionLabels[hash]) {
+            switchSection(hash);
+        }
+    }());
 
     // ══════════════════════════════════════════════════════════════════════════
     // ORGANIZATION SECTION
@@ -601,6 +656,319 @@ require_once __DIR__ . '/../../partials/sidebar.php';
         }
 
         loadZoneData();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // ACCOUNT MANAGEMENT SECTION
+    // ══════════════════════════════════════════════════════════════════════════
+    function initAccounts() {
+        var positions  = [];
+        var permGroups = [];
+        var accounts   = [];
+
+        var positionsArea   = document.getElementById('positionsArea');
+        var btnToggle       = document.getElementById('btnTogglePositions');
+        var positionList    = document.getElementById('positionList');
+        var newPosName      = document.getElementById('newPosName');
+        var newPosPermtier  = document.getElementById('newPosPermtier');
+        var btnCreatePos    = document.getElementById('btnCreatePos');
+        var posCreateMsg    = document.getElementById('posCreateMsg');
+        var accountRows     = document.getElementById('accountRows');
+        var acctMsg         = document.getElementById('acctMsg');
+
+        // Toggle positions area
+        btnToggle.addEventListener('click', function () {
+            var open = positionsArea.style.display !== 'none';
+            positionsArea.style.display = open ? 'none' : '';
+            btnToggle.textContent = open ? 'Manage Positions' : 'Hide Positions';
+        });
+
+        // ── Message helpers ───────────────────────────────────────────────────
+        function showAcctMsg(text, type) {
+            acctMsg.textContent = text;
+            acctMsg.className   = 'acct-msg ' + (type || 'info');
+            acctMsg.style.display = 'block';
+            clearTimeout(showAcctMsg._t);
+            showAcctMsg._t = setTimeout(function () { acctMsg.style.display = 'none'; }, 3000);
+        }
+
+        // ── Populate shared perm-group dropdowns ──────────────────────────────
+        function buildPermOptions(selectedId, includeDefault, defaultLabel) {
+            var opts = includeDefault
+                ? '<option value="">' + escHtml(defaultLabel || '— Use position default —') + '</option>'
+                : '<option value="">Unassigned</option>';
+            permGroups.forEach(function (pg) {
+                var sel = String(pg.permtier_id) === String(selectedId) ? ' selected' : '';
+                opts += '<option value="' + pg.permtier_id + '"' + sel + '>' + escHtml(pg.permtier_name || 'Group ' + pg.permtier_id) + '</option>';
+            });
+            return opts;
+        }
+
+        // ── Render positions panel ─────────────────────────────────────────────
+        function renderPositions() {
+            // Refresh create-form perm dropdown
+            newPosPermtier.innerHTML = '<option value="">Default permission group (optional)</option>' +
+                permGroups.map(function (pg) {
+                    return '<option value="' + pg.permtier_id + '">' + escHtml(pg.permtier_name || 'Group ' + pg.permtier_id) + '</option>';
+                }).join('');
+
+            if (!positions.length) {
+                positionList.innerHTML = '<div class="acct-pos-empty">No positions yet — create one above.</div>';
+                return;
+            }
+
+            positionList.innerHTML = positions.map(function (p) {
+                var defLabel = p.default_permtier_name ? escHtml(p.default_permtier_name) : 'None';
+                return '<div class="acct-pos-chip" data-pos-id="' + p.ojp_id + '">' +
+                    '<div class="acct-pos-chip-name">' +
+                        '<input class="mgmt-input acct-pos-chip-input" type="text" value="' + escHtml(p.ojp_name) + '" maxlength="100" />' +
+                    '</div>' +
+                    '<div class="acct-pos-chip-perm">' +
+                        '<select class="mgmt-input acct-pos-chip-select">' + buildPermOptions(p.ojp_default_permtier_id, false, '') + '</select>' +
+                    '</div>' +
+                    '<div class="acct-pos-chip-actions">' +
+                        '<button class="btn-mgmt acct-pos-save-btn" type="button">Save</button>' +
+                        '<button class="btn-mgmt btn-mgmt-danger acct-pos-del-btn" type="button">Delete</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+
+            positionList.querySelectorAll('.acct-pos-chip').forEach(function (chip) {
+                var posId    = chip.getAttribute('data-pos-id');
+                var saveBtn  = chip.querySelector('.acct-pos-save-btn');
+                var delBtn   = chip.querySelector('.acct-pos-del-btn');
+                var nameInp  = chip.querySelector('.acct-pos-chip-input');
+                var permSel  = chip.querySelector('.acct-pos-chip-select');
+
+                saveBtn.addEventListener('click', async function () {
+                    var n = nameInp.value.trim();
+                    if (!n) { showAcctMsg('Position name cannot be empty.', 'error'); return; }
+                    saveBtn.disabled = true; saveBtn.textContent = '…';
+                    try {
+                        var res  = await fetch(ACCT_API + '?action=updatePosition', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pos_id: posId, name: n, default_permtier_id: permSel.value }),
+                        });
+                        var data = await res.json();
+                        if (!data.ok) throw new Error(data.error || 'Save failed');
+                        var pos = positions.find(function (p) { return String(p.ojp_id) === String(posId); });
+                        if (pos) {
+                            pos.ojp_name = n;
+                            pos.ojp_default_permtier_id = permSel.value || null;
+                            var pg = permGroups.find(function (g) { return String(g.permtier_id) === String(permSel.value); });
+                            pos.default_permtier_name = pg ? pg.permtier_name : null;
+                        }
+                        // Re-render account rows so perm badges update
+                        renderAccounts();
+                        showAcctMsg('Position saved.', 'success');
+                    } catch (e) { showAcctMsg(e.message || 'Error saving position.', 'error'); }
+                    finally { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+                });
+
+                delBtn.addEventListener('click', async function () {
+                    var posObj = positions.find(function (p) { return String(p.ojp_id) === String(posId); });
+                    var posName = posObj ? posObj.ojp_name : posId;
+                    if (!confirm('Delete position "' + posName + '"?\n\nUsers assigned this position will have it cleared.')) return;
+                    delBtn.disabled = true;
+                    try {
+                        var res  = await fetch(ACCT_API + '?action=deletePosition', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pos_id: posId }),
+                        });
+                        var data = await res.json();
+                        if (!data.ok) throw new Error(data.error || 'Delete failed');
+                        positions = positions.filter(function (p) { return String(p.ojp_id) !== String(posId); });
+                        accounts.forEach(function (a) {
+                            if (String(a.acc_job_position_id) === String(posId)) {
+                                a.acc_job_position_id = null; a.position_name = null;
+                                a.pos_default_permtier_id = null; a.pos_default_permtier_name = null;
+                            }
+                        });
+                        renderPositions();
+                        renderAccounts();
+                        showAcctMsg('Position deleted.', 'success');
+                    } catch (e) { showAcctMsg(e.message || 'Error deleting position.', 'error'); delBtn.disabled = false; }
+                });
+            });
+        }
+
+        // ── Render account rows ───────────────────────────────────────────────
+        function renderAccounts() {
+            if (!accounts.length) {
+                accountRows.innerHTML = '<div class="acct-empty">No accounts found for this organization.</div>';
+                return;
+            }
+
+            accountRows.innerHTML = accounts.map(function (acc) {
+                var initials = (acc.acc_name || acc.username || '?')
+                    .split(/[\s.]+/).map(function (w) { return w[0] || ''; }).join('').slice(0, 2).toUpperCase();
+
+                var avatarHtml = acc.acc_profile_pic
+                    ? '<img src="/' + escHtml(acc.acc_profile_pic.replace(/^\//, '')) + '" class="acct-avatar-img" alt="' + escHtml(acc.acc_name || '') + '" />'
+                    : '<div class="acct-avatar-initials">' + escHtml(initials) + '</div>';
+
+                // Determine effective perm group badge
+                var hasPosDefault = acc.pos_default_permtier_id && !acc.acc_permtier_id;
+                var effectiveLabel = acc.acc_permtier_id
+                    ? escHtml(acc.manual_permtier_name || 'Group ' + acc.acc_permtier_id)
+                    : (acc.pos_default_permtier_id
+                        ? '<span class="acct-perm-hint">via position: ' + escHtml(acc.pos_default_permtier_name || 'default') + '</span>'
+                        : '');
+
+                // Position dropdown
+                var posOpts = '<option value="">— Unassigned —</option>' +
+                    positions.map(function (p) {
+                        var sel = String(p.ojp_id) === String(acc.acc_job_position_id) ? ' selected' : '';
+                        return '<option value="' + p.ojp_id + '"' + sel + '>' + escHtml(p.ojp_name) + '</option>';
+                    }).join('');
+
+                // Perm group dropdown — includes "Use position default" option
+                var permOpts = buildPermOptions(acc.acc_permtier_id, true, '— Use position default —');
+
+                return '<div class="acct-row" data-account-id="' + acc.account_id + '">' +
+                    '<div class="acct-col-avatar">' +
+                        '<div class="acct-avatar">' + avatarHtml + '</div>' +
+                    '</div>' +
+                    '<div class="acct-col-username">' +
+                        '<span class="acct-username">' + escHtml(acc.username || '') + '</span>' +
+                    '</div>' +
+                    '<div class="acct-col-displayname">' +
+                        '<span class="acct-displayname">' + escHtml(acc.acc_name || '') + '</span>' +
+                    '</div>' +
+                    '<div class="acct-col-position">' +
+                        '<select class="zone-input acct-pos-select">' + posOpts + '</select>' +
+                    '</div>' +
+                    '<div class="acct-col-permgroup">' +
+                        '<select class="zone-input acct-perm-select">' + permOpts + '</select>' +
+                        '<div class="acct-perm-effective">' + effectiveLabel + '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+
+            accountRows.querySelectorAll('.acct-row').forEach(function (row) {
+                var posSel  = row.querySelector('.acct-pos-select');
+                var permSel = row.querySelector('.acct-perm-select');
+                var effDiv  = row.querySelector('.acct-perm-effective');
+
+                posSel.addEventListener('change', function () {
+                    row.classList.add('dirty');
+                    if (!permSel.value) {
+                        var pos = positions.find(function (p) { return String(p.ojp_id) === String(posSel.value); });
+                        effDiv.innerHTML = (pos && pos.pos_default_permtier_id)
+                            ? '<span class="acct-perm-hint">via position: ' + escHtml(pos.default_permtier_name || 'default') + '</span>'
+                            : '';
+                    }
+                });
+
+                permSel.addEventListener('change', function () {
+                    row.classList.add('dirty');
+                    if (!permSel.value) {
+                        var pos = positions.find(function (p) { return String(p.ojp_id) === String(posSel.value); });
+                        effDiv.innerHTML = (pos && pos.ojp_default_permtier_id)
+                            ? '<span class="acct-perm-hint">via position: ' + escHtml(pos.default_permtier_name || 'default') + '</span>'
+                            : '';
+                    } else {
+                        var pg = permGroups.find(function (g) { return String(g.permtier_id) === String(permSel.value); });
+                        effDiv.textContent = pg ? (pg.permtier_name || 'Group ' + pg.permtier_id) : '';
+                    }
+                });
+            });
+        }
+
+        // ── Create position ───────────────────────────────────────────────────
+        btnCreatePos.addEventListener('click', async function () {
+            var name = newPosName.value.trim();
+            if (!name) { showFieldMsg(posCreateMsg, 'Position name is required.', 'error'); return; }
+            btnCreatePos.disabled = true; btnCreatePos.textContent = '…';
+            try {
+                var res  = await fetch(ACCT_API + '?action=createPosition', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, default_permtier_id: newPosPermtier.value || null }),
+                });
+                var data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Create failed');
+                positions.push(data.position);
+                newPosName.value = '';
+                newPosPermtier.value = '';
+                renderPositions();
+                renderAccounts();
+                showFieldMsg(posCreateMsg, 'Position "' + name + '" created.', 'ok');
+            } catch (e) { showFieldMsg(posCreateMsg, e.message || 'Error.', 'error'); }
+            finally { btnCreatePos.disabled = false; btnCreatePos.textContent = 'Add'; }
+        });
+
+        newPosName.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') btnCreatePos.click();
+        });
+
+        // ── Save row helper ───────────────────────────────────────────────────
+        async function saveRow(row) {
+            var accountId = row.getAttribute('data-account-id');
+            var posSel    = row.querySelector('.acct-pos-select');
+            var permSel   = row.querySelector('.acct-perm-select');
+
+            var r1 = await fetch(ACCT_API + '?action=saveUserPosition', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: accountId, job_position_id: posSel.value || null }),
+            });
+            var d1 = await r1.json();
+            if (!d1.ok) throw new Error(d1.error || 'Position save failed');
+
+            var r2 = await fetch(ACCT_API + '?action=saveUserPermtier', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: accountId, permtier_id: permSel.value || null }),
+            });
+            var d2 = await r2.json();
+            if (!d2.ok) throw new Error(d2.error || 'Permission save failed');
+
+            var acc = accounts.find(function (a) { return String(a.account_id) === String(accountId); });
+            if (acc) {
+                acc.acc_job_position_id = posSel.value || null;
+                acc.acc_permtier_id     = permSel.value || null;
+                var pos = positions.find(function (p) { return String(p.ojp_id) === String(posSel.value); });
+                acc.position_name             = pos ? pos.ojp_name : null;
+                acc.pos_default_permtier_id   = pos ? pos.ojp_default_permtier_id : null;
+                acc.pos_default_permtier_name = pos ? pos.default_permtier_name : null;
+                var pg = permGroups.find(function (g) { return String(g.permtier_id) === String(permSel.value); });
+                acc.manual_permtier_name = pg ? pg.permtier_name : null;
+            }
+            row.classList.remove('dirty');
+            return acc ? (acc.acc_name || acc.username || 'user') : 'user';
+        }
+
+        // ── Header save button ────────────────────────────────────────────────
+        var headerSaveBtn = document.getElementById('headerSaveBtn');
+        headerSaveBtn.addEventListener('click', async function () {
+            var dirtyRows = Array.from(accountRows.querySelectorAll('.acct-row.dirty'));
+            if (!dirtyRows.length) { showAcctMsg('No unsaved changes.', 'info'); return; }
+            headerSaveBtn.disabled = true; headerSaveBtn.textContent = 'Saving…';
+            var errors = [], saved = [];
+            for (var i = 0; i < dirtyRows.length; i++) {
+                try { saved.push(await saveRow(dirtyRows[i])); }
+                catch (e) { errors.push(e.message || 'Save failed'); }
+            }
+            headerSaveBtn.disabled = false; headerSaveBtn.textContent = 'Save Changes';
+            if (errors.length) { showAcctMsg(errors[0], 'error'); }
+            else { showAcctMsg('Saved ' + saved.length + ' user' + (saved.length !== 1 ? 's' : '') + '.', 'success'); }
+        });
+
+        // ── Initial load ──────────────────────────────────────────────────────
+        async function loadAll() {
+            try {
+                var res  = await fetch(ACCT_API + '?action=load');
+                var data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Failed to load');
+                accounts   = data.accounts   || [];
+                positions  = data.positions  || [];
+                permGroups = data.permGroups || [];
+                renderPositions();
+                renderAccounts();
+            } catch (e) {
+                accountRows.innerHTML = '<div class="acct-empty">' + escHtml(e.message || 'Failed to load accounts') + '</div>';
+            }
+        }
+
+        loadAll();
     }
 
     // ── Shared helpers ────────────────────────────────────────────────────────
